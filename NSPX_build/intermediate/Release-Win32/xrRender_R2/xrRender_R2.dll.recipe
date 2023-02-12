@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project>
+  <ProjectOutputs>
+    <ProjectOutput>
+      <FullPath>I:\Vitalya\mine\NSPX_build\bin\BugTrap.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>I:\Vitalya\mine\NSPX_build\bin\xrCore.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>I:\Vitalya\mine\NSPX_build\bin\xrCDB.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>I:\Vitalya\mine\NSPX_build\bin\xrParticles.dll</FullPath>
+    </ProjectOutput>
+    <ProjectOutput>
+      <FullPath>I:\Vitalya\mine\NSProjectX\NSPX_build\bin\xrRender_R2.dll</FullPath>
+    </ProjectOutput>
+  </ProjectOutputs>
+  <ContentFiles />
+  <SatelliteDlls />
+  <NonRecipeFileRefs />
+</Project>

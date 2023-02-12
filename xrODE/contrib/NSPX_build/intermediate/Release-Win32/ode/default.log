@@ -1,0 +1,66 @@
+﻿cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  array.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  Bounder33.cpp
+  collision_kernel.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  collision_space.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  collision_transform.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  collision_util.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  error.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  export-dif.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  joint.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  lcp.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  mass.cpp
+  mat.cpp
+  matrix.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  memory.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  misc.cpp
+  obstack.cpp
+  ode.cpp
+  odemath.cpp
+  quickstep.cpp
+  rotation.cpp
+  step.cpp
+  stepfast.cpp
+  StepJointInternal.cpp
+  testing.cpp
+  timer.cpp
+  util.cpp
+  de_padf_integration.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  collision_quadtreespace.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  collision_std.cpp
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  fastdot.c
+  fastldlt.c
+  fastlsolve.c
+cl : command line warning D9035: option 'Zc:forScope-' has been deprecated and will be removed in a future release
+  fastltsolve.c
+     Creating library I:\Vitalya\mine\NSProjectX\..\libraries\ode.lib and object I:\Vitalya\mine\NSProjectX\..\libraries\ode.exp
+  Generating code
+  Finished generating code
+  default.vcxproj -> I:\Vitalya\mine\NSProjectX\xrODE\contrib\NSPX_build\bin\ode.dll

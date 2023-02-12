@@ -16,7 +16,10 @@ void CSE_ALifeMonsterBase::on_spawn				()
 {
 	inherited1::on_spawn		();
 
-	if (!pSettings->line_exist(s_name,"Spawn_Inventory_Item_Section"))
+	//Перенесено в скрипт butcher.script
+	//TO-DO: преисполниться познанием и сделать обратно через движок
+
+	/*if (!pSettings->line_exist(s_name, "Spawn_Inventory_Item_Section"))
 		return;
 
 	LPCSTR						item_section = pSettings->r_string(s_name,"Spawn_Inventory_Item_Section");
@@ -25,7 +28,7 @@ void CSE_ALifeMonsterBase::on_spawn				()
 	if ((probability >= spawn_probability) && !fsimilar(spawn_probability,1.f))
 		return;
 
-	alife().spawn_item(item_section,o_Position,m_tNodeID,m_tGraphID,ID)->ID_Parent = ID;
+	alife().spawn_item(item_section,o_Position,m_tNodeID,m_tGraphID,ID)->ID_Parent = ID;*/
 }
 
 extern void add_online_impl		(CSE_ALifeDynamicObject *object, const bool &update_registries);
