@@ -42,29 +42,31 @@ void FlushLog			()
 
 void AddOne				(const char *split) 
 {
-	if(!LogFile)		
-						return;
+	if (!LogFile)
+		return;
 
-	logCS.Enter			();
+	logCS.Enter();
 
-//#ifdef DEBUG
-	if (IsDebuggerPresent()) {
-		OutputDebugString(split);
-		OutputDebugString("\n");
-	}
-//#endif
+#ifdef DEBUG
+	OutputDebugString(split);
+	OutputDebugString("\n");
+#endif
 
-//	DUMP_PHASE;
+	//	DUMP_PHASE;
 	{
-		shared_str			temp = shared_str(split);
-//		DUMP_PHASE;
-		LogFile->push_back	(temp);
+		//		DUMP_PHASE;
+		time_t t = time(NULL);
+		tm* ti = localtime(&t);
+		char buf[64];
+		strftime(buf, 64, "[%x %X]\t", ti);
+
+		char buf_1[1024];
+		sprintf_s(buf_1, "%s%s\r\n", buf, split);
+		shared_str			temp = shared_str(buf_1);
+		LogFile->push_back(temp);
 	}
 
-	//exec CallBack
-	if (LogExecCB&&LogCB)LogCB(split);
-
-	logCS.Leave				();
+	logCS.Leave();
 }
 
 void Log				(const char *s) 
