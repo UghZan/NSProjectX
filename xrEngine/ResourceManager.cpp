@@ -331,57 +331,7 @@ void CResourceManager::DeferredUpload()
 	Msg("texture loading time: %d ms", timer.GetElapsed_ms());
 }
 
-/*
-void CResourceManager::DeferredUpload()
-{
-    if (!Device.b_is_Ready)
-        return;
 
-    // минимальное количество текстур чтобы использовать многопоточную загрузку
-    const u32 MinTexturesCntToUseMT = 100;
-    
-    tex_to_load.clear();
-    Msg("CResourceManager::DeferredUpload -> START, size = %d", m_textures.size());
-    CTimer timer;
-    timer.Start();
-    
-    if (m_textures.size() <= MinTexturesCntToUseMT)
-    {
-        Msg("CResourceManager::DeferredUpload -> one thread");
-    
-        for (map_TextureIt t = m_textures.begin(); t != m_textures.end(); t++)
-            t->second->Load();
-    }
-    else
-    {
-        u32 th_count = std::thread::hardware_concurrency();
-        u32 texCntOneThread = m_textures.size() / th_count;
-        std::thread* th_arr = new std::thread[th_count];
-    
-        for (auto tex : m_textures)
-            tex_to_load.push_back(tex.second);
-
-        for (u16 i = 0; i < th_count; i++)
-        {
-            u32 from = i * texCntOneThread;
-            u32 to = (i + 1) * texCntOneThread;
-
-            if(i == th_count - 1)
-                to = m_textures.size();
-
-            th_arr[i] = std::thread(TextureLoading, from, to);
-        }
-
-        for (size_t i = 0; i < th_count; i++)
-            th_arr[i].join();
-
-        delete[] th_arr;
-        tex_to_load.clear();
-    }
-
-    Msg("texture loading time: %d ms", timer.GetElapsed_ms());
-}
-*/
 #else//MT_TEXTURES
 void	CResourceManager::DeferredUpload()
 {

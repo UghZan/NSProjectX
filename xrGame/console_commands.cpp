@@ -188,7 +188,34 @@ public:
 };
 
 
+class CCC_SetWeather : public IConsole_Command {
+public:
+	CCC_SetWeather(LPCSTR N) : IConsole_Command(N) {
+	}
 
+	virtual void Execute(LPCSTR weather_name) {
+		if (!g_pGamePersistent && !OnServer()) {
+			return;
+		}
+
+		if (weather_name && weather_name[0]) {
+			g_pGamePersistent->Environment().SetWeather(weather_name, IsGameTypeSingle());
+		}
+	}
+
+	virtual void fill_tips(vecTips& tips, u32 mode) {
+		auto& cycles = g_pGamePersistent->Environment().WeatherCycles;
+		for (auto& cycle : cycles) {
+			tips.push_back(cycle.first);
+		}
+
+		IConsole_Command::fill_tips(tips, mode);
+	}
+
+	virtual void Info(TInfo& I) {
+		strcpy(I, "Set new weather");
+	}
+};
 
 
 #ifdef DEBUG
@@ -1522,6 +1549,7 @@ void CCC_RegisterCommands()
 
 	CMD3(CCC_Mask,		"g_autopickup",			&psActorFlags,	AF_AUTOPICKUP);
 
+	CMD1(CCC_SetWeather, "set_weather");
 
 #ifdef DEBUG
 	CMD1(CCC_LuaHelp,				"lua_help");

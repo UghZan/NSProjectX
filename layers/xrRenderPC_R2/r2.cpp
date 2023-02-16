@@ -621,8 +621,8 @@ static HRESULT create_shader(
 		ID3DXBuffer* _disasm = 0;
 		D3DXDisassembleShader(LPDWORD(buffer), FALSE, 0, &_disasm);
 		string_path		dname;
-		strconcat(sizeof(dname), dname, "disasm\\", file_name, ('v' == pTarget[0]) ? ".vs" : ".ps");
-		IWriter* W = FS.w_open("$app_data_root$", dname);
+		strconcat(sizeof(dname), dname, "disassembied_shaders\\", file_name, ('v' == pTarget[0]) ? ".vs" : ".ps");
+		IWriter* W = FS.w_open("$debug_data_root$", dname);
 		W->w(_disasm->GetBufferPointer(), _disasm->GetBufferSize());
 		FS.w_close(W);
 		_RELEASE(_disasm);
@@ -794,20 +794,20 @@ HRESULT	CRender::shader_compile(
 	sh_name[len] = '0' + char(o.sjitter);
 	++len;
 
-	if (HW.Caps.raster_major >= 3) {
+	if (HW.Caps.raster_major >= 3 && o.advancedpp) {
 		defines[def_it].Name = "USE_BRANCHING";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(HW.Caps.raster_major >= 3);
+	sh_name[len] = '0' + char(HW.Caps.raster_major >= 3 && o.advancedpp);
 	++len;
 
-	if (HW.Caps.geometry.bVTF) {
+	if (HW.Caps.geometry.bVTF && o.advancedpp) {
 		defines[def_it].Name = "USE_VTF";
 		defines[def_it].Definition = "1";
 		def_it++;
 	}
-	sh_name[len] = '0' + char(HW.Caps.geometry.bVTF);
+	sh_name[len] = '0' + char(HW.Caps.geometry.bVTF && o.advancedpp);
 	++len;
 
 	if (o.Tshadows) {
@@ -1378,12 +1378,19 @@ HRESULT	CRender::shader_compile(
 
 	if (FAILED(_result))
 	{
-		// 
 		if (0 == xr_strcmp(pFunctionName, "main")) {
-			if ('v' == pTarget[0])			pTarget = D3DXGetVertexShaderProfile(HW.pDevice);	// vertex	"vs_2_a"; //	
-			else							pTarget = D3DXGetPixelShaderProfile(HW.pDevice);	// pixel	"ps_2_a"; //	
-		}
-
+			if (0 == xr_strcmp(pFunctionName, "main")) {
+				if (o.advancedpp)
+				{
+					if ('v' == pTarget[0])			pTarget = "vs_3_0";
+					else							pTarget = "ps_3_0";
+				}
+				else
+				{
+					if ('v' == pTarget[0])			pTarget = "vs_2_a";
+					else							pTarget = "ps_2_a";
+				}
+			}
 		includer Includer;
 		LPD3DXBUFFER pShaderBuf = NULL;
 		LPD3DXBUFFER pErrorBuf = NULL;
