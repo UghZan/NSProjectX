@@ -19,9 +19,11 @@
 CEatableItem::CEatableItem()
 {
 	m_fHealthInfluence = 0;
+	m_fPsyHealthInfluence = 0;
 	m_fPowerInfluence = 0;
 	m_fSatietyInfluence = 0;
 	m_fRadiationInfluence = 0;
+	m_fWoundsHealPerc = 0;
 
 	m_iPortionsNum = -1;
 
@@ -42,11 +44,12 @@ void CEatableItem::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
-	m_fHealthInfluence			= pSettings->r_float(section, "eat_health");
-	m_fPowerInfluence			= pSettings->r_float(section, "eat_power");
-	m_fSatietyInfluence			= pSettings->r_float(section, "eat_satiety");
-	m_fRadiationInfluence		= pSettings->r_float(section, "eat_radiation");
-	m_fWoundsHealPerc			= pSettings->r_float(section, "wounds_heal_perc");
+	m_fHealthInfluence			= READ_IF_EXISTS	(pSettings,r_float,section,"eat_health",0.0f);
+	m_fPsyHealthInfluence		= READ_IF_EXISTS	(pSettings,r_float,section,"eat_psy_health",0.0f);
+	m_fPowerInfluence			= READ_IF_EXISTS	(pSettings,r_float,section,"eat_power",0.0f);
+	m_fSatietyInfluence			= READ_IF_EXISTS	(pSettings,r_float,section,"eat_satiety",0.0f);
+	m_fRadiationInfluence		= READ_IF_EXISTS	(pSettings,r_float,section,"eat_radiation",0.0f);
+	m_fWoundsHealPerc			= READ_IF_EXISTS	(pSettings,r_float,section,"wounds_heal_perc",0.0f);
 	clamp						(m_fWoundsHealPerc, 0.f, 1.f);
 	
 	m_iStartPortionsNum			= pSettings->r_s32	(section, "eat_portions_num");
@@ -92,6 +95,7 @@ void CEatableItem::UseBy (CEntityAlive* entity_alive)
 	R_ASSERT		(m_pCurrentInventory==IO->m_inventory);
 	R_ASSERT		(object().H_Parent()->ID()==entity_alive->ID());
 	entity_alive->conditions().ChangeHealth		(m_fHealthInfluence);
+	entity_alive->conditions().ChangePsyHealth	(m_fPsyHealthInfluence);
 	entity_alive->conditions().ChangePower		(m_fPowerInfluence);
 	entity_alive->conditions().ChangeSatiety	(m_fSatietyInfluence);
 	entity_alive->conditions().ChangeRadiation	(m_fRadiationInfluence);

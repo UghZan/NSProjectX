@@ -27,6 +27,17 @@ protected:
 		_item_explosion_immunit,
 		_item_fire_wound_immunity,
 
+		_item_index1,
+
+		_item_health_restore_speed = _item_index1,
+		_item_psy_health_restore_speed,
+		_item_radiation_restore_speed,
+		_item_satiety_restore_speed,
+		_item_power_restore_speed,
+		_item_bleeding_restore_speed,
+		_item_additional_inventory_weight,
+		_item_power_loss,
+
 		_max_item_index,
 
 	};

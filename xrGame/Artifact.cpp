@@ -89,10 +89,15 @@ void CArtefact::Load(LPCSTR section)
 
 	{
 		m_fHealthRestoreSpeed = pSettings->r_float		(section,"health_restore_speed"		);
+		m_fPsyRestoreSpeed = pSettings->r_float			(section,"psy_health_restore_speed"	);
 		m_fRadiationRestoreSpeed = pSettings->r_float	(section,"radiation_restore_speed"	);
 		m_fSatietyRestoreSpeed = pSettings->r_float		(section,"satiety_restore_speed"	);
 		m_fPowerRestoreSpeed = pSettings->r_float		(section,"power_restore_speed"		);
 		m_fBleedingRestoreSpeed = pSettings->r_float	(section,"bleeding_restore_speed"	);
+
+		m_fAdditionalInvWeight = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight", 0.f);
+		m_fAdditionalInvWeight2 = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight2", 0.f);
+
 		if(pSettings->section_exist(/**cNameSect(), */pSettings->r_string(section,"hit_absorbation_sect")))
 			m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section,"hit_absorbation_sect"),pSettings);
 	}

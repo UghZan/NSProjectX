@@ -564,21 +564,23 @@ bool CRelationMapLocation::Update()
 
 	m_last_relation = ALife::eRelationTypeFriend;
 
+
+
 	if(ai().get_alife())		
 	{
-		CSE_ALifeTraderAbstract*	pEnt = NULL;
-		CSE_ALifeTraderAbstract*	pAct = NULL;
+		CSE_ALifeTraderAbstract*	pTraderEnt = NULL;
+		CSE_ALifeTraderAbstract*	pTraderAct = NULL;
 		CSE_ALifeDynamicObject*		temp = ai().alife().objects().object(m_pInvOwnerEntityID,true);
-		pEnt = smart_cast<CSE_ALifeTraderAbstract*>(temp);
-		pAct = smart_cast<CSE_ALifeTraderAbstract*>(ai().alife().objects().object(m_pInvOwnerActorID,true));
-		if(!pEnt || !pAct)	return false;
-		m_last_relation =  RELATION_REGISTRY().GetRelationType(pEnt, pAct);
+		pTraderEnt = smart_cast<CSE_ALifeTraderAbstract*>(temp);
+		pTraderAct = smart_cast<CSE_ALifeTraderAbstract*>(ai().alife().objects().object(m_pInvOwnerActorID,true));
+		if(!pTraderEnt || !pTraderAct)	return false;
+		m_last_relation =  RELATION_REGISTRY().GetRelationType(pTraderEnt, pTraderAct);
 		CSE_ALifeCreatureAbstract*		pCreature = smart_cast<CSE_ALifeCreatureAbstract*>(temp);
 		if(pCreature) //maybe trader ?
 			bAlive = pCreature->g_Alive		();
 	}else{
-		CInventoryOwner*			pEnt = NULL;
 		CInventoryOwner*			pAct = NULL;
+		CInventoryOwner*			pEnt = NULL;
 
 		pEnt = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(m_pInvOwnerEntityID));
 		pAct = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(m_pInvOwnerActorID));
@@ -605,6 +607,12 @@ bool CRelationMapLocation::Update()
 bool CRelationMapLocation::IsVisible	()
 {
 	bool res = true;
+
+	CInventoryOwner* pEnt = smart_cast<CInventoryOwner*>(Level().Objects.net_Find(m_pInvOwnerEntityID));
+	if (pEnt)
+		if (!pEnt->HasPDA())
+			return false;
+
 	if(m_last_relation==ALife::eRelationTypeEnemy || m_last_relation==ALife::eRelationTypeWorstEnemy){
 
 		CObject* _object_ = Level().Objects.net_Find(m_pInvOwnerEntityID);

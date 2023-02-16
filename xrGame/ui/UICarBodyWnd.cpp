@@ -25,6 +25,7 @@
 #include "../script_callback_ex.h"
 #include "../script_game_object.h"
 #include "../BottleItem.h"
+#include <string_table.h>
 
 #define				CAR_BODY_XML		"carbody_new.xml"
 #define				CARBODY_ITEM_XML	"carbody_item.xml"
@@ -168,12 +169,12 @@ void CUICarBodyWnd::InitCarBody(CInventoryOwner* pOur, CInventoryOwner* pOthers)
 		monster										= smart_cast<CBaseMonster *>(m_pOthersObject);
 		if (monster || m_pOthersObject->use_simplified_visual() ) 
 		{
-			m_pUICharacterInfoRight->ClearInfo		();
+			m_pUICharacterInfoRight->ClearInfo();
 			if(monster)
 			{
 				shared_str monster_tex_name = pSettings->r_string(monster->cNameSect(),"icon");
-				shared_str monster_sect_name = monster->cNameSect();
-				m_pUICharacterInfoRight->UIName().SetText(monster->cNameSect().c_str());
+				m_pUICharacterInfoRight->UIName().SetText(CStringTable().translate(monster->cNameSect()).c_str());
+				m_pUICharacterInfoRight->UIName().Show(true);
 				m_pUICharacterInfoRight->UIIcon().InitTexture(monster_tex_name.c_str());
 				m_pUICharacterInfoRight->UIIcon().SetStretchTexture(true);
 			}

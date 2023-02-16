@@ -19,9 +19,9 @@
 #ifndef TYPELIST_INC_
 #define TYPELIST_INC_
 
-#include "loki\static_check.h"
-#include "loki\Nulltype.h"
-#include "loki\TypeManip.h"
+#include "static_check.h"
+#include "Nulltype.h"
+#include "TypeManip.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // macros TYPELIST_1, TYPELIST_2, ... TYPELIST_50

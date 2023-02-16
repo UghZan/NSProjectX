@@ -29,4 +29,7 @@ protected:
 	CUIStatic					m_textHandling;
 	CUIStatic					m_textDamage;
 	CUIStatic					m_textRPM;
+
+	CUIStatic					m_textCapacity;
+	CUIStatic					m_captCapacity;
 };

@@ -182,8 +182,8 @@
     <OutDir>$(SolutionDir)..\NSPX_build\bin\</OutDir>
     <IntDir>$(SolutionDir)..\NSPX_build\intermediate\$(Configuration)-$(Platform)\$(ProjectName)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <ExternalIncludePath>$(SolutionDir)third-party\include\;$(SolutionDir)xrLua\src\;$(SolutionDir)xrCore\;$(DXSDK_DIR)Include\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
-    <LibraryPath>$(SolutionDir)..\libraries\;$(LibraryPath)</LibraryPath>
+    <ExternalIncludePath>$(SolutionDir)third-party\include\;$(SolutionDir)Luabind\;$(SolutionDir)LuaJIT\src;$(SolutionDir)xrCore\;$(DXSDK_DIR)Include\;$(ProjectDir);$(ExternalIncludePath)</ExternalIncludePath>
+    <LibraryPath>$(SolutionDir)..\NSPX_build\libraries\;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-AVX|Win32'">
     <OutDir>$(SolutionDir)..\bin\</OutDir>
@@ -381,6 +381,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>4237;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>I:\Vitalya\mine\NSProjectX\Luabind;I:\Vitalya\mine\NSProjectX\LuaJIT\src;I:\Vitalya\mine\NSProjectX\xrCore;I:\Vitalya\mine\NSProjectX\third-party\include\boost;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -398,7 +399,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
-      <ImportLibrary>$(SolutionDir)..\libraries\$(ProjectName).lib</ImportLibrary>
+      <ImportLibrary>$(SolutionDir)..\NSPX_build\libraries\$(ProjectName).lib</ImportLibrary>
+      <AdditionalDependencies>lua5.1.lib;luabind.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release-AVX|Win32'">
@@ -2182,6 +2184,8 @@
     <ClInclude Include="ui\UIXmlInit.h" />
     <ClInclude Include="ui\ui_af_params.h" />
     <ClInclude Include="ui\UI_IB_Static.h" />
+    <ClInclude Include="ui\ui_item_params.h" />
+    <ClInclude Include="ui\ui_outfits_params.h" />
     <ClInclude Include="ui\xrUIXmlParser.h" />
     <ClInclude Include="ui_base.h" />
     <ClInclude Include="UsableScriptObject.h" />
@@ -8518,6 +8522,8 @@
     <ClCompile Include="ui\UIXmlInit.cpp" />
     <ClCompile Include="ui\ui_af_params.cpp" />
     <ClCompile Include="ui\UI_IB_Static.cpp" />
+    <ClCompile Include="ui\ui_item_params.cpp" />
+    <ClCompile Include="ui\ui_outfits_params.cpp" />
     <ClCompile Include="ui\xrUIXmlParser.cpp" />
     <ClCompile Include="ui_base.cpp" />
     <ClCompile Include="ui_export_script.cpp">

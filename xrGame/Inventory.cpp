@@ -71,10 +71,8 @@ CInventory::CInventory()
 			m_slots[i].m_bPersistent = !!pSettings->r_bool("inventory",temp);
 	};
 
-	m_slots[PDA_SLOT].m_bVisible				= false;
+	//m_slots[PDA_SLOT].m_bVisible				= false;
 	m_slots[OUTFIT_SLOT].m_bVisible				= false;
-	m_slots[DETECTOR_SLOT].m_bVisible			= false;
-	m_slots[TORCH_SLOT].m_bVisible				= false;
 
 	m_bSlotsUseful								= true;
 	m_bBeltUseful								= false;

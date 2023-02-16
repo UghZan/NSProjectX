@@ -20,6 +20,7 @@ CUIItemParams::~CUIItemParams()
 
 LPCSTR item_sect_names[] = {
 	"eat_health",
+	"eat_psy_health",
 	"eat_satiety",
 	"eat_power",
 	"eat_radiation",
@@ -29,6 +30,7 @@ LPCSTR item_sect_names[] = {
 
 LPCSTR item_param_names[] = {
 	"ui_inv_health",
+	"ui_inv_psy_health",
 	"ui_inv_satiety",
 	"ui_inv_power",
 	"ui_inv_radiation",
@@ -38,6 +40,7 @@ LPCSTR item_param_names[] = {
 
 LPCSTR ui_sect_names[] = {
 	"item_health",
+	"item_psy_health",
 	"item_satiety",
 	"item_power",
 	"item_radiation",
@@ -48,16 +51,16 @@ void CUIItemParams::InitFromXml(CUIXml& xml_doc)
 {
 	LPCSTR _base = "item_params";
 	if (!xml_doc.NavigateToNode(_base, 0))	return;
-
 	string256					_buff;
 	CUIXmlInit::InitWindow(xml_doc, _base, 0, this);
 
 	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
+		strconcat(sizeof(_buff), _buff, _base, ":static_", ui_sect_names[i]);
+		if (!xml_doc.NavigateToNode(_buff, 0))	continue;
 		m_info_items[i] = xr_new<CUIStatic>();
 		CUIStatic* _s = m_info_items[i];
 		_s->SetAutoDelete(false);
-		strconcat(sizeof(_buff), _buff, _base, ":static_", ui_sect_names[i]);
 		CUIXmlInit::InitStatic(xml_doc, _buff, 0, _s);
 	}
 }
@@ -76,6 +79,9 @@ void CUIItemParams::SetInfo(const shared_str& item_section)
 	for (u32 i = _item_start; i < _max_item_index; ++i)
 	{
 		CUIStatic* _s = m_info_items[i];
+		if (!_s)
+			continue;
+
 		if (0 == pSettings->line_exist(item_section, item_sect_names[i])) continue;
 
 		float					_val;

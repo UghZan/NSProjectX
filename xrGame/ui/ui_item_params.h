@@ -18,6 +18,7 @@ protected:
 		_item_start = 0,
 
 		_item_eat_health = _item_start,
+		_item_eat_psy,
 		_item_eat_satiety,
 		_item_eat_power,
 		_item_eat_radiation, 

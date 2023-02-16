@@ -4,9 +4,6 @@
     <Filter Include="core">
       <UniqueIdentifier>{e244fe06-fcf7-4a24-9e06-919d37099476}</UniqueIdentifier>
     </Filter>
-    <Filter Include="luabind">
-      <UniqueIdentifier>{a89c2bcf-287a-4b7f-a6cb-7b9d1db68179}</UniqueIdentifier>
-    </Filter>
     <Filter Include="etc">
       <UniqueIdentifier>{d6a1a887-e75d-4be1-885d-4a605f469779}</UniqueIdentifier>
     </Filter>
@@ -119,63 +116,6 @@
     </ClCompile>
     <ClCompile Include="src\lzio.c">
       <Filter>core</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\class.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\class_info.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\class_registry.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\class_rep.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\create_class.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\error.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\find_best_match.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\function.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\implicit_cast.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\link_compatibility.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\object.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\object_rep.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\open.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\pcall.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\ref.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\scope.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\stack_content_by_name.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\weak_ref.cpp">
-      <Filter>luabind</Filter>
-    </ClCompile>
-    <ClCompile Include="luabind\wrapper_base.cpp">
-      <Filter>luabind</Filter>
     </ClCompile>
     <ClCompile Include="StdAfx.cpp" />
   </ItemGroup>

@@ -162,6 +162,7 @@ void CUIPdaWnd::SendMessage(CUIWindow* pWnd, s16 msg, void* pData)
 
 void CUIPdaWnd::Show()
 {
+
 	InventoryUtilities::SendInfoToActor("ui_pda");
 
 	inherited::Show();

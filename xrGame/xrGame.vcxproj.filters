@@ -6192,17 +6192,11 @@
     <ClInclude Include="ui\UIWpnParams.h">
       <Filter>UI\Common\ItemInfo</Filter>
     </ClInclude>
-    <ClInclude Include="ui\UIOutfitInfo.h">
-      <Filter>UI\Common\OutfitInfo</Filter>
-    </ClInclude>
     <ClInclude Include="ui\UITimeWnd.h">
       <Filter>UI\Common\TimeWnd</Filter>
     </ClInclude>
     <ClInclude Include="ui\UISleepWnd.h">
       <Filter>UI\Common\SleepWnd</Filter>
-    </ClInclude>
-    <ClInclude Include="ui\UIInventoryUtilities.h">
-      <Filter>UI\Common\InventoryUtilities</Filter>
     </ClInclude>
     <ClInclude Include="callback_info.h">
       <Filter>UI\UIWindows</Filter>
@@ -6557,6 +6551,18 @@
     </ClInclude>
     <ClInclude Include="ui\UIGameTutorial.h">
       <Filter>UI\Tutorial</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ui_item_params.h">
+      <Filter>UI\Common\ItemInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\ui_outfits_params.h">
+      <Filter>UI\Common\ItemInfo</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIInventoryUtilities.h">
+      <Filter>UI\Common\InventoryWnd</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIOutfitInfo.h">
+      <Filter>UI\Common\OutfitInfo</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -9302,9 +9308,6 @@
     <ClCompile Include="ui\UIItemInfo.cpp">
       <Filter>UI\Common\ItemInfo</Filter>
     </ClCompile>
-    <ClCompile Include="ui\UIOutfitInfo.cpp">
-      <Filter>UI\Common\OutfitInfo</Filter>
-    </ClCompile>
     <ClCompile Include="ui\UITimeWnd.cpp">
       <Filter>UI\Common\TimeWnd</Filter>
     </ClCompile>
@@ -9706,6 +9709,15 @@
     </ClCompile>
     <ClCompile Include="ui\UIGameTutorialVideoItem.cpp">
       <Filter>UI\Tutorial</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui_item_params.cpp">
+      <Filter>UI\Common\ItemInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\ui_outfits_params.cpp">
+      <Filter>UI\Common\ItemInfo</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIOutfitInfo.cpp">
+      <Filter>UI\Common\OutfitInfo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

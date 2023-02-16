@@ -88,6 +88,13 @@ protected:
 	CUIDragDropListEx*			m_pUIPistolList;
 	CUIDragDropListEx*			m_pUIAutomaticList;
 	CUIOutfitDragDropList*		m_pUIOutfitList;
+
+	CUIDragDropListEx*			m_pUIKnifeList;
+	CUIDragDropListEx*			m_pUIDetectorList;
+	CUIDragDropListEx*			m_pUIAFDetectorList;
+	CUIDragDropListEx*			m_pUITorchList;
+	CUIDragDropListEx*			m_pUIBinocularList;
+
 	void						ClearAllLists				();
 	void						BindDragDropListEnents		(CUIDragDropListEx* lst);
 	
@@ -105,6 +112,7 @@ protected:
 	CUIStatic					UIProgressBack_rank;
 	CUIProgressBar				UIProgressBarHealth;	
 	CUIProgressBar				UIProgressBarPsyHealth;
+	CUIProgressBar				UIProgressBarSatiety;
 	CUIProgressBar				UIProgressBarRadiation;
 	CUIProgressBar				UIProgressBarRank;
 

@@ -69,33 +69,25 @@ void CScriptProcess::update()
 	return;
 #endif
 
-	run_scripts			();
+	run_scripts();
 
 	if (m_scripts.empty())
 		return;
 
 	// update script
-	g_ca_stdout[0]		= 0;
-	u32					_id	= (++m_iterator)%m_scripts.size();
+	g_ca_stdout[0] = 0;
+	u32					_id = (++m_iterator) % m_scripts.size();
 	if (!m_scripts[_id]->update()) {
-		xr_delete			(m_scripts[_id]);
-		m_scripts.erase	(m_scripts.begin() + _id);
+		xr_delete(m_scripts[_id]);
+		m_scripts.erase(m_scripts.begin() + _id);
 		--m_iterator;		// try to avoid skipping
 	}
 
 	if (g_ca_stdout[0]) {
-		fputc							(0,stderr);
-		ai().script_engine().script_log	(ScriptStorage::eLuaMessageTypeInfo,"%s",g_ca_stdout);
-		fflush							(stderr);
+		fputc(0, stderr);
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeInfo, "%s", g_ca_stdout);
+		fflush(stderr);
 	}
-
-#if defined(_DEBUG) && !defined(USE_JIT)
-	try {
-		lua_setgcthreshold	(ai().script_engine().lua(),0);
-	}
-	catch(...) {
-	}
-#endif
 }
 
 void CScriptProcess::add_script	(LPCSTR	script_name,bool do_string, bool reload)

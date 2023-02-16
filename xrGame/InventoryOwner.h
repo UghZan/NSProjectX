@@ -57,6 +57,7 @@ public:
 
 
 	CPda* GetPDA		() const;
+	bool HasPDA			() const;
 
 
 	// инвентарь
@@ -132,6 +133,7 @@ public:
 	virtual float GetWeaponAccuracy			() const;
 	//максимальный переносимы вес
 	virtual float MaxCarryWeight			() const;
+	virtual float GetArtifactWeightBonus	(bool = false) const;
 
 	virtual CCustomOutfit*			GetOutfit()	const {return NULL;};
 

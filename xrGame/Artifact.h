@@ -68,11 +68,15 @@ public:
 
 	bool							m_bCanSpawnZone;
 	float							m_fHealthRestoreSpeed;
+	float							m_fPsyRestoreSpeed;
 	float 							m_fRadiationRestoreSpeed;
 	float 							m_fSatietyRestoreSpeed;
 	float							m_fPowerRestoreSpeed;
 	float							m_fBleedingRestoreSpeed;
 	CHitImmunity 					m_ArtefactHitImmunities;
+
+	float							m_fAdditionalInvWeight;
+	float							m_fAdditionalInvWeight2;
 
 protected:
 	MotionSVec						m_anim_idle;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "UIOutfitInfo.h"
 #include "UIXmlInit.h"
 #include "UIStatic.h"
@@ -6,7 +6,6 @@
 #include "../actor.h"
 #include "../CustomOutfit.h"
 #include "../string_table.h"
-
 CUIOutfitInfo::CUIOutfitInfo()
 {
 	Memory.mem_fill			(m_items, 0, sizeof(m_items));
@@ -31,6 +30,24 @@ LPCSTR _imm_names []={
 	"chemical_burn_immunity",
 	"explosion_immunity",
 	"fire_wound_immunity",
+
+	"health_restore_speed",
+	"psy_health_restore_speed",
+	"radiation_restore_speed",
+	"satiety_restore_speed",
+	"power_restore_speed",
+	"bleeding_restore_speed",
+	"additional_inventory_weight",
+	"power_loss"
+};
+
+LPCSTR outfit_actor_param_names[] = {
+	"satiety_health_v",
+	"psy_health_v",
+	"radiation_v",
+	"satiety_v",
+	"satiety_power_v",
+	"wound_incarnation_v",
 };
 
 LPCSTR _imm_st_names[]={
@@ -43,6 +60,15 @@ LPCSTR _imm_st_names[]={
 	"ui_inv_outfit_chemical_burn_protection",
 	"ui_inv_outfit_explosion_protection",
 	"ui_inv_outfit_fire_wound_protection",
+
+	"ui_inv_health",
+	"ui_inv_psy_health",
+	"ui_inv_radiation",
+	"ui_inv_satiety",
+	"ui_inv_power",
+	"ui_inv_bleeding",
+	"ui_inv_additional_inventory_weight",
+	"ui_inv_power_loss"
 };
 
 void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
@@ -57,7 +83,7 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 	strconcat					(sizeof(_buff),_buff, _base, ":scroll_view");
 	CUIXmlInit::InitScrollView	(xml_doc, _buff, 0, m_listWnd);
 
-	for(u32 i=ALife::eHitTypeBurn; i<= ALife::eHitTypeFireWound; ++i)
+	for(u32 i=_item_start; i< _max_item_index; ++i)
 	{
 		m_items[i]				= xr_new<CUIStatic>();
 		CUIStatic* _s			= m_items[i];
@@ -68,55 +94,114 @@ void CUIOutfitInfo::InitFromXml(CUIXml& xml_doc)
 
 }
 
+//replaced my shitty implementation with OGSR' one
 void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 {
-	m_outfit				= outfit;
+	m_outfit				= outfit; 
 
-    SetItem(ALife::eHitTypeBurn,		false);
-	SetItem(ALife::eHitTypeShock,		false);
-	SetItem(ALife::eHitTypeStrike,		false);
-	SetItem(ALife::eHitTypeWound,		false);
-	SetItem(ALife::eHitTypeRadiation,	false);
-	SetItem(ALife::eHitTypeTelepatic,	false);
-    SetItem(ALife::eHitTypeChemicalBurn,false);
-	SetItem(ALife::eHitTypeExplosion,	false);
-	SetItem(ALife::eHitTypeFireWound,	false);
+	string128 _buff;
+
+	auto artefactEffects = Actor()->GetActorStatRestores();
+
+	m_listWnd->Clear(); // clear existing items and do not scroll to top
+
+	for (int i = _item_start; i < _max_item_index; i++)
+	{
+		string128 _buff;
+
+		CUIStatic* _s = m_items[i];
+		if (!_s)
+			continue;
+
+		float _val = 0.0f;
+		float _val_af = 0.0f;
+
+		//resistances
+		if (i < _item_index_1)
+		{
+			_val = m_outfit ? m_outfit->GetDefHitTypeProtection(ALife::EHitType(i)) : 1.0f;
+			_val = 1.0f - _val;
+
+
+			_val_af = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(i));
+			_val_af = 1.0f - _val_af;
+		}
+		else //restores
+		{
+			_val = GetRestoreByID(artefactEffects, i);
+
+			if (i < _item_additional_inventory_weight)
+			{
+				float _val_actor = pSettings->r_float("actor_condition", outfit_actor_param_names[i- _item_index_1]);
+				_val = (_val / _val_actor);
+			}
+		}
+
+		if (fsimilar(_val, 0.0f) && fsimilar(_val_af, 0.0f))
+		{
+			continue;
+		}
+
+		LPCSTR _sn = "";
+		if (i != _item_radiation_restore_speed && i != _item_power_restore_speed && i != _item_additional_inventory_weight)
+		{
+			_val *= 100.0f;
+			_val_af *= 100.0f;
+			_sn = "%";
+		}
+
+		if (i == _item_bleeding_restore_speed)
+			_val *= -1.0f;
+
+		LPCSTR _color = (_val > 0) ? "%c[green]" : "%c[red]";
+
+		if (i == _item_bleeding_restore_speed || i == _item_radiation_restore_speed)
+			_color = (_val > 0) ? "%c[red]" : "%c[green]";
+
+		if (i == _item_power_loss)
+			LPCSTR _color = (_val > 100) ? "%c[red]" : "%c[green]";
+
+		if (i == _item_additional_inventory_weight)
+			_sn = "";
+
+		LPCSTR _imm_name = *CStringTable().translate(_imm_st_names[i]);
+
+		int _sz = sprintf_s(_buff, sizeof(_buff), "%s ", _imm_name);
+		_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%s", _color, _val, _sn);
+
+		if (!fsimilar(_val_af, 0.0f))
+		{
+			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af);
+		}
+
+		_s->SetText(_buff);
+
+		m_listWnd->AddWindow(_s, false);
+	}
+
+
 }
 
-void CUIOutfitInfo::SetItem(u32 hitType, bool force_add)
+float CUIOutfitInfo::GetRestoreByID(SActorRestores restores, u8 id)
 {
-	string128 _buff;
-	float _val_outfit	= 0.0f;
-	float _val_af		= 0.0f;
-
-	CUIStatic* _s		= m_items[hitType];
-
-	_val_outfit			= m_outfit ? m_outfit->GetDefHitTypeProtection(ALife::EHitType(hitType)) : 1.0f;
-	_val_outfit			= 1.0f - _val_outfit;
-
-
-	_val_af				= Actor()->HitArtefactsOnBelt(1.0f,ALife::EHitType(hitType));
-	_val_af				= 1.0f - _val_af;
-
-	if(fsimilar(_val_outfit, 0.0f) && fsimilar(_val_af, 0.0f) && !force_add)
+	if (!m_outfit) return 0.0f;
+	switch (id)
 	{
-		if(_s->GetParent()!=NULL)
-			m_listWnd->RemoveWindow(_s);
-		return;
+	case _item_health_restore_speed:
+		return restores.HealthRestoreSpeed;
+	case _item_psy_health_restore_speed:
+		return restores.PsyRestoreSpeed;
+	case _item_radiation_restore_speed:
+		return restores.RadiationRestoreSpeed;
+	case _item_satiety_restore_speed:
+		return restores.SatietyRestoreSpeed;
+	case _item_power_restore_speed:
+		return restores.PowerRestoreSpeed;
+	case _item_bleeding_restore_speed:
+		return restores.BleedingRestoreSpeed;
+	case _item_additional_inventory_weight:
+		return m_outfit->m_additional_weight + Actor()->GetArtifactWeightBonus();
+	case _item_power_loss:
+		return m_outfit->GetPowerLoss();
 	}
-
-//	LPCSTR			_clr_outfit, _clr_af;
-	LPCSTR			_imm_name	= *CStringTable().translate(_imm_st_names[hitType]);
-
-	int _sz			= sprintf_s	(_buff,sizeof(_buff),"%s ", _imm_name);
-	_sz				+= sprintf_s	(_buff+_sz,sizeof(_buff)-_sz,"%s %3.0f%%", (_val_outfit>0.0f)?"%c[green]":"%c[red]", _val_outfit*100.0f);
-
-	if( !fsimilar(_val_af, 0.0f) )
-	{
-		_sz		+= sprintf_s	(_buff+_sz,sizeof(_buff)-_sz,"%s %+3.0f%%", (_val_af>0.0f)?"%c[green]":"%c[red]", _val_af*100.0f);
-	}
-	_s->SetText			(_buff);
-
-	if(_s->GetParent()==NULL)
-		m_listWnd->AddWindow(_s, false);
 }

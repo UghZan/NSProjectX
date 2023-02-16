@@ -109,6 +109,9 @@ void CUIInventoryWnd::Init()
 	UIProgressBack.AttachChild	(&UIProgressBarPsyHealth);
 	xml_init.InitProgressBar (uiXml, "progress_bar_psy", 0, &UIProgressBarPsyHealth);
 
+	UIProgressBack.AttachChild(&UIProgressBarSatiety);
+	xml_init.InitProgressBar(uiXml, "progress_bar_satiety", 0, &UIProgressBarSatiety);
+
 	UIProgressBack.AttachChild	(&UIProgressBarRadiation);
 	xml_init.InitProgressBar (uiXml, "progress_bar_radiation", 0, &UIProgressBarRadiation);
 
@@ -134,6 +137,22 @@ void CUIInventoryWnd::Init()
 		UIRankFrame->AttachChild(UIRank);		
 	}
 
+	m_pUIKnifeList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUIKnifeList); m_pUIKnifeList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx(uiXml, "dragdrop_knife", 0, m_pUIKnifeList);
+	BindDragDropListEnents(m_pUIKnifeList);
+
+	m_pUIDetectorList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUIDetectorList); m_pUIDetectorList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx(uiXml, "dragdrop_detector", 0, m_pUIDetectorList);
+	BindDragDropListEnents(m_pUIDetectorList);
+
+	m_pUITorchList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUITorchList); m_pUITorchList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx(uiXml, "dragdrop_torch", 0, m_pUITorchList);
+	BindDragDropListEnents(m_pUITorchList);
+
+	m_pUIBinocularList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUIBinocularList); m_pUIBinocularList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx(uiXml, "dragdrop_binoculars", 0, m_pUIBinocularList);
+	BindDragDropListEnents(m_pUIBinocularList);
+
 	m_pUIBagList						= xr_new<CUIDragDropListEx>(); UIBagWnd.AttachChild(m_pUIBagList); m_pUIBagList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_bag", 0, m_pUIBagList);
 	BindDragDropListEnents				(m_pUIBagList);
@@ -153,6 +172,10 @@ void CUIInventoryWnd::Init()
 	m_pUIAutomaticList						= xr_new<CUIDragDropListEx>(); AttachChild(m_pUIAutomaticList); m_pUIAutomaticList->SetAutoDelete(true);
 	xml_init.InitDragDropListEx			(uiXml, "dragdrop_automatic", 0, m_pUIAutomaticList);
 	BindDragDropListEnents				(m_pUIAutomaticList);
+
+	m_pUIAFDetectorList = xr_new<CUIDragDropListEx>(); AttachChild(m_pUIAFDetectorList); m_pUIAFDetectorList->SetAutoDelete(true);
+	xml_init.InitDragDropListEx(uiXml, "dragdrop_af_detector", 0, m_pUIAFDetectorList);
+	BindDragDropListEnents(m_pUIAFDetectorList);
 
 	//pop-up menu
 	AttachChild							(&UIPropertiesBox);
@@ -189,12 +212,17 @@ void CUIInventoryWnd::Init()
 
 EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 {
-	if(l==m_pUIBagList)			return iwBag;
-	if(l==m_pUIBeltList)		return iwBelt;
+	if(l == m_pUIBagList)			return iwBag;
+	if(l == m_pUIBeltList)			return iwBelt;
 
-	if(l==m_pUIAutomaticList)	return iwSlot;
-	if(l==m_pUIPistolList)		return iwSlot;
-	if(l==m_pUIOutfitList)		return iwSlot;
+	if(l == m_pUIAutomaticList)		return iwSlot;
+	if(l == m_pUIPistolList)		return iwSlot;
+	if(l == m_pUIOutfitList)		return iwSlot;
+	if (l == m_pUIKnifeList)		return iwSlot;
+
+	if (l == m_pUIDetectorList)		return iwSlot;
+	if (l == m_pUITorchList)		return iwSlot;
+	if (l == m_pUIBinocularList)	return iwSlot;
 
 	NODEFAULT;
 #ifdef DEBUG
@@ -246,24 +274,27 @@ void CUIInventoryWnd::Update()
 		InitInventory					();
 
 
-	CEntityAlive *pEntityAlive			= smart_cast<CEntityAlive*>(Level().CurrentEntity());
+	CActor* pActor			= smart_cast<CActor*>(Level().CurrentEntity());
 
-	if(pEntityAlive) 
+	if(pActor)
 	{
-		float v = pEntityAlive->conditions().GetHealth()*100.0f;
+		float v = pActor->conditions().GetHealth() * 100.0f;
 		UIProgressBarHealth.SetProgressPos		(v);
 
-		v = pEntityAlive->conditions().GetPsyHealth()*100.0f;
+		v = pActor->conditions().GetPsyHealth() * 100.0f;
 		UIProgressBarPsyHealth.SetProgressPos	(v);
 
-		v = pEntityAlive->conditions().GetRadiation()*100.0f;
+		v = pActor->conditions().GetRadiation() * 100.0f;
 		UIProgressBarRadiation.SetProgressPos	(v);
 
-		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pEntityAlive);
+		v = pActor->conditions().GetSatiety() * 100.0f;
+		UIProgressBarSatiety.SetProgressPos(v);
+
+		CInventoryOwner* pOurInvOwner	= smart_cast<CInventoryOwner*>(pActor);
 		u32 _money						= 0;
 
 		if (GameID() != GAME_SINGLE){
-			game_PlayerState* ps = Game().GetPlayerByGameID(pEntityAlive->ID());
+			game_PlayerState* ps = Game().GetPlayerByGameID(pActor->ID());
 			if (ps){
 				UIProgressBarRank.SetProgressPos(ps->experience_D*100);
 				_money							= ps->money_for_round;

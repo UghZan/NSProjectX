@@ -284,6 +284,8 @@ void CUICharacterInfo::Update()
 
 void CUICharacterInfo::ClearInfo()
 {
+	m_ownerID = u16(-1);
+
 	ResetAllStrings	();
 	
 	if (m_icons[eUIIcon]) {

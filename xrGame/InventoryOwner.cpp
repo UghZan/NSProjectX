@@ -2,6 +2,7 @@
 #include "InventoryOwner.h"
 #include "entity_alive.h"
 #include "pda.h"
+#include "Artifact.h"
 #include "actor.h"
 #include "trade.h"
 #include "inventory.h"
@@ -218,6 +219,11 @@ CPda* CInventoryOwner::GetPDA() const
 	return (CPda*)(m_inventory->m_slots[PDA_SLOT].m_pIItem);
 }
 
+bool CInventoryOwner::HasPDA() const
+{
+	return (CPda*)(m_inventory->item(CLSID_DEVICE_PDA));
+}
+
 CTrade* CInventoryOwner::GetTrade() 
 {
 	R_ASSERT2(m_pTrade, "trade for object does not init yet");
@@ -318,9 +324,23 @@ float  CInventoryOwner::MaxCarryWeight () const
 
 	const CCustomOutfit* outfit	= GetOutfit();
 	if(outfit)
-		ret += outfit->m_additional_weight2;
+		ret += outfit->m_additional_weight;
 
+	ret += GetArtifactWeightBonus();
 	return ret;
+}
+
+float CInventoryOwner::GetArtifactWeightBonus(bool second) const
+{
+	float bonus = 0;
+	for (auto const &it : inventory().m_belt)
+	{
+		CArtefact* artefact = smart_cast<CArtefact*>(it);
+
+		if (artefact)
+			bonus += second ? artefact->m_fAdditionalInvWeight2 : artefact->m_fAdditionalInvWeight;
+	}
+	return bonus;
 }
 
 void CInventoryOwner::spawn_supplies		()

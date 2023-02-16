@@ -40,6 +40,7 @@
 #include "../xrEngine/resourcemanager.h"
 #include "doug_lea_memory_allocator.h"
 #include "cameralook.h"
+#include "ai_object_location.h"
 
 #include "GameSpy/GameSpy_Full.h"
 #include "GameSpy/GameSpy_Patching.h"
@@ -1003,7 +1004,6 @@ struct CCC_ClearSmartCastStats : public IConsole_Command {
 };
 #endif
 
-#ifndef MASTER_GOLD
 #	include "game_graph.h"
 struct CCC_JumpToLevel : public IConsole_Command {
 	CCC_JumpToLevel(LPCSTR N) : IConsole_Command(N)  {};
@@ -1026,7 +1026,27 @@ struct CCC_JumpToLevel : public IConsole_Command {
 		Msg							("! There is no level \"%s\" in the game graph!",level);
 	}
 };
-#endif // MASTER_GOLD
+
+class CCC_Spawn : public IConsole_Command
+{
+public:
+	CCC_Spawn(LPCSTR N) : IConsole_Command(N) {}
+
+	void Execute(LPCSTR args)
+	{
+		if (!g_pGameLevel)
+			return;
+
+		if (!pSettings->section_exist(args))
+		{
+			Msg("! Can't find section: %s", args);
+			return;
+		}
+
+		if (auto tpGame = smart_cast<game_sv_Single*>(Level().Server->game))
+			tpGame->alife().spawn_item(args, Actor()->Position(), Actor()->ai_location().level_vertex_id(), Actor()->ai_location().game_vertex_id(), ALife::_OBJECT_ID(-1));
+	}
+};
 
 #include "GamePersistent.h"
 
@@ -1493,13 +1513,10 @@ void CCC_RegisterCommands()
 #endif // DEBUG
 
 
-#ifndef MASTER_GOLD
 	CMD1(CCC_JumpToLevel,	"jump_to_level"		);
+	CMD1(CCC_Spawn,			"g_spawn");
 	CMD3(CCC_Mask,			"g_god",			&psActorFlags,	AF_GODMODE	);
 	CMD3(CCC_Mask,			"g_unlimitedammo",	&psActorFlags,	AF_UNLIMITEDAMMO);
-	CMD1(CCC_Script,		"run_script");
-	CMD1(CCC_ScriptCommand,	"run_string");	
-#endif // MASTER_GOLD
 
 	CMD1(CCC_TimeFactor, "time_factor");
 

@@ -64,7 +64,14 @@ void CCustomOutfit::Load(LPCSTR section)
 	if (pSettings->line_exist(section, "power_loss"))
 		m_fPowerLoss = pSettings->r_float(section, "power_loss");
 	else
-		m_fPowerLoss = 1.0f;	
+		m_fPowerLoss = 1.0f;
+			
+	m_HealthRestoreSpeed =		READ_IF_EXISTS(pSettings, r_float, section, "health_restore_speed",		0.f);
+	m_PsyRestoreSpeed =			READ_IF_EXISTS(pSettings, r_float, section, "psy_health_restore_speed", 0.f);
+	m_RadiationRestoreSpeed =	READ_IF_EXISTS(pSettings, r_float, section, "radiation_restore_speed",	0.f);
+	m_SatietyRestoreSpeed =		READ_IF_EXISTS(pSettings, r_float, section, "satiety_restore_speed",	0.f);
+	m_PowerRestoreSpeed =		READ_IF_EXISTS(pSettings, r_float, section, "power_restore_speed",		0.f);
+	m_BleedingRestoreSpeed =	READ_IF_EXISTS(pSettings, r_float, section, "bleeding_restore_speed",	0.f);
 
 	m_additional_weight				= pSettings->r_float(section,"additional_inventory_weight");
 	m_additional_weight2			= pSettings->r_float(section,"additional_inventory_weight2");

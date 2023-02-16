@@ -16,9 +16,12 @@ static BOOL 				no_log			= TRUE;
 xr_vector<shared_str>*		LogFile			= NULL;
 static LogCallback			LogCB			= 0;
 
+//from https://github.com/xer-urg/xp-dev_xray
+IWriter* LogWriter;
+
 void FlushLog			(LPCSTR file_name)
 {
-	if (no_log)
+	/*if (no_log)
 		return;
 
 	logCS.Enter			();
@@ -32,41 +35,50 @@ void FlushLog			(LPCSTR file_name)
         FS.w_close		(f);
     }
 
-	logCS.Leave			();
+	logCS.Leave			();*/
 }
 
 void FlushLog			()
 {
-	FlushLog		(logFName);
+	//FlushLog		(logFName);
 }
 
 void AddOne				(const char *split) 
 {
-	if (!LogFile)
-		return;
+	if(!LogFile)		
+						return;
 
-	logCS.Enter();
+	logCS.Enter			();
 
-#ifdef DEBUG
-	OutputDebugString(split);
-	OutputDebugString("\n");
-#endif
+//#ifdef DEBUG
+	if (IsDebuggerPresent()) {
+		OutputDebugString(split);
+		OutputDebugString("\n");
+	}
+//#endif
 
-	//	DUMP_PHASE;
+//	DUMP_PHASE;
 	{
-		//		DUMP_PHASE;
+		shared_str			temp = shared_str(split);
+//		DUMP_PHASE;
+		LogFile->push_back	(temp);
+	}
+
+	//modified
+	if (LogWriter) {
 		time_t t = time(NULL);
 		tm* ti = localtime(&t);
 		char buf[64];
 		strftime(buf, 64, "[%x %X]\t", ti);
 
-		char buf_1[1024];
-		sprintf_s(buf_1, "%s%s\r\n", buf, split);
-		shared_str			temp = shared_str(buf_1);
-		LogFile->push_back(temp);
+		LogWriter->w_printf("%s%s\n", buf, split);
+		LogWriter->flush();
 	}
 
-	logCS.Leave();
+	//exec CallBack
+	if (LogExecCB&&LogCB)LogCB(split);
+
+	logCS.Leave				();
 }
 
 void Log				(const char *s) 
@@ -172,18 +184,32 @@ void CreateLog			(BOOL nl)
 	if (FS.path_exist("$logs$"))
 		FS.update_path	(logFName,"$logs$",logFName);
 	if (!no_log){
-        IWriter *f		= FS.w_open	(logFName);
-        if (f==NULL){
-        	MessageBox	(NULL,"Can't create log file.","Error",MB_ICONERROR);
-        	abort();
-        }
-        FS.w_close		(f);
+
+		LogWriter = FS.w_open(logFName);
+		if (LogWriter == NULL) {
+			MessageBox(NULL, "Can't create log file.", "Error", MB_ICONERROR);
+			abort();
+		}
+
+		time_t t = time(NULL);
+		tm* ti = localtime(&t);
+		char buf[64];
+		strftime(buf, 64, "[%x %X]\t", ti);
+
+		for (u32 it = 0; it < LogFile->size(); it++) {
+			LPCSTR		s = *((*LogFile)[it]);
+			LogWriter->w_printf("%s%s\n", buf, s ? s : "");
+		}
+		LogWriter->flush();
     }
 	LogFile->reserve		(128);
 }
 
 void CloseLog(void)
 {
+	if (LogWriter) {
+		FS.w_close(LogWriter);
+	}
 	FlushLog		();
  	LogFile->clear	();
 	xr_delete		(LogFile);

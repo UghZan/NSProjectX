@@ -42,6 +42,14 @@ protected:
 	u32								m_ef_equipment_type;
 
 public:
+
+	float							m_HealthRestoreSpeed;
+	float							m_PsyRestoreSpeed;
+	float 							m_RadiationRestoreSpeed;
+	float 							m_SatietyRestoreSpeed;
+	float							m_PowerRestoreSpeed;
+	float							m_BleedingRestoreSpeed;
+
 	float							m_additional_weight;
 	float							m_additional_weight2;
 	shared_str						m_NightVisionSect;

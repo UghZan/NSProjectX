@@ -85,8 +85,6 @@ static Fvector	vFootExt;
 
 Flags32			psActorFlags={0};
 
-
-
 CActor::CActor() : CEntityAlive()
 {
 	encyclopedia_registry	= xr_new<CEncyclopediaRegistryWrapper	>();
@@ -1490,6 +1488,42 @@ void CActor::MoveArtefactBelt(const CArtefact* artefact, bool on_belt)
 		HUD().GetUI()->UIMainIngameWnd->m_artefactPanel->InitIcons(m_ArtefactsOnBelt);
 }
 
+SActorRestores CActor::GetActorStatRestores()
+{
+	//Realisation from OGSR Engine
+	SActorRestores ar;
+
+	Memory.mem_fill(&ar, 0, sizeof(ar));
+
+	for (TIItemContainer::iterator it = inventory().m_belt.begin();
+		inventory().m_belt.end() != it; ++it)
+	{
+		CArtefact* artefact = smart_cast<CArtefact*>(*it);
+		if (artefact)
+		{
+			ar.HealthRestoreSpeed	 += artefact->m_fHealthRestoreSpeed;
+			ar.PsyRestoreSpeed		 += artefact->m_fPsyRestoreSpeed;
+			ar.RadiationRestoreSpeed += artefact->m_fRadiationRestoreSpeed;
+			ar.SatietyRestoreSpeed	 += artefact->m_fSatietyRestoreSpeed;
+			ar.PowerRestoreSpeed	 += artefact->m_fPowerRestoreSpeed;
+			ar.BleedingRestoreSpeed	 += artefact->m_fBleedingRestoreSpeed;
+		}
+	}
+
+	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(inventory().m_slots[OUTFIT_SLOT].m_pIItem);
+	if (outfit)
+	{
+		ar.HealthRestoreSpeed	 += outfit->m_HealthRestoreSpeed;
+		ar.PsyRestoreSpeed		 += outfit->m_PsyRestoreSpeed;
+		ar.RadiationRestoreSpeed += outfit->m_RadiationRestoreSpeed;
+		ar.SatietyRestoreSpeed	 += outfit->m_SatietyRestoreSpeed;
+		ar.PowerRestoreSpeed	 += outfit->m_PowerRestoreSpeed;
+		ar.BleedingRestoreSpeed  += outfit->m_BleedingRestoreSpeed;
+	}
+
+	return ar;
+}
+
 #define ARTEFACTS_UPDATE_TIME 0.100f
 
 void CActor::UpdateArtefactsOnBelt()
@@ -1509,19 +1543,14 @@ void CActor::UpdateArtefactsOnBelt()
 		update_time		= 0.0f;
 	}
 
-	for(TIItemContainer::iterator it = inventory().m_belt.begin(); 
-		inventory().m_belt.end() != it; ++it) 
-	{
-		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
-		if(artefact)
-		{
-			conditions().ChangeBleeding			(artefact->m_fBleedingRestoreSpeed*f_update_time);
-			conditions().ChangeHealth			(artefact->m_fHealthRestoreSpeed*f_update_time);
-			conditions().ChangePower			(artefact->m_fPowerRestoreSpeed*f_update_time);
-//			conditions().ChangeSatiety			(artefact->m_fSatietyRestoreSpeed*f_update_time);
-			conditions().ChangeRadiation		(artefact->m_fRadiationRestoreSpeed*f_update_time);
-		}
-	}
+	SActorRestores restores = GetActorStatRestores();
+
+	if (!fis_zero(restores.BleedingRestoreSpeed))	conditions().ChangeBleeding			(restores.BleedingRestoreSpeed * f_update_time);
+	if (!fis_zero(restores.HealthRestoreSpeed))		conditions().ChangeHealth			(restores.HealthRestoreSpeed*f_update_time);
+	if (!fis_zero(restores.PowerRestoreSpeed))		conditions().ChangePower			(restores.PowerRestoreSpeed*f_update_time);
+	if (!fis_zero(restores.SatietyRestoreSpeed))	conditions().ChangeSatiety			(restores.SatietyRestoreSpeed*f_update_time);
+	if (!fis_zero(restores.PsyRestoreSpeed))		conditions().ChangePsyHealth		(restores.PsyRestoreSpeed * f_update_time);
+	if (!fis_zero(restores.RadiationRestoreSpeed))	conditions().ChangeRadiation		(restores.RadiationRestoreSpeed*f_update_time);
 }
 
 float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)

@@ -29,6 +29,7 @@ public:
 protected:	
 	//влияние при поедании вещи на параметры игрока
 	float					m_fHealthInfluence;
+	float					m_fPsyHealthInfluence;
 	float					m_fPowerInfluence;
 	float					m_fSatietyInfluence;
 	float					m_fRadiationInfluence;

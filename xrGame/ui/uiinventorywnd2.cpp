@@ -63,7 +63,15 @@ void CUIInventoryWnd::InitInventory()
 	SetCurrentItem				(NULL);
 
 	//Slots
-	PIItem _itm							= m_pInv->m_slots[PISTOL_SLOT].m_pIItem;
+
+	PIItem _itm = m_pInv->m_slots[KNIFE_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm = create_cell_item(_itm);
+		m_pUIKnifeList->SetItem(itm);
+	}
+
+	 _itm							= m_pInv->m_slots[PISTOL_SLOT].m_pIItem;
 	if(_itm)
 	{
 		CUICellItem* itm				= create_cell_item(_itm);
@@ -76,6 +84,34 @@ void CUIInventoryWnd::InitInventory()
 	{
 		CUICellItem* itm				= create_cell_item(_itm);
 		m_pUIAutomaticList->SetItem		(itm);
+	}
+
+	_itm = m_pInv->m_slots[AF_DETECTOR_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm = create_cell_item(_itm);
+		m_pUIAFDetectorList->SetItem(itm);
+	}
+
+	_itm = m_pInv->m_slots[DETECTOR_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm = create_cell_item(_itm);
+		m_pUIDetectorList->SetItem(itm);
+	}
+
+	_itm = m_pInv->m_slots[APPARATUS_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm = create_cell_item(_itm);
+		m_pUIBinocularList->SetItem(itm);
+	}
+
+	_itm = m_pInv->m_slots[TORCH_SLOT].m_pIItem;
+	if (_itm)
+	{
+		CUICellItem* itm = create_cell_item(_itm);
+		m_pUITorchList->SetItem(itm);
 	}
 
 	PIItem _outfit						= m_pInv->m_slots[OUTFIT_SLOT].m_pIItem;
@@ -334,6 +370,26 @@ CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
 	if(slot_idx == NO_ACTIVE_SLOT || GetInventory()->m_slots[slot_idx].m_bPersistent)	return NULL;
 	switch (slot_idx)
 	{
+		case KNIFE_SLOT:
+			return m_pUIKnifeList;
+			break;
+
+		case DETECTOR_SLOT:
+			return m_pUIDetectorList;
+			break;
+
+		case AF_DETECTOR_SLOT:
+			return m_pUIAFDetectorList;
+			break;
+
+		case APPARATUS_SLOT:
+			return m_pUIBinocularList;
+			break;
+
+		case TORCH_SLOT:
+			return m_pUITorchList;
+			break;
+
 		case PISTOL_SLOT:
 			return m_pUIPistolList;
 			break;
@@ -359,4 +415,8 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIOutfitList->ClearAll				(true);
 	m_pUIPistolList->ClearAll				(true);
 	m_pUIAutomaticList->ClearAll			(true);
+	m_pUIKnifeList->ClearAll				(true);
+	m_pUIBinocularList->ClearAll			(true);
+	m_pUIDetectorList->ClearAll				(true);
+	m_pUITorchList->ClearAll				(true);
 }

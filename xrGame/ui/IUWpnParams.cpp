@@ -43,11 +43,14 @@ CUIWpnParams::CUIWpnParams(){
 	AttachChild(&m_textDamage);
 	AttachChild(&m_textHandling);
 	AttachChild(&m_textRPM);
+	AttachChild(&m_captCapacity);
 
 	AttachChild(&m_progressAccuracy);
 	AttachChild(&m_progressDamage);
 	AttachChild(&m_progressHandling);
 	AttachChild(&m_progressRPM);
+	AttachChild(&m_textCapacity);
+
 }
 
 CUIWpnParams::~CUIWpnParams()
@@ -67,6 +70,9 @@ void CUIWpnParams::InitFromXml(CUIXml& xml_doc){
 	CUIXmlInit::InitProgressBar		(xml_doc, "wpn_params:progress_damage",		0, &m_progressDamage);
 	CUIXmlInit::InitProgressBar		(xml_doc, "wpn_params:progress_handling",	0, &m_progressHandling);
 	CUIXmlInit::InitProgressBar		(xml_doc, "wpn_params:progress_rpm",		0, &m_progressRPM);
+
+	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:cap_capacity", 0, &m_captCapacity);
+	CUIXmlInit::InitStatic			(xml_doc, "wpn_params:text_capacity", 0, &m_textCapacity);
 
 	m_progressAccuracy.SetRange		(0, 100);
 	m_progressDamage.SetRange		(0, 100);
@@ -88,6 +94,8 @@ void CUIWpnParams::SetInfo(const shared_str& wpn_section)
 	else
 		m_progressDamage.SetProgressPos	(g_lua_wpn_params->m_functorDamageMP(*wpn_section));
 	m_progressHandling.SetProgressPos	(g_lua_wpn_params->m_functorHandling(*wpn_section));
+
+	m_textCapacity.SetText(pSettings->r_string(wpn_section, "ammo_mag_size"));
 }
 
 bool CUIWpnParams::Check(const shared_str& wpn_section){

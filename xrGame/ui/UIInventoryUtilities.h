@@ -81,4 +81,6 @@ void	SendInfoToActor				(LPCSTR info_id);
 u32		GetGoodwillColor			(CHARACTER_GOODWILL gw);
 u32		GetRelationColor			(ALife::ERelationType r);
 u32		GetReputationColor			(CHARACTER_REPUTATION_VALUE rv);
+
+bool HasPDAEquipped();
 };
