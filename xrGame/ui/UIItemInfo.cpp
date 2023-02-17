@@ -16,6 +16,7 @@
 #include "ui_af_params.h"
 #include "ui_outfits_params.h"
 #include "ui_item_params.h"
+#include <CustomOutfit.h>
 
 CUIItemInfo::CUIItemInfo()
 {
@@ -29,7 +30,7 @@ CUIItemInfo::CUIItemInfo()
 	UIWpnParams					= NULL;
 	UIArtefactParams			= NULL;
 	UIOutfitParams				= NULL;
-	UIItemParams				= NULL;
+	//UIItemParams				= NULL;
 	UIName						= NULL;
 	m_pInvItem					= NULL;
 	m_b_force_drawing			= false;
@@ -40,7 +41,7 @@ CUIItemInfo::~CUIItemInfo()
 	xr_delete					(UIWpnParams);
 	xr_delete					(UIArtefactParams);
 	xr_delete					(UIOutfitParams);
-	xr_delete					(UIItemParams);
+	//xr_delete					(UIItemParams);
 }
 
 void CUIItemInfo::Init(LPCSTR xml_name){
@@ -105,11 +106,11 @@ void CUIItemInfo::Init(LPCSTR xml_name){
 		UIWpnParams						= xr_new<CUIWpnParams>();
 		UIArtefactParams				= xr_new<CUIArtefactParams>();
 		UIOutfitParams					= xr_new<CUIOutfitParams>();
-		UIItemParams					= xr_new<CUIItemParams>();
+		//UIItemParams					= xr_new<CUIItemParams>();
 		UIWpnParams->InitFromXml		(uiXml);
 		UIArtefactParams->InitFromXml	(uiXml);
 		UIOutfitParams->InitFromXml		(uiXml);
-		UIItemParams->InitFromXml		(uiXml);
+		//UIItemParams->InitFromXml		(uiXml);
 		UIDesc							= xr_new<CUIScrollView>(); 
 		AttachChild						(UIDesc);		
 		UIDesc->SetAutoDelete			(true);
@@ -176,8 +177,8 @@ void CUIItemInfo::InitItem(CInventoryItem* pInvItem)
 		VERIFY								(0==UIDesc->GetSize());
 		TryAddWpnInfo						(pInvItem->object().cNameSect());
 		TryAddArtefactInfo					(pInvItem->object().cNameSect());
-		TryAddOutfitInfo					(pInvItem->object().cNameSect());
-		TryAddItemInfo						(pInvItem->object().cNameSect());
+		TryAddOutfitInfo					(pInvItem);
+		//TryAddItemInfo						(pInvItem->object().cNameSect());
 		if(m_desc_info.bShowDescrText)
 		{
 			CUIStatic* pItem					= xr_new<CUIStatic>();
@@ -236,23 +237,24 @@ void CUIItemInfo::TryAddArtefactInfo	(const shared_str& af_section)
 	}
 }
 
-void CUIItemInfo::TryAddOutfitInfo(const shared_str& outfit_section)
+void CUIItemInfo::TryAddOutfitInfo(CInventoryItem* outfit_item)
 {
-	if (UIOutfitParams->Check(outfit_section))
+	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(outfit_item);
+	if (outfit)
 	{
-		UIOutfitParams->SetInfo(outfit_section);
+		UIOutfitParams->SetInfo(outfit);
 		UIDesc->AddWindow(UIOutfitParams, false);
 	}
 }
 
-void CUIItemInfo::TryAddItemInfo(const shared_str& item_section)
+/*void CUIItemInfo::TryAddItemInfo(const shared_str& item_section)
 {
 	if (UIItemParams->Check(item_section))
 	{
 		UIItemParams->SetInfo(item_section);
 		UIDesc->AddWindow(UIItemParams, false);
 	}
-}
+}*/
 
 void CUIItemInfo::Draw()
 {

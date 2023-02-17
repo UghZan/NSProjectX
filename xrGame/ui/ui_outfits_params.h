@@ -1,5 +1,6 @@
 #pragma once
 #include "UIWindow.h"
+#include "CustomOutfit.h"
 
 class CUIXml;
 class CUIStatic;
@@ -11,9 +12,10 @@ public:
 	virtual						~CUIOutfitParams		();
 	void 						InitFromXml				(CUIXml& xml_doc);
 	bool 						Check					(const shared_str& af_section);
-	void 						SetInfo					(const shared_str& af_section);
+	void 						SetInfo					(CCustomOutfit* outfit);
 
 protected:
+	float GetOutfitStat(CCustomOutfit* outfit, u32 id);
 	enum {
 		_item_start = 0,
 

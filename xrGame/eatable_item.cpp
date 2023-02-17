@@ -16,6 +16,7 @@
 #include "EntityCondition.h"
 #include "InventoryOwner.h"
 
+
 CEatableItem::CEatableItem()
 {
 	m_fHealthInfluence = 0;
@@ -43,17 +44,7 @@ DLL_Pure *CEatableItem::_construct	()
 void CEatableItem::Load(LPCSTR section)
 {
 	inherited::Load(section);
-
-	m_fHealthInfluence			= READ_IF_EXISTS	(pSettings,r_float,section,"eat_health",0.0f);
-	m_fPsyHealthInfluence		= READ_IF_EXISTS	(pSettings,r_float,section,"eat_psy_health",0.0f);
-	m_fPowerInfluence			= READ_IF_EXISTS	(pSettings,r_float,section,"eat_power",0.0f);
-	m_fSatietyInfluence			= READ_IF_EXISTS	(pSettings,r_float,section,"eat_satiety",0.0f);
-	m_fRadiationInfluence		= READ_IF_EXISTS	(pSettings,r_float,section,"eat_radiation",0.0f);
-	m_fWoundsHealPerc			= READ_IF_EXISTS	(pSettings,r_float,section,"wounds_heal_perc",0.0f);
-	clamp						(m_fWoundsHealPerc, 0.f, 1.f);
-	
 	m_iStartPortionsNum			= pSettings->r_s32	(section, "eat_portions_num");
-	m_fMaxPowerUpInfluence		= READ_IF_EXISTS	(pSettings,r_float,section,"eat_max_power",0.0f);
 	VERIFY						(m_iPortionsNum<10000);
 }
 
@@ -94,12 +85,35 @@ void CEatableItem::UseBy (CEntityAlive* entity_alive)
 	R_ASSERT		(IO);
 	R_ASSERT		(m_pCurrentInventory==IO->m_inventory);
 	R_ASSERT		(object().H_Parent()->ID()==entity_alive->ID());
-	entity_alive->conditions().ChangeHealth		(m_fHealthInfluence);
-	entity_alive->conditions().ChangePsyHealth	(m_fPsyHealthInfluence);
-	entity_alive->conditions().ChangePower		(m_fPowerInfluence);
-	entity_alive->conditions().ChangeSatiety	(m_fSatietyInfluence);
-	entity_alive->conditions().ChangeRadiation	(m_fRadiationInfluence);
-	entity_alive->conditions().ChangeBleeding	(m_fWoundsHealPerc);
+
+	SMedicineInfluenceValues	V;
+	V.Load(m_physic_item->cNameSect());
+
+	entity_alive->conditions().ApplyInfluence(V, m_physic_item->cNameSect());
+
+	//Log(m_physic_item->cNameSect().c_str());
+	if (!fis_zero(READ_IF_EXISTS(pSettings, r_float ,m_physic_item->cNameSect().c_str(), "boost_time", 0.0f)))
+	{
+		for (u8 i = 0; i < (u8)eBoostMaxCount; i++)
+		{
+			if (pSettings->line_exist(m_physic_item->cNameSect().c_str(), ef_boosters_section_names[i]))
+			{
+				float booster_value = pSettings->r_float(m_physic_item->cNameSect().c_str(), ef_boosters_section_names[i]);
+				if (fis_zero(booster_value)) continue;
+				SBooster B;
+				B.Load(m_physic_item->cNameSect(), (EBoostParams)i);
+				entity_alive->conditions().ApplyBooster(B, m_physic_item->cNameSect());
+			}
+		}
+	}
+
+	if (!IsGameTypeSingle() && OnServer())
+	{
+		NET_Packet				tmp_packet;
+		CGameObject::u_EventGen(tmp_packet, GEG_PLAYER_USE_BOOSTER, entity_alive->ID());
+		tmp_packet.w_u16(object_id());
+		Level().Send(tmp_packet);
+	}
 	
 	entity_alive->conditions().SetMaxPower( entity_alive->conditions().GetMaxPower()+m_fMaxPowerUpInfluence );
 	

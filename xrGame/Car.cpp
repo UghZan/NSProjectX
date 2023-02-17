@@ -531,7 +531,7 @@ void	CCar::Hit							(SHit* pHDS)
 	DoorHit(HDS.damage(),HDS.bone(),HDS.hit_type);
 	float hitScale=1.f,woundScale=1.f;
 	if(HDS.hit_type!=ALife::eHitTypeStrike) CDamageManager::HitScale(HDS.bone(), hitScale, woundScale);
-	HDS.power *= m_HitTypeK[HDS.hit_type]*hitScale;
+	HDS.power *= GetHitImmunity(pHDS->hit_type)*hitScale;
 
 	inherited::Hit(&HDS);
 	if(!CDelayedActionFuse::isActive())

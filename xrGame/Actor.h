@@ -209,10 +209,10 @@ public:
 //			void		UpdateSleep			();
 
 	//свойства артефактов
-	virtual SActorRestores GetActorStatRestores ();
-	virtual void		UpdateArtefactsOnBelt	();
-	virtual void		MoveArtefactBelt		(const CArtefact* artefact, bool on_belt);
-	virtual float		HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type);
+	virtual SActorRestores GetActorStatRestores		();
+	virtual void			UpdateArtefactsOnBelt	();
+	virtual void			MoveArtefactBelt		(const CArtefact* artefact, bool on_belt);
+	virtual float			HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type);
 	const xr_vector<const CArtefact*>& ArtefactsOnBelt() {return m_ArtefactsOnBelt;}
 protected:
 	//звук тяжелого дыхания
@@ -640,7 +640,7 @@ public:
 		return				(true);
 	}
 
-	virtual	shared_str			GetDefaultVisualOutfit	() const	{return m_DefaultVisualOutfit;};
+	virtual	shared_str		GetDefaultVisualOutfit	() const	{return m_DefaultVisualOutfit;};
 	virtual	void			SetDefaultVisualOutfit	(shared_str DefaultOutfit) {m_DefaultVisualOutfit = DefaultOutfit;};
 	virtual void			UpdateAnimation			() 	{ g_SetAnimation(mstate_real); };
 

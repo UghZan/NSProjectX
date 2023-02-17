@@ -21,6 +21,7 @@
 #include "SleepEffector.h"
 #include "character_info.h"
 #include "CustomOutfit.h"
+#include "StalkerOutfit.h"
 #include "actorcondition.h"
 #include "UIGameCustom.h"
 #include "game_cl_base_weapon_usage_statistic.h"
@@ -1510,15 +1511,20 @@ SActorRestores CActor::GetActorStatRestores()
 		}
 	}
 
-	CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(inventory().m_slots[OUTFIT_SLOT].m_pIItem);
-	if (outfit)
+	
+	PIItem outfit_item = inventory().m_slots[OUTFIT_SLOT].m_pIItem;
+	if (outfit_item)
 	{
-		ar.HealthRestoreSpeed	 += outfit->m_HealthRestoreSpeed;
-		ar.PsyRestoreSpeed		 += outfit->m_PsyRestoreSpeed;
-		ar.RadiationRestoreSpeed += outfit->m_RadiationRestoreSpeed;
-		ar.SatietyRestoreSpeed	 += outfit->m_SatietyRestoreSpeed;
-		ar.PowerRestoreSpeed	 += outfit->m_PowerRestoreSpeed;
-		ar.BleedingRestoreSpeed  += outfit->m_BleedingRestoreSpeed;
+		CCustomOutfit* outfit = smart_cast<CCustomOutfit*>(outfit_item);
+		if (outfit)
+		{
+			ar.HealthRestoreSpeed += outfit->m_HealthRestoreSpeed;
+			ar.PsyRestoreSpeed += outfit->m_PsyRestoreSpeed;
+			ar.RadiationRestoreSpeed += outfit->m_RadiationRestoreSpeed;
+			ar.SatietyRestoreSpeed += outfit->m_SatietyRestoreSpeed;
+			ar.PowerRestoreSpeed += outfit->m_PowerRestoreSpeed;
+			ar.BleedingRestoreSpeed += outfit->m_BleedingRestoreSpeed;
+		}
 	}
 
 	return ar;

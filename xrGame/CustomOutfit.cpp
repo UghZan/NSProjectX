@@ -20,6 +20,13 @@ CCustomOutfit::CCustomOutfit()
 	for(int i=0; i<ALife::eHitTypeMax; i++)
 		m_HitTypeProtection[i] = 1.0f;
 
+	m_HealthRestoreSpeed	= 0.0f;
+	m_PsyRestoreSpeed		= 0.0f;
+	m_RadiationRestoreSpeed = 0.0f;
+	m_SatietyRestoreSpeed	= 0.0f;
+	m_PowerRestoreSpeed		= 0.0f;
+	m_BleedingRestoreSpeed	= 0.0f;
+
 	m_boneProtection = xr_new<SBoneProtections>();
 }
 
@@ -86,18 +93,18 @@ void CCustomOutfit::Load(LPCSTR section)
 
 void CCustomOutfit::Hit(float hit_power, ALife::EHitType hit_type)
 {
-	hit_power *= m_HitTypeK[hit_type];
+	hit_power *= GetHitImmunity(hit_type);
 	ChangeCondition(-hit_power);
 }
 
 float CCustomOutfit::GetDefHitTypeProtection(ALife::EHitType hit_type)
 {
-	return 1.0f - m_HitTypeProtection[hit_type]*GetCondition();
+	return 1.0f - m_HitTypeProtection[hit_type] * GetCondition();
 }
 
 float CCustomOutfit::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 {
-	float fBase = m_HitTypeProtection[hit_type]*GetCondition();
+	float fBase = m_HitTypeProtection[hit_type]* GetCondition();
 	float bone = m_boneProtection->getBoneProtection(element);
 	return 1.0f - fBase*bone;
 }

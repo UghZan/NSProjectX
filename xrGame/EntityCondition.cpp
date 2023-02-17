@@ -54,6 +54,27 @@ CEntityCondition::CEntityCondition(CEntityAlive *object)
 	m_fHealthHitPart		= 1.0f;
 	m_fPowerHitPart			= 0.5f;
 
+	m_fBoostBurnImmunity = 0.f;
+	m_fBoostShockImmunity = 0.f;
+	m_fBoostRadiationImmunity = 0.f;
+	m_fBoostTelepaticImmunity = 0.f;
+	m_fBoostChemicalBurnImmunity = 0.f;
+	m_fBoostExplImmunity = 0.f;
+	m_fBoostStrikeImmunity = 0.f;
+	m_fBoostFireWoundImmunity = 0.f;
+	m_fBoostWoundImmunity = 0.f;
+
+	m_fBoostBurnProtection		    = 0.f;
+	m_fBoostShockProtection	    = 0.f;
+	m_fBoostRadiationProtection    = 0.f;
+	m_fBoostTelepaticProtection    = 0.f;
+	m_fBoostChemicalBurnProtection = 0.f;
+	m_fBoostExplProtection		    = 0.f;
+	m_fBoostStrikeProtection	    = 0.f;
+	m_fBoostFireWoundProtection    = 0.f;
+	m_fBoostWoundProtection	    = 0.f;
+
+
 	m_fDeltaHealth			= 0;
 	m_fDeltaPower			= 0;
 	m_fDeltaRadiation		= 0;
@@ -133,6 +154,12 @@ void CEntityCondition::reinit	()
 
 	ClearWounds				();
 
+}
+
+void CEntityCondition::SetHealth(float value)
+{
+	health() = value;
+	clamp(health(), 0.f, MAX_HEALTH);
 }
 
 void CEntityCondition::ChangeHealth(float value)
@@ -281,7 +308,10 @@ void CEntityCondition::UpdateCondition()
 	m_fDeltaCircumspection		= 0;
 	m_fDeltaEntityMorale		= 0;
 
-	clamp						(health(),			MIN_HEALTH, max_health());
+	float	l_health = GetHealth();
+	clamp(l_health, MIN_HEALTH, max_health());
+	SetHealth(l_health);
+
 	clamp						(m_fPower,			0.0f,		m_fPowerMax);
 	clamp						(m_fRadiation,		0.0f,		m_fRadiationMax);
 	clamp						(m_fEntityMorale,	0.0f,		m_fEntityMoraleMax);
@@ -371,52 +401,91 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	switch(pHDS->hit_type)
 	{
 	case ALife::eHitTypeTelepatic:
-		// -------------------------------------------------
-		// temp (till there is no death from psy hits)
-		hit_power *= m_HitTypeK[pHDS->hit_type];
-/*
+		hit_power -= m_fBoostTelepaticProtection;
+		if (hit_power < 0.f)
+			hit_power = 0.f;
+
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostTelepaticImmunity;
+
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
-*/
-		// -------------------------------------------------
 
-		hit_power *= m_HitTypeK[pHDS->hit_type];
 		ChangePsyHealth(-hit_power);
 		bAddWound =false;
 		break;
 	case ALife::eHitTypeBurn:
-		hit_power *= m_HitTypeK[pHDS->hit_type];
+		hit_power -= m_fBoostBurnProtection;
+		if (hit_power < 0.f)
+			hit_power = 0.f;
+
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostBurnImmunity;
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
 		bAddWound		=  false;
 		break;
 	case ALife::eHitTypeChemicalBurn:
-		hit_power *= m_HitTypeK[pHDS->hit_type];
+		hit_power -= m_fBoostChemicalBurnProtection;
+		if (hit_power < 0.f)
+			hit_power = 0.f;
+
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostChemicalBurnImmunity;
+		m_fHealthLost = hit_power * m_fHealthHitPart;
+		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
+		m_fDeltaPower -= hit_power * m_fPowerHitPart;
+		bAddWound = false;
 		break;
 	case ALife::eHitTypeShock:
-		hit_power		*= m_HitTypeK[pHDS->hit_type];
-		m_fHealthLost	=  hit_power*m_fHealthHitPart;
+		hit_power -= m_fBoostShockProtection;
+		if (hit_power < 0.f)
+			hit_power = 0.f;
+
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostShockImmunity;
+		m_fHealthLost = hit_power * m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
-		m_fDeltaPower	-= hit_power*m_fPowerHitPart;
-		bAddWound		=  false;
+		m_fDeltaPower -= hit_power * m_fPowerHitPart;
+		bAddWound = false;
 		break;
 	case ALife::eHitTypeRadiation:
+		hit_power -= m_fBoostRadiationProtection;
+		if (hit_power < 0.f)
+			hit_power = 0.f;
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostRadiationImmunity;
 		m_fDeltaRadiation += hit_power;
+		bAddWound = false;
 		return NULL;
 		break;
 	case ALife::eHitTypeExplosion:
+		hit_power -= m_fBoostExplProtection;
+		if (hit_power < 0.f)
+			hit_power = 0.f;
+		m_fHealthLost = hit_power * m_fHealthHitPart;
+		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
+		m_fDeltaPower -= hit_power * m_fPowerHitPart;
+		break;
 	case ALife::eHitTypeStrike:
 	case ALife::eHitTypePhysicStrike:
-		hit_power *= m_HitTypeK[pHDS->hit_type];
-		m_fHealthLost = hit_power*m_fHealthHitPart;
+		hit_power -= m_fBoostStrikeProtection;
+
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostStrikeImmunity;
+		m_fHealthLost = hit_power * m_fHealthHitPart;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
-		m_fDeltaPower -= hit_power*m_fPowerHitPart;
+		m_fDeltaPower -= hit_power * m_fPowerHitPart;
+		bAddWound = false;
 		break;
 	case ALife::eHitTypeFireWound:
+		hit_power -= m_fBoostFireWoundProtection;
+
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostFireWoundImmunity;
+		m_fHealthLost = hit_power * m_fHealthHitPart * m_fHitBoneScale;
+		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
+		m_fDeltaPower -= hit_power * m_fPowerHitPart;
+		break;
 	case ALife::eHitTypeWound:
-		hit_power *= m_HitTypeK[pHDS->hit_type];
+		hit_power -= m_fBoostWoundProtection;
+
+		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostWoundImmunity;
 		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
 		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
 		m_fDeltaPower -= hit_power*m_fPowerHitPart;
@@ -569,4 +638,46 @@ void CEntityCondition::remove_links	(const CObject *object)
 
 	m_pWho					= m_object;
 	m_iWhoID				= m_object->ID();
+}
+
+bool CEntityCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const shared_str& sect)
+{
+	ChangeHealth(V.fHealth);
+	ChangePsyHealth(V.fPsyHealth);
+	ChangePower(V.fPower);
+	ChangeSatiety(V.fSatiety);
+	ChangeRadiation(V.fRadiation);
+	ChangeBleeding(V.fWoundsHeal);
+	SetMaxPower(GetMaxPower() + V.fMaxPowerUp);
+	ChangeAlcohol(V.fAlcohol);
+	return true;
+}
+
+bool CEntityCondition::ApplyBooster(const SBooster& B, const shared_str& sect)
+{
+	return true;
+}
+
+void SMedicineInfluenceValues::Load(const shared_str& sect)
+{
+	fHealth = pSettings->r_float(sect.c_str(), "eat_health");
+	fPsyHealth = pSettings->r_float(sect.c_str(), "eat_psy_health");
+	fPower = pSettings->r_float(sect.c_str(), "eat_power");
+	fSatiety = pSettings->r_float(sect.c_str(), "eat_satiety");
+	fRadiation = pSettings->r_float(sect.c_str(), "eat_radiation");
+	fWoundsHeal = pSettings->r_float(sect.c_str(), "wounds_heal_perc");
+	clamp(fWoundsHeal, 0.f, 1.f);
+	fMaxPowerUp = READ_IF_EXISTS(pSettings, r_float, sect.c_str(), "eat_max_power", 0.0f);
+	fAlcohol = READ_IF_EXISTS(pSettings, r_float, sect.c_str(), "eat_alcohol", 0.0f);
+	fTimeTotal = READ_IF_EXISTS(pSettings, r_float, sect.c_str(), "apply_time_sec", -1.0f);
+}
+
+void SBooster::Load(const shared_str& sect, EBoostParams type)
+{
+	fBoostTime = pSettings->r_float(sect.c_str(), "boost_time");
+	m_type = type;
+	if (type >= 0 && type < eBoostMaxCount)
+	{
+		fBoostValue = pSettings->r_float(sect.c_str(), ef_boosters_section_names[type]);
+	}
 }

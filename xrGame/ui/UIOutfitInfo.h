@@ -1,6 +1,7 @@
 #pragma once
 
 #include "UIWindow.h"
+#include "ActorCondition.h"
 
 class CUIScrollView;
 class CCustomOutfit;
@@ -48,6 +49,7 @@ protected:
 
 		_max_item_index
 	};
-	float			GetRestoreByID(SActorRestores restores, u8 id);
+	float			GetRestoreByID(SActorRestores& restores, u16 id);
+	float			GetBoosterRestoreByID(CActorCondition& conditions, u16 id);
 	CUIStatic*		m_items[_max_item_index];
 };

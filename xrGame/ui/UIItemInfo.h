@@ -34,8 +34,8 @@ public:
 	void				InitItem			(CInventoryItem* pInvItem);
 	void				TryAddWpnInfo		(const shared_str& wpn_section);
 	void				TryAddArtefactInfo	(const shared_str& af_section);
-	void				TryAddOutfitInfo	(const shared_str& outfit_section);
-	void				TryAddItemInfo		(const shared_str& item_section);
+	void				TryAddOutfitInfo	(CInventoryItem* pInvItem);
+	//void				TryAddItemInfo		(const shared_str& item_section);
 
 	virtual void		Draw				();
 	bool				m_b_force_drawing;
@@ -48,7 +48,7 @@ public:
 	CUIWpnParams*		UIWpnParams;
 	CUIArtefactParams*	UIArtefactParams;
 	CUIOutfitParams*	UIOutfitParams;
-	CUIItemParams*		UIItemParams;
+	//CUIItemParams*		UIItemParams;
 
 	Fvector2			UIItemImageSize; 
 	CUIStatic*			UIItemImage;

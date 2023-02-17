@@ -65,6 +65,7 @@ public:
 	virtual						~CInventoryItem		();
 
 public:
+	virtual u16					object_id() const;
 	virtual void				Load				(LPCSTR section);
 
 	virtual LPCSTR				Name				();

@@ -72,6 +72,11 @@ net_updateData* CInventoryItem::NetSync()
 	return m_net_updateData;
 }
 
+u16 CInventoryItem::object_id() const
+{
+	return object().ID();
+}
+
 CInventoryItem::CInventoryItem() 
 {
 	m_net_updateData	= NULL;
@@ -169,7 +174,7 @@ void	CInventoryItem::Hit					(SHit* pHDS)
 	if( !m_flags.test(FUsingCondition) ) return;
 
 	float hit_power = pHDS->damage();
-	hit_power *= m_HitTypeK[pHDS->hit_type];
+	hit_power *= GetHitImmunity(pHDS->hit_type);
 
 	ChangeCondition(-hit_power);
 }

@@ -24,6 +24,8 @@ public:
 	virtual BOOL			net_Relevant		();
 	virtual void			OnEvent				(NET_Packet		&packet, u16 type);
 	virtual void			Die					(CObject		*killer);
+
+	void			use_booster(NET_Packet& packet);
 };
 
 #endif // ACTOR_MP_CLIENT_H

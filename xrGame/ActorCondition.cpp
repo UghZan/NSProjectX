@@ -89,7 +89,7 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 	
 	m_fV_Alcohol				= pSettings->r_float(section,"alcohol_v");
 
-//. ???	m_fSatietyCritical			= pSettings->r_float(section,"satiety_critical");
+	m_fSatietyCritical			= pSettings->r_float(section,"satiety_critical");
 	m_fV_Satiety				= pSettings->r_float(section,"satiety_v");		
 	m_fV_SatietyPower			= pSettings->r_float(section,"satiety_power_v");
 	m_fV_SatietyHealth			= pSettings->r_float(section,"satiety_health_v");
@@ -104,16 +104,21 @@ void CActorCondition::LoadCondition(LPCSTR entity_section)
 
 void CActorCondition::UpdateCondition()
 {
+	UpdateSatiety();
+	UpdateBoosters();
+
 	if (GodMode())				return;
 	if (!object().g_Alive())	return;
 	if (!object().Local() && m_object != Level().CurrentViewEntity())		return;	
 	
+	float base_weight = object().MaxCarryWeight();
+	float cur_weight = object().inventory().TotalWeight();
 
 	if ((object().mstate_real&mcAnyMove)) {
-		ConditionWalk(object().inventory().TotalWeight()/object().inventory().GetMaxWeight(), isActorAccelerated(object().mstate_real,object().IsZoomAimingMode()), (object().mstate_real&mcSprint) != 0);
+		ConditionWalk(cur_weight / base_weight, isActorAccelerated(object().mstate_real,object().IsZoomAimingMode()), (object().mstate_real&mcSprint) != 0);
 	}
 	else {
-		ConditionStand(object().inventory().TotalWeight()/object().inventory().GetMaxWeight());
+		ConditionStand(cur_weight / base_weight);
 	};
 	
 	if( IsGameTypeSingle() ){
@@ -122,16 +127,13 @@ void CActorCondition::UpdateCondition()
 
 		if( true )
 		{
-			float weight = object().inventory().TotalWeight();
-
-			float base_w = object().MaxCarryWeight();
 /*
 			CCustomOutfit* outfit	= m_object->GetOutfit();
 			if(outfit)
 				base_w += outfit->m_additional_weight2;
 */
 
-			k_max_power = 1.0f + _min(weight,base_w)/base_w + _max(0.0f, (weight-base_w)/10.0f);
+			k_max_power = 1.0f + _min(cur_weight, base_weight)/ base_weight + _max(0.0f, (cur_weight - base_weight)/10.0f);
 		}else
 			k_max_power = 1.0f;
 		
@@ -178,12 +180,28 @@ void CActorCondition::UpdateCondition()
 			health() =0.0f;
 	};
 
-	UpdateSatiety				();
 
 	inherited::UpdateCondition	();
 
 	if( IsGameTypeSingle() )
 		UpdateTutorialThresholds();
+}
+
+void CActorCondition::UpdateBoosters()
+{
+	for (u8 i = 0;i < eBoostMaxCount;i++)
+	{
+		BOOSTER_MAP::iterator it = m_booster_influences.find((EBoostParams)i);
+		if (it != m_booster_influences.end())
+		{
+			it->second.fBoostTime -= m_fDeltaTime / (IsGameTypeSingle() ? Level().GetGameTimeFactor() : 1.0f);
+			if (it->second.fBoostTime <= 0.0f)
+			{
+				DisableBoostParameters(it->second);
+				m_booster_influences.erase(it);
+			}
+		}
+	}
 }
 
 
@@ -202,22 +220,12 @@ void CActorCondition::UpdateSatiety()
 
 	}
 		
-	//сытость увеличивает здоровье только если нет открытых ран
-	if(!m_bIsBleeding)
+	float satiety_health_koef = (m_fSatiety - m_fSatietyCritical) / (m_fSatiety >= m_fSatietyCritical ? 1 - m_fSatietyCritical : m_fSatietyCritical);
+	if (CanBeHarmed())
 	{
-		m_fDeltaHealth += CanBeHarmed() ? 
-					(m_fV_SatietyHealth*(m_fSatiety>0.0f?1.f:-1.f)*m_fDeltaTime)
-					: 0;
+		m_fDeltaHealth += m_fV_SatietyHealth * satiety_health_koef * m_fDeltaTime;
+		m_fDeltaPower += m_fV_SatietyPower * (m_fV_SatietyPower > 0.0f ? m_fSatiety : 1.f) * m_fDeltaTime;
 	}
-
-	//коэффициенты уменьшения восстановления силы от сытоти и радиации
-	float radiation_power_k		= 1.f;
-	float satiety_power_k		= 1.f;
-			
-	m_fDeltaPower += m_fV_SatietyPower*
-				radiation_power_k*
-				satiety_power_k*
-				m_fDeltaTime;
 }
 
 
@@ -308,6 +316,26 @@ void CActorCondition::save(NET_Packet &output_packet)
 	save_data			(m_fAlcohol, output_packet);
 	save_data			(m_condition_flags, output_packet);
 	save_data			(m_fSatiety, output_packet);
+
+	save_data(m_curr_medicine_influence.fHealth, output_packet);
+	save_data(m_curr_medicine_influence.fPsyHealth, output_packet);
+	save_data(m_curr_medicine_influence.fPower, output_packet);
+	save_data(m_curr_medicine_influence.fSatiety, output_packet);
+	save_data(m_curr_medicine_influence.fRadiation, output_packet);
+	save_data(m_curr_medicine_influence.fWoundsHeal, output_packet);
+	save_data(m_curr_medicine_influence.fMaxPowerUp, output_packet);
+	save_data(m_curr_medicine_influence.fAlcohol, output_packet);
+	save_data(m_curr_medicine_influence.fTimeTotal, output_packet);
+	save_data(m_curr_medicine_influence.fTimeCurrent, output_packet);
+
+	output_packet.w_u8((u8)m_booster_influences.size());
+	BOOSTER_MAP::iterator b = m_booster_influences.begin(), e = m_booster_influences.end();
+	for (; b != e; b++)
+	{
+		output_packet.w_u8((u8)b->second.m_type);
+		output_packet.w_float(b->second.fBoostValue);
+		output_packet.w_float(b->second.fBoostTime);
+	}
 }
 
 void CActorCondition::load(IReader &input_packet)
@@ -316,6 +344,28 @@ void CActorCondition::load(IReader &input_packet)
 	load_data			(m_fAlcohol, input_packet);
 	load_data			(m_condition_flags, input_packet);
 	load_data			(m_fSatiety, input_packet);
+
+	load_data(m_curr_medicine_influence.fHealth, input_packet);
+	load_data(m_curr_medicine_influence.fPsyHealth, input_packet);
+	load_data(m_curr_medicine_influence.fPower, input_packet);
+	load_data(m_curr_medicine_influence.fSatiety, input_packet);
+	load_data(m_curr_medicine_influence.fRadiation, input_packet);
+	load_data(m_curr_medicine_influence.fWoundsHeal, input_packet);
+	load_data(m_curr_medicine_influence.fMaxPowerUp, input_packet);
+	load_data(m_curr_medicine_influence.fAlcohol, input_packet);
+	load_data(m_curr_medicine_influence.fTimeTotal, input_packet);
+	load_data(m_curr_medicine_influence.fTimeCurrent, input_packet);
+
+	u8 cntr = input_packet.r_u8();
+	for (; cntr > 0; cntr--)
+	{
+		SBooster B;
+		B.m_type = (EBoostParams)input_packet.r_u8();
+		B.fBoostValue = input_packet.r_float();
+		B.fBoostTime = input_packet.r_float();
+		m_booster_influences[B.m_type] = B;
+		BoostParameters(B);
+	}
 }
 
 void CActorCondition::reinit	()
@@ -335,6 +385,200 @@ void CActorCondition::ChangeSatiety(float value)
 	m_fSatiety += value;
 	clamp		(m_fSatiety, 0.0f, 1.0f);
 }
+
+void CActorCondition::BoostParameters(const SBooster& B)
+{
+	if (OnServer())
+	{
+		switch (B.m_type)
+		{
+		case eBoostHpRestore: BoostHpRestore(B.fBoostValue); break;
+		case eBoostPsyHealthRestore: BoostPsyRestore(B.fBoostValue); break;
+		case eBoostRadiationRestore: BoostRadiationRestore(B.fBoostValue); break;
+		case eBoostSatietyRestore: BoostSatietyRestore(B.fBoostValue); break;
+		case eBoostPowerRestore: BoostPowerRestore(B.fBoostValue); break;
+		case eBoostBleedingRestore: BoostBleedingRestore(B.fBoostValue); break;
+		case eBoostAlcoholRestore: BoostAlcoholRestore(B.fBoostValue); break;
+
+		case eBoostMaxWeight: BoostMaxWeight(B.fBoostValue); break;
+
+		case eBoostBurnImmunity: BoostBurnImmunity(B.fBoostValue); break;
+		case eBoostShockImmunity: BoostShockImmunity(B.fBoostValue); break;
+		case eBoostRadiationImmunity: BoostRadiationImmunity(B.fBoostValue); break;
+		case eBoostTelepaticImmunity: BoostTelepaticImmunity(B.fBoostValue); break;
+		case eBoostChemicalBurnImmunity: BoostChemicalBurnImmunity(B.fBoostValue); break;
+		case eBoostExplImmunity: BoostExplImmunity(B.fBoostValue); break;
+		case eBoostStrikeImmunity: BoostStrikeImmunity(B.fBoostValue); break;
+		case eBoostFireWoundImmunity: BoostFireWoundImmunity(B.fBoostValue); break;
+		case eBoostWoundImmunity: BoostWoundImmunity(B.fBoostValue); break;
+
+		case eBoostBurnProtection: BoostBurnProtection(B.fBoostValue); break;
+		case eBoostShockProtection: BoostShockProtection(B.fBoostValue); break;
+		case eBoostRadiationProtection: BoostRadiationProtection(B.fBoostValue); break;
+		case eBoostTelepaticProtection: BoostTelepaticProtection(B.fBoostValue); break;
+		case eBoostChemicalBurnProtection: BoostChemicalBurnProtection(B.fBoostValue); break;
+		case eBoostExplProtection: BoostExplProtection(B.fBoostValue); break;
+		case eBoostStrikeProtection: BoostStrikeProtection(B.fBoostValue); break;
+		case eBoostFireWoundProtection: BoostFireWoundProtection(B.fBoostValue); break;
+		case eBoostWoundProtection: BoostWoundProtection(B.fBoostValue); break;
+		default: NODEFAULT;
+		}
+	}
+}
+
+void CActorCondition::DisableBoostParameters(const SBooster& B)
+{
+	if (!OnServer())
+		return;
+
+	switch (B.m_type)
+	{
+		case eBoostHpRestore: BoostHpRestore(-B.fBoostValue); break;
+		case eBoostPsyHealthRestore: BoostPsyRestore(-B.fBoostValue); break;
+		case eBoostRadiationRestore: BoostRadiationRestore(-B.fBoostValue); break;
+		case eBoostSatietyRestore: BoostSatietyRestore(-B.fBoostValue); break;
+		case eBoostPowerRestore: BoostPowerRestore(-B.fBoostValue); break;
+		case eBoostBleedingRestore: BoostBleedingRestore(-B.fBoostValue); break;
+		case eBoostAlcoholRestore: BoostAlcoholRestore(-B.fBoostValue); break;
+
+		case eBoostMaxWeight: BoostMaxWeight(-B.fBoostValue); break;
+
+		case eBoostBurnImmunity: BoostBurnImmunity(-B.fBoostValue); break;
+		case eBoostShockImmunity: BoostShockImmunity(-B.fBoostValue); break;
+		case eBoostRadiationImmunity: BoostRadiationImmunity(-B.fBoostValue); break;
+		case eBoostTelepaticImmunity: BoostTelepaticImmunity(-B.fBoostValue); break;
+		case eBoostChemicalBurnImmunity: BoostChemicalBurnImmunity(-B.fBoostValue); break;
+		case eBoostExplImmunity: BoostExplImmunity(-B.fBoostValue); break;
+		case eBoostStrikeImmunity: BoostStrikeImmunity(-B.fBoostValue); break;
+		case eBoostFireWoundImmunity: BoostFireWoundImmunity(-B.fBoostValue); break;
+		case eBoostWoundImmunity: BoostWoundImmunity(-B.fBoostValue); break;
+
+		case eBoostBurnProtection: BoostBurnProtection(-B.fBoostValue); break;
+		case eBoostShockProtection: BoostShockProtection(-B.fBoostValue); break;
+		case eBoostRadiationProtection: BoostRadiationProtection(-B.fBoostValue); break;
+		case eBoostTelepaticProtection: BoostTelepaticProtection(-B.fBoostValue); break;
+		case eBoostChemicalBurnProtection: BoostChemicalBurnProtection(-B.fBoostValue); break;
+		case eBoostExplProtection: BoostExplProtection(-B.fBoostValue); break;
+		case eBoostStrikeProtection: BoostStrikeProtection(-B.fBoostValue); break;
+		case eBoostFireWoundProtection: BoostFireWoundProtection(-B.fBoostValue); break;
+		case eBoostWoundProtection: BoostWoundProtection(-B.fBoostValue); break;
+		default: NODEFAULT;
+	}
+}
+
+#pragma region Boost Restores
+void CActorCondition::BoostHpRestore(const float value)
+{
+	m_change_v.m_fV_HealthRestore += value;
+}
+void CActorCondition::BoostPsyRestore(const float value)
+{
+	m_change_v.m_fV_PsyHealth += value;
+}
+void CActorCondition::BoostSatietyRestore(const float value)
+{
+	m_fV_Satiety += value;
+}
+void CActorCondition::BoostPowerRestore(const float value)
+{
+	m_fV_SatietyPower += value;
+}
+void CActorCondition::BoostRadiationRestore(const float value)
+{
+	m_change_v.m_fV_Radiation += value;
+}
+void CActorCondition::BoostBleedingRestore(const float value)
+{
+	m_change_v.m_fV_WoundIncarnation += value;
+}
+void CActorCondition::BoostAlcoholRestore(const float value)
+{
+	m_fV_Alcohol += value;
+}
+#pragma endregion
+
+#pragma region Boost Immunities + Max Weight
+void CActorCondition::BoostMaxWeight(const float value)
+{
+	m_object->inventory().SetMaxWeight(object().inventory().GetMaxWeight() + value);
+	m_MaxWalkWeight += value;
+}
+void CActorCondition::BoostBurnImmunity(const float value)
+{
+	m_fBoostBurnImmunity += value;
+}
+void CActorCondition::BoostShockImmunity(const float value)
+{
+	m_fBoostShockImmunity += value;
+}
+void CActorCondition::BoostRadiationImmunity(const float value)
+{
+	m_fBoostRadiationImmunity += value;
+}
+void CActorCondition::BoostTelepaticImmunity(const float value)
+{
+	m_fBoostTelepaticImmunity += value;
+}
+void CActorCondition::BoostChemicalBurnImmunity(const float value)
+{
+	m_fBoostChemicalBurnImmunity += value;
+}
+void CActorCondition::BoostExplImmunity(const float value)
+{
+	m_fBoostExplImmunity += value;
+}
+void CActorCondition::BoostStrikeImmunity(const float value)
+{
+	m_fBoostStrikeImmunity += value;
+}
+void CActorCondition::BoostFireWoundImmunity(const float value)
+{
+	m_fBoostFireWoundImmunity += value;
+}
+void CActorCondition::BoostWoundImmunity(const float value)
+{
+	m_fBoostWoundImmunity += value;
+}
+#pragma endregion
+
+#pragma region Boost Protections
+void CActorCondition::BoostBurnProtection(const float value)
+{
+	m_fBoostBurnProtection += value;
+}
+void CActorCondition::BoostShockProtection(const float value)
+{
+	m_fBoostShockProtection += value;
+}
+void CActorCondition::BoostRadiationProtection(const float value)
+{
+	m_fBoostRadiationProtection += value;
+}
+void CActorCondition::BoostTelepaticProtection(const float value)
+{
+	m_fBoostTelepaticProtection += value;
+}
+void CActorCondition::BoostChemicalBurnProtection(const float value)
+{
+	m_fBoostChemicalBurnProtection += value;
+}
+void CActorCondition::BoostExplProtection(const float value)
+{
+	m_fBoostExplProtection += value;
+}
+void CActorCondition::BoostStrikeProtection(const float value)
+{
+	m_fBoostStrikeProtection += value;
+}
+void CActorCondition::BoostFireWoundProtection(const float value)
+{
+	m_fBoostFireWoundProtection += value;
+}
+void CActorCondition::BoostWoundProtection(const float value)
+{
+	m_fBoostWoundProtection += value;
+}
+#pragma endregion
 
 void CActorCondition::UpdateTutorialThresholds()
 {
@@ -406,4 +650,67 @@ void CActorCondition::UpdateTutorialThresholds()
 		R_ASSERT							(ai().script_engine().functor<LPCSTR>(cb_name,fl));
 		fl									();
 	}
+
+
+}
+
+bool CActorCondition::ApplyInfluence(const SMedicineInfluenceValues& V, const shared_str& sect)
+{
+	if (m_curr_medicine_influence.InProcess())
+		return false;
+
+	if (m_object->Local() && m_object == Level().CurrentViewEntity())
+	{
+		if (pSettings->line_exist(sect, "use_sound"))
+		{
+			if (m_use_sound._feedback())
+				m_use_sound.stop();
+
+			shared_str snd_name = pSettings->r_string(sect, "use_sound");
+			m_use_sound.create(snd_name.c_str(), st_Effect, sg_SourceType);
+			m_use_sound.play(NULL, sm_2D);
+		}
+	}
+
+	if (V.fTimeTotal < 0.0f)
+		return inherited::ApplyInfluence(V, sect);
+
+	m_curr_medicine_influence = V;
+	m_curr_medicine_influence.fTimeCurrent = m_curr_medicine_influence.fTimeTotal;
+	return true;
+}
+bool CActorCondition::ApplyBooster(const SBooster& B, const shared_str& sect)
+{
+	if (!fis_zero(B.fBoostValue))
+	{
+		if (m_object->Local() && m_object == Level().CurrentViewEntity())
+		{
+			if (pSettings->line_exist(sect, "use_sound"))
+			{
+				if (m_use_sound._feedback())
+					m_use_sound.stop();
+
+				shared_str snd_name = pSettings->r_string(sect, "use_sound");
+				m_use_sound.create(snd_name.c_str(), st_Effect, sg_SourceType);
+				m_use_sound.play(NULL, sm_2D);
+			}
+		}
+
+		BOOSTER_MAP::iterator it = m_booster_influences.find(B.m_type);
+		if (it != m_booster_influences.end())
+			DisableBoostParameters((*it).second);
+
+		//in case the new effect is weaker, we shouldn't apply it
+		m_booster_influences[B.m_type] = B;
+		BoostParameters(B);
+	}
+	return true;
+}
+
+float CActorCondition::GetBoosterInfluence(EBoostParams type)
+{
+	BOOSTER_MAP::iterator it = m_booster_influences.find(type);
+	if (it != m_booster_influences.end())
+		return it->second.fBoostValue;
+	else return 0.f;
 }

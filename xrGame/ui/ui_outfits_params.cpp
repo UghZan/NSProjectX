@@ -92,8 +92,43 @@ bool CUIOutfitParams::Check(const shared_str& outfit_section)
 {
 	return pSettings->line_exist(outfit_section, "bones_koeff_protection");
 }
+
+float CUIOutfitParams::GetOutfitStat(CCustomOutfit* outfit, u32 id)
+{
+	float ret = 0.0f;
+
+	switch (id)
+	{
+	case _item_health_restore_speed:
+		ret = outfit->m_HealthRestoreSpeed;
+		break;
+	case _item_psy_health_restore_speed:
+		ret = outfit->m_PsyRestoreSpeed;
+		break;
+	case _item_radiation_restore_speed:
+		ret = outfit->m_RadiationRestoreSpeed;
+		break;
+	case _item_satiety_restore_speed:
+		ret = outfit->m_SatietyRestoreSpeed;
+		break;
+	case _item_power_restore_speed:
+		ret = outfit->m_PowerRestoreSpeed;
+		break;
+	case _item_bleeding_restore_speed:
+		ret = outfit->m_BleedingRestoreSpeed;
+		break;
+	case _item_additional_inventory_weight:
+		ret = outfit->m_additional_weight;
+		break;
+	case _item_power_loss:
+		ret = outfit->GetPowerLoss();
+		break;
+	}
+	return ret;
+}
+
 #include "../string_table.h"
-void CUIOutfitParams::SetInfo(const shared_str& outfit_section)
+void CUIOutfitParams::SetInfo(CCustomOutfit* outfit)
 {
 
 	string128					_buff;
@@ -106,30 +141,33 @@ void CUIOutfitParams::SetInfo(const shared_str& outfit_section)
 		if (!_s)
 			continue;
 
-		LPCSTR _sn = "%";
+		LPCSTR _sn = "";
 		bool sign = false;
 
-		float					_val;
-		if (0 == pSettings->line_exist(outfit_section, outfit_item_sect_names[i])) continue;
+		float					_val = 0.0f;
 
 		if (i < _item_index1)
 		{
-			_val = pSettings->r_float(outfit_section, outfit_item_sect_names[i]);
-			if (fsimilar(_val, 1.0f))				continue;
-			_val *= 100.0f;
+			_val = 1.0f - outfit->GetDefHitTypeProtection((ALife::EHitType)(ALife::eHitTypeBurn + i));
+			if (fis_zero(_val))				continue;
 		}
 		else
 		{
-			_val = pSettings->r_float(outfit_section, outfit_item_sect_names[i]);
+			_val = GetOutfitStat(outfit, i);
+			if (fis_zero(_val))				continue;
+
 			if (i != _item_additional_inventory_weight && i != _item_power_loss)
 			{
 				float _actor_val = pSettings->r_float("actor_condition", actor_param_names[ i - _item_index1]);
-				_val = (_val / _actor_val) * 100.0f;
+				_val = (_val / _actor_val);
 			}
-			else if (i == _item_power_loss)
-				_val *= 100.0f;
+		}
 
-			if (fis_zero(_val))				continue;
+
+		if (i != _item_radiation_restore_speed && i != _item_power_restore_speed && i != _item_additional_inventory_weight)
+		{
+			_val *= 100.0f;
+			_sn = "%";
 		}
 		
 		if (i == _item_additional_inventory_weight)
@@ -139,12 +177,6 @@ void CUIOutfitParams::SetInfo(const shared_str& outfit_section)
 		}
 
 		LPCSTR _color = (_val > 0) ? "%c[green]" : "%c[red]";
-
-		if (i == _item_radiation_restore_speed || i == _item_power_restore_speed)
-		{
-			_val /= 100.0f;
-			_sn = "";
-		}
 
 		_color = (_val > 0) ? "%c[green]" : "%c[red]";
 

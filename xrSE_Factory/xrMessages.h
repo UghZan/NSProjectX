@@ -156,6 +156,8 @@ enum {
 
 	GE_FREEZE_OBJECT,
 
+	GEG_PLAYER_USE_BOOSTER,
+
 	GE_FORCEDWORD				= u32(-1)
 };
 
