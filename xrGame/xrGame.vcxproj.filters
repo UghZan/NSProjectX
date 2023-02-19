@@ -2293,6 +2293,9 @@
     <Filter Include="UI\Tutorial">
       <UniqueIdentifier>{f8362524-5b63-42ba-86d7-e93a333b5fc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors">
+      <UniqueIdentifier>{4def4c91-42cb-4479-8eca-77b126dc8346}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="mt_config.h">
@@ -6568,10 +6571,13 @@
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
     </ClInclude>
     <ClInclude Include="CustomAFDetector.h">
-      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
     </ClInclude>
     <ClInclude Include="CustomMonsterDetector.h">
-      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
+    </ClInclude>
+    <ClInclude Include="CustomZoneDetector.h">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -9732,10 +9738,13 @@
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
     </ClCompile>
     <ClCompile Include="CustomAFDetector.cpp">
-      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
     </ClCompile>
     <ClCompile Include="CustomMonsterDetector.cpp">
-      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors</Filter>
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
+    </ClCompile>
+    <ClCompile Include="CustomZoneDetector.cpp">
+      <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

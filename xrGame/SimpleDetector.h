@@ -1,8 +1,8 @@
 #pragma once
-#include "customdetector.h"
+#include "customzonedetector.h"
 
 class CSimpleDetector :
-	public CCustomDetector
+	public CCustomZoneDetector
 {
 public:
 	CSimpleDetector(void);

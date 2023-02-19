@@ -3,42 +3,6 @@
 #include <Level.h>
 #include "map_manager.h"
 
-CCustomMonsterDetector::CCustomMonsterDetector(void)
-{
-	m_bWorking = false;
-}
-
-CCustomMonsterDetector::~CCustomMonsterDetector(void)
-{
-	m_monster_list.destroy();
-	m_monster_list.clear();
-}
-
-BOOL CCustomMonsterDetector::net_Spawn(CSE_Abstract* DC)
-{
-	m_pCurrentActor = NULL;
-	m_pCurrentInvOwner = NULL;
-
-	return		(inherited::net_Spawn(DC));
-}
-
-void CCustomMonsterDetector::Load(LPCSTR section)
-{
-	inherited::Load(section);
-
-	m_fRadius = pSettings->r_float(section, "radius");
-
-	//TBA
-	//m_fPulseRadius = pSettings->r_float(section, "af_pulse_radius");
-
-	if (pSettings->line_exist(section, "night_vision_particle"))
-		m_nightvision_particle = pSettings->r_string(section, "night_vision_particle");
-
-	m_monster_list.load(section, "af");
-
-	m_ef_detector_type = pSettings->r_u32(section, "ef_detector_type");
-}
-
 BOOL CMonsterList::feel_touch_contact(CObject* O)
 {
 	TypeMap_iter it = m_TypeMap.find(O->cNameSect());
@@ -51,28 +15,8 @@ BOOL CMonsterList::feel_touch_contact(CObject* O)
 	return						res;
 }
 
-void CCustomMonsterDetector::shedule_Update(u32 dt)
+void CCustomMonsterDetector::UpdateDetector()
 {
-	inherited::shedule_Update(dt);
-
-	if (!IsWorking()) return;
-	if (!H_Parent()) return;
-
-	Position().set(H_Parent()->Position());
-
-	if (H_Parent() && H_Parent() == Level().CurrentViewEntity())
-	{
-		Fvector					P;
-		P.set(H_Parent()->Position());
-		m_monster_list.feel_touch_update(P, m_fRadius);
-		//UpdateNightVisionMode();
-	}
-}
-
-void CCustomMonsterDetector::UpdateCL()
-{
-	inherited::UpdateCL();
-
 	if (!IsWorking()) return;
 	if (!H_Parent()) return;
 
@@ -117,9 +61,7 @@ void CCustomMonsterDetector::UpdateCL()
 		(item_type->max_freq - item_type->min_freq) * fRelPow * fRelPow;
 	//Log("freq: ",zone_info.cur_freq);
 
-	float min_snd_freq = 0.85f;
-	float max_snd_freq = 1.2f;
-	float snd_freq = min_snd_freq + (max_snd_freq - min_snd_freq) * (1.0f - fRelPow);
+	float snd_freq = m_minSoundPitch + (m_maxSoundPitch - m_minSoundPitch) * (1.0f - fRelPow);
 
 	float corrected_snd_time = zone_info.cur_freq * 100.0f;
 
@@ -133,55 +75,6 @@ void CCustomMonsterDetector::UpdateCL()
 	}
 	else
 		zone_info.snd_time += Device.dwTimeDelta;
-}
-
-void CCustomMonsterDetector::OnH_A_Chield()
-{
-	m_pCurrentActor = smart_cast<CActor*>(H_Parent());
-	m_pCurrentInvOwner = smart_cast<CInventoryOwner*>(H_Parent());
-	inherited::OnH_A_Chield();
-}
-
-void CCustomMonsterDetector::OnH_B_Independent(bool just_before_destroy)
-{
-	inherited::OnH_B_Independent(just_before_destroy);
-
-	m_pCurrentActor = NULL;
-	m_pCurrentInvOwner = NULL;
-
-	m_monster_list.clear();
-}
-
-void CCustomMonsterDetector::OnMoveToRuck()
-{
-	inherited::OnMoveToRuck();
-	TurnOff();
-}
-
-void CCustomMonsterDetector::OnMoveToSlot()
-{
-	inherited::OnMoveToSlot();
-	TurnOn();
-}
-
-void CCustomMonsterDetector::OnMoveToBelt()
-{
-	inherited::OnMoveToBelt();
-	TurnOn();
-}
-
-void CCustomMonsterDetector::TurnOn()
-{
-	m_bWorking = true;
-	m_monster_list.UpdateMapSpots(IsWorking());
-	//UpdateNightVisionMode();
-}
-
-void CCustomMonsterDetector::TurnOff()
-{
-	m_bWorking = false;
-	m_monster_list.UpdateMapSpots(IsWorking());
-	//UpdateNightVisionMode();
 }
 
 void CMonsterList::AddRemoveMapSpot(CCustomMonster* pArt, bool bAdd)
@@ -204,9 +97,4 @@ void CMonsterList::UpdateMapSpots(bool bAdd) // called on turn on/off only
 
 	for (CMonsterList::ItemMap_iter it = iter_start; it != iter_end; ++it)
 		AddRemoveMapSpot(it->first, bAdd);
-}
-
-u32	CCustomMonsterDetector::ef_detector_type() const
-{
-	return	(m_ef_detector_type);
 }

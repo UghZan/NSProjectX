@@ -5,6 +5,8 @@
 #include "CustomZone.h"
 #include "../ai_sounds.h"
 #include "CDetectable.h"
+#include <Level.h>
+#include "map_manager.h"
 
 class CCustomZone;
 //описание типа зоны
@@ -118,14 +120,6 @@ public:
 	}
 };
 
-class CZoneList : public CDetectList<CCustomZone>
-{
-protected:
-	BOOL									feel_touch_contact(CObject* O);
-	void									AddRemoveMapSpot(CCustomZone* pT, bool bAdd);
-public:
-	void									UpdateMapSpots(bool bAdd);
-};
 
 class CInventoryOwner;
 
@@ -169,14 +163,21 @@ protected:
 
 	bool m_bWorking;
 	float m_fRadius;
+	float m_minSoundPitch;
+	float m_maxSoundPitch;
 
 	//если хозяин текущий актер
 	CActor*				m_pCurrentActor;
 	CInventoryOwner*	m_pCurrentInvOwner;
-
-	CZoneList	m_zone_list;
 	
 	shared_str						m_nightvision_particle;
+
+	virtual void UpdateDetector() {};
+	virtual void UpdateDetectList(Fvector3& pos, float radius) {};
+	virtual void LoadDetectList(LPCSTR sect) {};
+	virtual void ClearDetectList() {};
+	virtual void DestroyDetectList() {};
+	virtual void UpdateDetectList_MapSpots(bool mode) {};
 
 protected:
 	u32					m_ef_detector_type;

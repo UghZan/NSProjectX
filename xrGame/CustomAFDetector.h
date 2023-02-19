@@ -15,51 +15,32 @@ public:
 };
 
 class CCustomAFDetector :
-	public CInventoryItemObject
+	public CCustomDetector
 {
-	typedef	CInventoryItemObject	inherited;
-public:
-	CCustomAFDetector(void);
-	virtual ~CCustomAFDetector(void);
-
-	virtual BOOL net_Spawn(CSE_Abstract* DC);
-	virtual void Load(LPCSTR section);
-
-	virtual void OnH_A_Chield();
-	virtual void OnH_B_Independent(bool just_before_destroy);
-
-	virtual void shedule_Update(u32 dt);
-	virtual void UpdateCL();
-
-	void TurnOn();
-	void TurnOff();
-	bool IsWorking() { return m_bWorking; }
-
-	virtual void OnMoveToSlot();
-	virtual void OnMoveToRuck();
-	virtual void OnMoveToBelt();
-
+	typedef	CCustomDetector	inherited;
 protected:
-	void StopAllSounds();
-	void UpdateNightVisionMode();
-
-	bool m_bWorking;
-
-	float m_fRadius;
-	float m_fPulseRadius;
-
-	//если хоз€ин текущий актер
-	CActor* m_pCurrentActor;
-	CInventoryOwner* m_pCurrentInvOwner;
+	void UpdateDetector() override;
+	void UpdateDetectList(Fvector3& pos, float radius) override
+	{
+		m_af_list.feel_touch_update(pos, radius);
+	};
+	void LoadDetectList(LPCSTR sect) override
+	{
+		m_af_list.load(sect, "af");
+	}
+	void ClearDetectList() override
+	{
+		m_af_list.clear();
+	}
+	void DestroyDetectList() override
+	{
+		m_af_list.destroy();
+	}
+	void UpdateDetectList_MapSpots(bool mode) override
+	{
+		m_af_list.UpdateMapSpots(mode);
+	}
 
 	CArtefactList	m_af_list;
-
-	shared_str						m_nightvision_particle;
-
-protected:
-	u32					m_ef_detector_type;
-
-public:
-	virtual u32			ef_detector_type() const;
 };
 
