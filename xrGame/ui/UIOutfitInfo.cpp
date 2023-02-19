@@ -177,7 +177,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 			 _val_boost_immunity = 0.0f,
 			 _val_boost = 0.0f;
 
-		LPCSTR _sn = "";
+		LPCSTR _sn = "%";
 
 		//resistances
 		if (i < _item_index_1)
@@ -185,10 +185,12 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 			sign = false;
 			_val = m_outfit ? m_outfit->GetDefHitTypeProtection(ALife::EHitType(i)) : 1.0f;
 			_val = 1.0f - _val;
+			_val *= 100.0f;
 
 
 			_val_af = Actor()->HitArtefactsOnBelt(1.0f, ALife::EHitType(i));
 			_val_af = 1.0f - _val_af;
+			_val_af *= 100.0f;
 
 			//линейное уменьшение от бустеров
 			_val_boost_protection = conditions.GetBoosterInfluence((EBoostParams)(eBoostBurnProtection + i)) * -100.0f;
@@ -198,28 +200,17 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 		else //restores
 		{
 			_val = GetRestoreByID(artefactEffects, i);
-			if (i != _item_power_loss) _val_boost = GetBoosterRestoreByID(conditions, i) * -1000.0f;
+			if( i < _item_additional_inventory_weight)
+				_val *= 100.0f * 1 / ARTEFACTS_UPDATE_TIME;
+			if (i != _item_power_loss) _val_boost = GetBoosterRestoreByID(conditions, i) * -100.0f * 10.0f; //10 is accounting for ten updates per second
+			_sn = "%/s";
 
 			if (fis_zero(_val) && fis_zero(_val_boost))	continue;
-
-			if (i < _item_additional_inventory_weight)
-			{
-				float _val_actor = pSettings->r_float("actor_condition", outfit_actor_param_names[i - _item_index_1]);
-				if(!fis_zero(_val_actor))
-					_val = (_val / _val_actor);
-			}
 		}
 
 		if (fis_zero(_val) && fis_zero(_val_af) && fis_zero(_val_boost_immunity) && fis_zero(_val_boost_protection) && fis_zero(_val_boost))
 		{
 			continue;
-		}
-
-		if (i != _item_radiation_restore_speed && i != _item_power_restore_speed && i != _item_additional_inventory_weight)
-		{
-			_val *= 100.0f;
-			_val_af *= 100.0f;
-			_sn = "%";
 		}
 
 		if (i == _item_bleeding_restore_speed)
@@ -247,28 +238,28 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 		int _sz = sprintf_s(_buff, sizeof(_buff), "%s: ", _imm_name);
 		if (!fis_zero(_val))
 		{
-			if (sign) _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%s", _color, _val, _sn);
-			else _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %3.0f%s", _color, _val, _sn);
+			if (sign) _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.2f%s", _color, _val, _sn);
+			else _sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %3.2f%s", _color, _val, _sn);
 		}
 
 		if (!fis_zero(_val_af))
 		{
-			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af);
+			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.2f%%", (_val_af > 0.0f) ? "%c[green]" : "%c[red]", _val_af);
 		}
 
 		if (!fis_zero(_val_boost_immunity))
 		{
-			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%", (_val_boost_immunity > 0.0f) ? "%c[255,0,225,0]" : "%c[255,225,0,0]", _val_boost_immunity);
+			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.2f%%", (_val_boost_immunity > 0.0f) ? "%c[255,0,225,0]" : "%c[255,225,0,0]", _val_boost_immunity);
 		}
 
 		if (!fis_zero(_val_boost_protection))
 		{
-			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s(%+3.0f)", (_val_boost_protection > 0.0f) ? "%c[255,200,0,0]" : "%c[255,0,200,0]", _val_boost_protection);
+			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s(%+3.2f)", (_val_boost_protection > 0.0f) ? "%c[255,200,0,0]" : "%c[255,0,200,0]", _val_boost_protection);
 		}
 
 		if (!fis_zero(_val_boost))
 		{
-			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.0f%%/s", (_val_boost > 0.0f) ? "%c[255,200,0,0]" : "%c[255,0,200,0]", _val_boost);
+			_sz += sprintf_s(_buff + _sz, sizeof(_buff) - _sz, "%s %+3.2f%%/s", (_val_boost > 0.0f) ? "%c[255,200,0,0]" : "%c[255,0,200,0]", _val_boost);
 		}
 
 		_s->SetText(_buff);

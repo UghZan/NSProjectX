@@ -1,6 +1,7 @@
 #pragma once
 #include "UIWindow.h"
 #include <Actor.h>
+#include <Artifact.h>
 
 class CUIXml;
 class CUIStatic;
@@ -12,7 +13,7 @@ public:
 	virtual						~CUIArtefactParams		();
 	void 						InitFromXml				(CUIXml& xml_doc);
 	bool 						Check					(const shared_str& af_section);
-	void 						SetInfo					(const shared_str& af_section);
+	void 						SetInfo					(CArtefact* artefact);
 
 protected:
 	enum{
@@ -25,6 +26,7 @@ protected:
 		_item_power_restore_speed,
 		_item_bleeding_restore_speed,
 		_item_additional_inventory_weight,
+		_item_additional_inventory_weight2,
 
 		_item_index1,
 

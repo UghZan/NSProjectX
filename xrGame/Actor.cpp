@@ -1502,12 +1502,12 @@ SActorRestores CActor::GetActorStatRestores()
 		CArtefact* artefact = smart_cast<CArtefact*>(*it);
 		if (artefact)
 		{
-			ar.HealthRestoreSpeed	 += artefact->m_fHealthRestoreSpeed;
-			ar.PsyRestoreSpeed		 += artefact->m_fPsyRestoreSpeed;
-			ar.RadiationRestoreSpeed += artefact->m_fRadiationRestoreSpeed;
-			ar.SatietyRestoreSpeed	 += artefact->m_fSatietyRestoreSpeed;
-			ar.PowerRestoreSpeed	 += artefact->m_fPowerRestoreSpeed;
-			ar.BleedingRestoreSpeed	 += artefact->m_fBleedingRestoreSpeed;
+			ar.HealthRestoreSpeed	 += artefact->GetStatWithVariation(CArtefact::aHealthRestore);
+			ar.PsyRestoreSpeed		 += artefact->GetStatWithVariation(CArtefact::aPsyRestore);
+			ar.RadiationRestoreSpeed += artefact->GetStatWithVariation(CArtefact::aRadRestore);
+			ar.SatietyRestoreSpeed	 += artefact->GetStatWithVariation(CArtefact::aSatietyRestore);
+			ar.PowerRestoreSpeed	 += artefact->GetStatWithVariation(CArtefact::aPowerRestore);
+			ar.BleedingRestoreSpeed	 += artefact->GetStatWithVariation(CArtefact::aBleedingRestore);
 		}
 	}
 
@@ -1566,7 +1566,7 @@ float	CActor::HitArtefactsOnBelt		(float hit_power, ALife::EHitType hit_type)
 	{
 		CArtefact*	artefact = smart_cast<CArtefact*>(*it);
 		if(artefact){
-			res_hit_power_k	+= artefact->m_ArtefactHitImmunities.AffectHit(1.0f, hit_type);
+			res_hit_power_k	+= 1.0f * (1.0f - artefact->GetStatWithVariation((CArtefact::AFProperty)(CArtefact::aBurnProtection + hit_type)));
 			_af_count		+= 1.0f;
 		}
 	}

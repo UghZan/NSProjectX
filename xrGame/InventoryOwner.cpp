@@ -338,7 +338,7 @@ float CInventoryOwner::GetArtifactWeightBonus(bool second) const
 		CArtefact* artefact = smart_cast<CArtefact*>(it);
 
 		if (artefact)
-			bonus += second ? artefact->m_fAdditionalInvWeight2 : artefact->m_fAdditionalInvWeight;
+			bonus += second ? artefact->GetStatWithVariation(CArtefact::aInventoryWeight2) : artefact->GetStatWithVariation(CArtefact::aInventoryWeight);
 	}
 	return bonus;
 }

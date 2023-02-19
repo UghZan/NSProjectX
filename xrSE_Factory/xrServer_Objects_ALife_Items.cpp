@@ -727,6 +727,7 @@ void CSE_ALifeItemDetector::FillProps		(LPCSTR pref, PropItemVec& items)
 CSE_ALifeItemArtefact::CSE_ALifeItemArtefact(LPCSTR caSection) : CSE_ALifeItem(caSection)
 {
 	m_fAnomalyValue				= 100.f;
+	m_fRandomVariation			= 0.0f;
 }
 
 CSE_ALifeItemArtefact::~CSE_ALifeItemArtefact()
@@ -736,21 +737,25 @@ CSE_ALifeItemArtefact::~CSE_ALifeItemArtefact()
 void CSE_ALifeItemArtefact::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 {
 	inherited::STATE_Read		(tNetPacket,size);
+	tNetPacket.r_float_q8(m_fRandomVariation, -0.1f, 0.1f);
 }
 
 void CSE_ALifeItemArtefact::STATE_Write		(NET_Packet	&tNetPacket)
 {
 	inherited::STATE_Write		(tNetPacket);
+	tNetPacket.w_float_q8(m_fRandomVariation, -0.1f, 0.1f);
 }
 
 void CSE_ALifeItemArtefact::UPDATE_Read		(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Read		(tNetPacket);
+	tNetPacket.r_float_q8(m_fRandomVariation, -0.1f, 0.1f);
 }
 
 void CSE_ALifeItemArtefact::UPDATE_Write	(NET_Packet	&tNetPacket)
 {
 	inherited::UPDATE_Write		(tNetPacket);
+	tNetPacket.w_float_q8(m_fRandomVariation, -0.1f, 0.1f);
 }
 
 void CSE_ALifeItemArtefact::FillProps		(LPCSTR pref, PropItemVec& items)

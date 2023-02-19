@@ -22,6 +22,9 @@ public:
 	virtual BOOL					net_Spawn						(CSE_Abstract* DC);
 	virtual void					net_Destroy						();
 
+	virtual void					save							(NET_Packet& output_packet);
+	virtual void					load							(IReader& input_packet);
+
 	virtual void					OnH_A_Chield					();
 	virtual void					OnH_B_Independent				(bool just_before_destroy);
 	
@@ -60,6 +63,27 @@ protected:
 	virtual void					UpdateLights();
 	
 public:
+	enum AFProperty {
+		aHealthRestore,
+		aPsyRestore,
+		aRadRestore,
+		aSatietyRestore,
+		aPowerRestore,
+		aBleedingRestore,
+
+		aInventoryWeight,
+		aInventoryWeight2,
+
+		aBurnProtection,
+		aStrikeProtection,
+		aShockProtection,
+		aWoundProtection,
+		aRadProtection,
+		aTelepaticProtection,
+		aChemBurnProtection,
+		aExplosionProtection,
+		aFireWoundProtection,
+	};
 	virtual void					StartLights();
 	virtual void					StopLights();
 	void							ActivateArtefact					();
@@ -79,6 +103,11 @@ public:
 
 	float							m_fAdditionalInvWeight;
 	float							m_fAdditionalInvWeight2;
+
+	bool							m_canHaveVariation = true;
+	float							m_randomVariation;
+	
+	float							GetStatWithVariation(AFProperty stat_name);
 
 protected:
 	MotionSVec						m_anim_idle;
