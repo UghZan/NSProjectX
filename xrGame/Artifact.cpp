@@ -75,6 +75,7 @@ void CArtefact::Load(LPCSTR section)
 {
 	inherited::Load			(section);
 
+	DetectorID_Load(section, "detector_id", cNameSect());
 
 	if (pSettings->line_exist(section, "particles"))
 		m_sParticlesName	= pSettings->r_string(section, "particles");

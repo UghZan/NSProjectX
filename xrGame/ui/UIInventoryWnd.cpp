@@ -220,6 +220,7 @@ EListType CUIInventoryWnd::GetType(CUIDragDropListEx* l)
 	if(l == m_pUIOutfitList)		return iwSlot;
 	if (l == m_pUIKnifeList)		return iwSlot;
 
+	if (l == m_pUIAFDetectorList)	return iwSlot;
 	if (l == m_pUIDetectorList)		return iwSlot;
 	if (l == m_pUITorchList)		return iwSlot;
 	if (l == m_pUIBinocularList)	return iwSlot;

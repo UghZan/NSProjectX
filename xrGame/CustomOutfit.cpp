@@ -111,7 +111,9 @@ float CCustomOutfit::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 
 float	CCustomOutfit::HitThruArmour(float hit_power, s16 element, float AP)
 {
-	float BoneArmour = m_boneProtection->getBoneArmour(element)*GetCondition()*(1-AP);	
+	//now, second values in damages.ltx represent the fraction of overall protection on this specific bone
+	//e.g. bip01_r_clavicle	 		= 1.0, 0.25 would mean that right clavicle would have 40% of fire_wound_protection of this armor
+	float BoneArmour = m_HitTypeProtection[ALife::eHitTypeWound] * m_boneProtection->getBoneArmour(element)*GetCondition()*(1-AP);
 	float NewHitPower = hit_power - BoneArmour;
 	if (NewHitPower < hit_power*m_boneProtection->m_fHitFrac) return hit_power*m_boneProtection->m_fHitFrac;
 	return NewHitPower;

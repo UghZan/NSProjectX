@@ -32,7 +32,8 @@ class CCustomMonster :
 	public CScriptEntity,
 	public Feel::Vision,
 	public Feel::Sound,
-	public Feel::Touch
+	public Feel::Touch,
+	public CDetectable
 {
 private:
 	typedef	CEntityAlive	inherited;

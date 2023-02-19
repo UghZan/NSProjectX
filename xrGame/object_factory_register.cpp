@@ -135,6 +135,8 @@
 #	include "amebazone.h"
 #	include "nogravityzone.h"
 #	include "simpledetector.h"
+#	include "customafdetector.h"
+#	include "custommonsterdetector.h"
 
 #	include "torch.h"
 #	include "pda.h"
@@ -349,7 +351,8 @@ void CObjectFactory::register_classes	()
 	ADD(CNoGravityZone			,CSE_ALifeAnomalousZone			,CLSID_Z_NOGRAVITY				,"nogravity_zone");
 	// Detectors
 	ADD(CSimpleDetector			,CSE_ALifeItemDetector			,CLSID_DETECTOR_SIMPLE			,"device_detector_simple");
-
+	ADD(CCustomAFDetector		,CSE_ALifeItemDetector			,CLSID_DETECTOR_AF				,"device_af_detector");
+	ADD(CCustomMonsterDetector	,CSE_ALifeItemDetector			,CLSID_DETECTOR_MONSTER			,"device_monster_detector");
 	// Devices
 	ADD(CTorch					,CSE_ALifeItemTorch				,CLSID_DEVICE_TORCH				,"device_torch");
 	ADD(CPda					,CSE_ALifeItemPDA				,CLSID_DEVICE_PDA				,"device_pda");

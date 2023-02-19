@@ -12,6 +12,7 @@
 #include "UsableScriptObject.h"
 #include "script_binder.h"
 #include "Hit.h"
+#include "CDetectable.h"
 
 class CPhysicsShell;
 class CSE_Abstract;

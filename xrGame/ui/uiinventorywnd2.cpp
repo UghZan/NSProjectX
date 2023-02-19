@@ -416,6 +416,7 @@ void CUIInventoryWnd::ClearAllLists()
 	m_pUIPistolList->ClearAll				(true);
 	m_pUIAutomaticList->ClearAll			(true);
 	m_pUIKnifeList->ClearAll				(true);
+	m_pUIAFDetectorList->ClearAll			(true);
 	m_pUIBinocularList->ClearAll			(true);
 	m_pUIDetectorList->ClearAll				(true);
 	m_pUITorchList->ClearAll				(true);

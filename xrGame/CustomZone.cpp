@@ -76,6 +76,8 @@ void CCustomZone::Load(LPCSTR section)
 {
 	inherited::Load(section);
 
+	DetectorID_Load(section, "detector_id", cNameSect());
+
 	m_iDisableHitTime		= pSettings->r_s32(section,				"disable_time");	
 	m_iDisableHitTimeSmall	= pSettings->r_s32(section,				"disable_time_small");	
 	m_iDisableIdleTime		= pSettings->r_s32(section,				"disable_idle_time");	
@@ -87,9 +89,6 @@ void CCustomZone::Load(LPCSTR section)
 	m_zone_flags.set(eIgnoreSmall,		pSettings->r_bool(section,	"ignore_small"));
 	m_zone_flags.set(eIgnoreArtefact,	pSettings->r_bool(section,	"ignore_artefacts"));
 	m_zone_flags.set(eVisibleByDetector,pSettings->r_bool(section,	"visible_by_detector"));
-	
-
-
 
 	//загрузить времена для зоны
 	m_StateTime[eZoneStateIdle]			= -1;

@@ -1530,8 +1530,6 @@ SActorRestores CActor::GetActorStatRestores()
 	return ar;
 }
 
-#define ARTEFACTS_UPDATE_TIME 0.100f
-
 void CActor::UpdateArtefactsOnBelt()
 {
 	static float update_time = 0;

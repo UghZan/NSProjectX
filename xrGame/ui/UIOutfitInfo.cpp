@@ -160,7 +160,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 	auto artefactEffects = Actor()->GetActorStatRestores();
 	CActorCondition conditions = Actor()->conditions();
 
-	//m_listWnd->Clear(); // clear existing items and do not scroll to top
+	m_listWnd->Clear(); // clear existing items and do not scroll to top
 
 	for (u16 i = _item_start; i < _max_item_index; i++)
 	{

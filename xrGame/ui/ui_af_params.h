@@ -1,5 +1,6 @@
 #pragma once
 #include "UIWindow.h"
+#include <Actor.h>
 
 class CUIXml;
 class CUIStatic;

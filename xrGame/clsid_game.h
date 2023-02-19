@@ -161,6 +161,8 @@
 // Detectors
 #define CLSID_DETECTOR_SIMPLE		MK_CLSID('D','_','S','I','M','D','E','T')
 #define CLSID_DETECTOR_VISUAL		MK_CLSID('D','_','V','I','S','D','E','T')
+#define CLSID_DETECTOR_AF			MK_CLSID('D','_','A','F','D','E','T',' ')
+#define CLSID_DETECTOR_MONSTER		MK_CLSID('D','_','M','O','N','D','E','T')
 
 // PDA
 #define CLSID_DEVICE_PDA			MK_CLSID('D','_','P','D','A',' ',' ',' ')

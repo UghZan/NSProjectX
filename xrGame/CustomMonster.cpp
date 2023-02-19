@@ -111,6 +111,8 @@ void CCustomMonster::Load		(LPCSTR section)
 	material().Load				(section);
 	memory().Load				(section);
 	movement().Load				(section);
+
+	DetectorID_Load(section, "kind", cNameSect());
 	//////////////////////////////////////////////////////////////////////////
 
 	///////////

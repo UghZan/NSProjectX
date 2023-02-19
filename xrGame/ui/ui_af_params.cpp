@@ -57,15 +57,6 @@ LPCSTR af_item_param_names[] = {
 	"ui_inv_outfit_explosion_protection",		// "(explosion_imm)",
 	"ui_inv_outfit_fire_wound_protection"		// "(fire_wound_imm)",
 };
-
-LPCSTR af_actor_param_names[]={
-	"satiety_health_v",
-	"psy_health_v",
-	"radiation_v",
-	"satiety_v",
-	"satiety_power_v",
-	"wound_incarnation_v"
-};
 void CUIArtefactParams::InitFromXml(CUIXml& xml_doc)
 {
 	LPCSTR _base				= "af_params";
@@ -110,8 +101,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 			_val = pSettings->r_float(af_section, af_item_sect_names[i]);
 			if (i != _item_additional_inventory_weight)
 			{
-				float _actor_val = pSettings->r_float("actor_condition", af_actor_param_names[i]);
-				_val = (_val / _actor_val) * 100.0f;
+					_val *= 100.0f * 1/ARTEFACTS_UPDATE_TIME;
 			}
 
 			if					(fis_zero(_val))				continue;
@@ -128,11 +118,6 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 
 		}
 		LPCSTR _sn = "%";
-		if(i==_item_radiation_restore_speed || i==_item_power_restore_speed)
-		{
-			_val				/= 100.0f;
-			_sn					= "";
-		}
 
 		LPCSTR _color = (_val>0)?"%c[green]":"%c[red]";
 		
@@ -143,7 +128,7 @@ void CUIArtefactParams::SetInfo(const shared_str& af_section)
 			_color = (_val>0)?"%c[red]":"%c[green]";
 
 
-		sprintf_s					(	_buff, "%s %s %+.0f %s", 
+		sprintf_s					(	_buff, "%s %s %+.2f %s", 
 									CStringTable().translate(af_item_param_names[i]).c_str(), 
 									_color, 
 									_val, 

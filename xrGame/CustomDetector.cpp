@@ -10,17 +10,6 @@
 #include "actor.h"
 #include "ai_sounds.h"
 
-ZONE_INFO::ZONE_INFO	()
-{
-	pParticle=NULL;
-}
-
-ZONE_INFO::~ZONE_INFO	()
-{
-	if(pParticle)
-		CParticlesObject::Destroy(pParticle);
-}
-
 CCustomDetector::CCustomDetector(void) 
 {
 	m_bWorking					= false;
@@ -28,12 +17,8 @@ CCustomDetector::CCustomDetector(void)
 
 CCustomDetector::~CCustomDetector(void) 
 {
-	ZONE_TYPE_MAP_IT it;
-	for(it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it)
-		HUD_SOUND::DestroySound(it->second.detect_snds);
-//		it->second.detect_snd.destroy();
-
-	m_ZoneInfoMap.clear();
+	m_zone_list.destroy();
+	m_zone_list.clear();
 }
 
 BOOL CCustomDetector::net_Spawn(CSE_Abstract* DC) 
@@ -53,38 +38,7 @@ void CCustomDetector::Load(LPCSTR section)
 	if( pSettings->line_exist(section,"night_vision_particle") )
 		m_nightvision_particle	= pSettings->r_string(section,"night_vision_particle");
 
-	u32 i = 1;
-	string256 temp;
-
-	//загрузить звуки для обозначения различных типов зон
-	do 
-	{
-		sprintf_s			(temp, "zone_class_%d", i);
-		if(pSettings->line_exist(section,temp))
-		{
-			LPCSTR z_Class			= pSettings->r_string(section,temp);
-			CLASS_ID zone_cls		= TEXT2CLSID(pSettings->r_string(z_Class,"class"));
-
-			m_ZoneTypeMap.insert	(std::make_pair(zone_cls,ZONE_TYPE()));
-			ZONE_TYPE& zone_type	= m_ZoneTypeMap[zone_cls];
-			sprintf_s					(temp, "zone_min_freq_%d", i);
-			zone_type.min_freq		= pSettings->r_float(section,temp);
-			sprintf_s					(temp, "zone_max_freq_%d", i);
-			zone_type.max_freq		= pSettings->r_float(section,temp);
-			R_ASSERT				(zone_type.min_freq<zone_type.max_freq);
-			sprintf_s					(temp, "zone_sound_%d_", i);
-
-			HUD_SOUND::LoadSound(section, temp	,zone_type.detect_snds		, SOUND_TYPE_ITEM);
-
-			sprintf_s					(temp, "zone_map_location_%d", i);
-			
-			if( pSettings->line_exist(section,temp) )
-				zone_type.zone_map_location = pSettings->r_string(section,temp);
-
-			++i;
-		}
-		else break;
-	} while(true);
+	m_zone_list.load(section, "zone");
 
 	m_ef_detector_type	= pSettings->r_u32(section,"ef_detector_type");
 }
@@ -103,19 +57,8 @@ void CCustomDetector::shedule_Update(u32 dt)
 	{
 		Fvector					P; 
 		P.set					(H_Parent()->Position());
-		feel_touch_update		(P,m_fRadius);
-		UpdateNightVisionMode();
-	}
-}
-
-void CCustomDetector::StopAllSounds()
-{
-	ZONE_TYPE_MAP_IT it;
-	for(it = m_ZoneTypeMap.begin(); m_ZoneTypeMap.end() != it; ++it) 
-	{
-		ZONE_TYPE& zone_type = (*it).second;
-		HUD_SOUND::StopSound(zone_type.detect_snds);
-//		zone_type.detect_snd.stop();
+		m_zone_list.feel_touch_update(P, m_fRadius);
+		//UpdateNightVisionMode();
 	}
 }
 
@@ -127,68 +70,74 @@ void CCustomDetector::UpdateCL()
 	if( !H_Parent()  ) return;
 
 	if(!m_pCurrentActor) return;
+	if (m_zone_list.m_ItemInfo.size() == 0)	return;
 
-	ZONE_INFO_MAP_IT it;
-	for(it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it) 
+	CZoneList::ItemMap_iter iter_start = m_zone_list.m_ItemInfo.begin();
+	CZoneList::ItemMap_iter iter_end = m_zone_list.m_ItemInfo.end();
+	CZoneList::ItemMap_iter iter = iter_start;
+	xr_map<CCustomZone*, ITEM_INFO> m_ZoneInfoMap = m_zone_list.m_ItemInfo;
+
+	Fvector						detector_pos = H_Parent()->Position();
+	float min_dist				= flt_max;
+
+	CCustomZone* detectable = iter_start->first;
+
+	for (;iter_start != iter_end;++iter_start)//only nearest
 	{
-		CCustomZone *pZone = it->first;
-		ZONE_INFO& zone_info = it->second;
+		detectable = iter_start->first;
+		if (!detectable->IsVisible()) continue;
 
-		
-		//такой тип зон не обнаруживается
-		if(m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end() ||
-			!pZone->VisibleByDetector())
-			continue;
-
-		ZONE_TYPE& zone_type = m_ZoneTypeMap[pZone->CLS_ID];
-
-		float dist_to_zone = H_Parent()->Position().distance_to(pZone->Position()) - 0.8f*pZone->Radius();
-		if(dist_to_zone<0) dist_to_zone = 0;
-		
-		float fRelPow = 1.f - dist_to_zone / m_fRadius;
-		clamp(fRelPow, 0.f, 1.f);
-
-		//определить текущую частоту срабатывания сигнала
-		zone_info.cur_freq = zone_type.min_freq + 
-			(zone_type.max_freq - zone_type.min_freq) * fRelPow* fRelPow* fRelPow* fRelPow;
-
-		float current_snd_time = 1000.f*1.f/zone_info.cur_freq;
-			
-		if((float)zone_info.snd_time > current_snd_time)
+		float d = detector_pos.distance_to(detectable->Position());
+		if (d < min_dist)
 		{
-			zone_info.snd_time	= 0;
-			HUD_SOUND::PlaySound	(zone_type.detect_snds, Fvector().set(0,0,0), this, true, false);
-
-		} 
-		else 
-			zone_info.snd_time += Device.dwTimeDelta;
+			min_dist = d;
+			iter = iter_start;
+		}
 	}
-}
 
-void CCustomDetector::feel_touch_new(CObject* O) 
-{
-	CCustomZone *pZone = smart_cast<CCustomZone*>(O);
-	if(pZone && pZone->IsEnabled()) 
-	{
-		m_ZoneInfoMap[pZone].snd_time = 0;
+	ITEM_INFO& zone_info = iter->second;
+
+	ITEM_TYPE* item_type = m_ZoneInfoMap[detectable].curr_ref;
+
+	float dist_to_zone = min_dist;
+	if(dist_to_zone<0) dist_to_zone = 0;
 		
-		AddRemoveMapSpot(pZone,true);
-	}
-}
+	float fRelPow = dist_to_zone / m_fRadius;
+	clamp(fRelPow, 0.f, 1.f);
 
-void CCustomDetector::feel_touch_delete(CObject* O)
-{
-	CCustomZone *pZone = smart_cast<CCustomZone*>(O);
-	if(pZone)
+	//определить текущую частоту срабатывания сигнала
+	zone_info.cur_freq = item_type->min_freq +
+		(item_type->max_freq - item_type->min_freq) * fRelPow* fRelPow;
+	//Log("freq: ",zone_info.cur_freq);
+
+	float min_snd_freq = 0.85f;
+	float max_snd_freq = 1.2f;
+	float snd_freq = min_snd_freq + (max_snd_freq - min_snd_freq) * (1.0f - fRelPow);
+
+	float corrected_snd_time = zone_info.cur_freq * 100.0f;
+		
+	if((float)zone_info.snd_time > corrected_snd_time)
 	{
-		m_ZoneInfoMap.erase(pZone);
-		AddRemoveMapSpot(pZone,false);
-	}
+		zone_info.snd_time	= 0;
+		HUD_SOUND::PlaySound	(item_type->detect_snds, Fvector().set(0,0,0), this, true, false);
+		if (item_type->detect_snds.m_activeSnd)
+			item_type->detect_snds.m_activeSnd->snd.set_frequency(snd_freq);
+
+	} 
+	else 
+		zone_info.snd_time += Device.dwTimeDelta;
 }
 
-BOOL CCustomDetector::feel_touch_contact(CObject* O) 
+BOOL CZoneList::feel_touch_contact(CObject* O) 
 {
-	return (NULL != smart_cast<CCustomZone*>(O));
+	CCustomZone* zone = smart_cast<CCustomZone*>(O);
+	if (!zone) return false;
+	if (!zone->IsVisible()) return false;
+
+	TypeMap_iter it = m_TypeMap.find(zone->DetectorID());
+	if (it != m_TypeMap.end())
+		return true;
+	return false;
 }
 
 void CCustomDetector::OnH_A_Chield() 
@@ -205,10 +154,7 @@ void CCustomDetector::OnH_B_Independent(bool just_before_destroy)
 	m_pCurrentActor				= NULL;
 	m_pCurrentInvOwner			= NULL;
 
-	StopAllSounds				();
-
-	m_ZoneInfoMap.clear			();
-	Feel::Touch::feel_touch.clear();
+	m_zone_list.clear();
 }
 
 
@@ -238,38 +184,41 @@ void CCustomDetector::OnMoveToBelt		()
 void CCustomDetector::TurnOn()
 {
 	m_bWorking				= true;
-	UpdateMapLocations		();
+	m_zone_list.UpdateMapSpots(IsWorking());
 	UpdateNightVisionMode	();
 }
 
 void CCustomDetector::TurnOff() 
 {
 	m_bWorking				= false;
-	UpdateMapLocations		();
+	m_zone_list.UpdateMapSpots(IsWorking());
 	UpdateNightVisionMode	();
 }
 
-void CCustomDetector::AddRemoveMapSpot(CCustomZone* pZone, bool bAdd)
+void CZoneList::AddRemoveMapSpot(CCustomZone* detectable, bool bAdd)
 {
-	if(m_ZoneTypeMap.find(pZone->CLS_ID) == m_ZoneTypeMap.end() )return;
-	
-	if ( bAdd && !pZone->VisibleByDetector() ) return;
-		
+	if(m_ItemInfo.find(detectable) == m_ItemInfo.end() )return;
 
-	ZONE_TYPE& zone_type = m_ZoneTypeMap[pZone->CLS_ID];
-	if( xr_strlen(zone_type.zone_map_location) ){
+	if ( bAdd && !detectable->IsVisible()) return;
+	
+	CGameObject* pObj = smart_cast<CGameObject*>(detectable);
+
+	ITEM_TYPE* zone_type = m_ItemInfo[detectable].curr_ref;
+	if( xr_strlen(zone_type->item_map_location) ){
 		if( bAdd )
-			Level().MapManager().AddMapLocation(*zone_type.zone_map_location,pZone->ID());
+			Level().MapManager().AddMapLocation(zone_type->item_map_location, pObj->ID());
 		else
-			Level().MapManager().RemoveMapLocation(*zone_type.zone_map_location,pZone->ID());
+			Level().MapManager().RemoveMapLocation(zone_type->item_map_location, pObj->ID());
 	}
 }
 
-void CCustomDetector::UpdateMapLocations() // called on turn on/off only
+void CZoneList::UpdateMapSpots(bool bAdd) // called on turn on/off only
 {
-	ZONE_INFO_MAP_IT it;
-	for(it = m_ZoneInfoMap.begin(); it != m_ZoneInfoMap.end(); ++it)
-		AddRemoveMapSpot(it->first,IsWorking());
+	CZoneList::ItemMap_iter iter_start = m_ItemInfo.begin();
+	CZoneList::ItemMap_iter iter_end = m_ItemInfo.end();
+
+	for(CZoneList::ItemMap_iter it = iter_start; it != iter_end; ++it)
+		AddRemoveMapSpot(it->first, bAdd);
 }
 
 #include "clsid_game.h"
@@ -277,7 +226,7 @@ void CCustomDetector::UpdateMapLocations() // called on turn on/off only
 void CCustomDetector::UpdateNightVisionMode()
 {
 //	CObject* tmp = Level().CurrentViewEntity();	
-	bool bNightVision = false;
+	/*bool bNightVision = false;
 	if (GameID() == GAME_SINGLE)
 	{
 		bNightVision = Actor()->Cameras().GetPPEffector(EEffectorPPType(effNightvision))!=NULL;
@@ -299,11 +248,12 @@ void CCustomDetector::UpdateNightVisionMode()
 				IsWorking() && 
 				m_nightvision_particle.size();
 
-	ZONE_INFO_MAP_IT it;
-	for(it = m_ZoneInfoMap.begin(); m_ZoneInfoMap.end() != it; ++it) 
+	CDetectList::ItemMap_iter iter_start = m_zone_list.m_ItemInfo.begin();
+	CDetectList::ItemMap_iter iter_end = m_zone_list.m_ItemInfo.end();
+	for(CDetectList::ItemMap_iter it = iter_start; it != iter_end; ++it)
 	{
 		CCustomZone *pZone = it->first;
-		ZONE_INFO& zone_info = it->second;
+		ITEM_INFO& zone_info = it->second;
 
 		if(bOn){
 			Fvector zero_vector;
@@ -321,5 +271,5 @@ void CCustomDetector::UpdateNightVisionMode()
 				CParticlesObject::Destroy(zone_info.pParticle);
 			}
 		}
-	}
+	}*/
 }

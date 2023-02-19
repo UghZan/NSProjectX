@@ -2,6 +2,7 @@
 
 #include "space_restrictor.h"
 #include "../xrEngine/feel_touch.h"
+#include "CDetectable.h"
 
 class CActor;
 class CLAItem;
@@ -35,7 +36,8 @@ struct SZoneObjectInfo
 
 class CCustomZone :
 	public CSpaceRestrictor,
-	public Feel::Touch
+	public Feel::Touch,
+	public CDetectable
 {
 private:
     typedef	CSpaceRestrictor inherited;
@@ -123,7 +125,6 @@ protected:
 
 	//тип наносимого хита
 	ALife::EHitType		m_eHitTypeBlowout;
-
 	
 
 	EZoneState			m_eZoneState;
@@ -316,6 +317,7 @@ protected:
 	//видимость зоны детектором
 public:
 	bool		VisibleByDetector			() {return !!m_zone_flags.test(eVisibleByDetector);}
+	bool		IsVisible					() { return VisibleByDetector() && IsEnabled(); }
 
 	//////////////////////////////////////////////////////////////////////////
 	// список артефактов

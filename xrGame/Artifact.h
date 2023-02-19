@@ -4,11 +4,13 @@
 #include "hit_immunity.h"
 #include "PHObject.h"
 #include "script_export_space.h"
+#include "CDetectable.h"
 
 struct SArtefactActivation;
 
 class CArtefact :	public CHudItemObject, 
-					public CPHUpdateObject {
+					public CPHUpdateObject,
+					public CDetectable {
 private:
 	typedef			CHudItemObject	inherited;
 public:

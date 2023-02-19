@@ -1284,6 +1284,7 @@
     <ClInclude Include="CarLights.h" />
     <ClInclude Include="CarWeapon.h" />
     <ClInclude Include="car_memory.h" />
+    <ClInclude Include="CDetectable.h" />
     <ClInclude Include="CharacterPhysicsSupport.h" />
     <ClInclude Include="character_community.h" />
     <ClInclude Include="character_hit_animations.h" />
@@ -1308,8 +1309,10 @@
     <ClInclude Include="cover_manager_inline.h" />
     <ClInclude Include="cover_point.h" />
     <ClInclude Include="cover_point_inline.h" />
+    <ClInclude Include="CustomAFDetector.h" />
     <ClInclude Include="CustomDetector.h" />
     <ClInclude Include="CustomMonster.h" />
+    <ClInclude Include="CustomMonsterDetector.h" />
     <ClInclude Include="CustomMonster_inline.h" />
     <ClInclude Include="CustomOutfit.h" />
     <ClInclude Include="CustomRocket.h" />
@@ -3556,6 +3559,7 @@
     <ClCompile Include="CarWeapon.cpp" />
     <ClCompile Include="CarWheels.cpp" />
     <ClCompile Include="car_memory.cpp" />
+    <ClCompile Include="CDetectable.cpp" />
     <ClCompile Include="CharacterPhysicsSupport.cpp" />
     <ClCompile Include="character_community.cpp" />
     <ClCompile Include="character_hit_animations.cpp" />
@@ -3677,6 +3681,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_Advanced|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_All_To_All|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="CustomAFDetector.cpp" />
     <ClCompile Include="CustomDetector.cpp" />
     <ClCompile Include="CustomMonster.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
@@ -3700,6 +3705,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_Advanced|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_All_To_All|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="CustomMonsterDetector.cpp" />
     <ClCompile Include="CustomMonster_VCPU.cpp" />
     <ClCompile Include="CustomOutfit.cpp" />
     <ClCompile Include="CustomRocket.cpp" />

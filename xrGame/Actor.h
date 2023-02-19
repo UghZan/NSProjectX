@@ -15,6 +15,8 @@
 
 #include "step_manager.h"
 
+#define ARTEFACTS_UPDATE_TIME 0.100f
+
 using namespace ACTOR_DEFS;
 
 class CInfoPortion;
