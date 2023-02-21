@@ -62,6 +62,7 @@ protected:
 	Fvector4				fvHitPower;
 	//float					fHitPower;
 	float					fHitImpulse;
+	ALife::EHitType			hit_type;
 
 	//скорость вылета пули из ствола
 	float					m_fStartBulletSpeed;

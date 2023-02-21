@@ -80,10 +80,17 @@ void CTorch::Load(LPCSTR section)
 	inherited::Load			(section);
 	light_trace_bone		= pSettings->r_string(section,"light_trace_bone");
 
+	HUD_SOUND::LoadSound(section, "snd_torch_on", m_TorchOnSnd, SOUND_TYPE_ITEM_USING);
+	HUD_SOUND::LoadSound(section, "snd_torch_off", m_TorchOffSnd, SOUND_TYPE_ITEM_USING);
 
 	m_bNightVisionEnabled = !!pSettings->r_bool(section,"night_vision");
 	if(m_bNightVisionEnabled)
 	{
+		if (pSettings->line_exist(section, "nightvision_sect"))
+			m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
+		else
+			m_NightVisionSect = NULL;
+
 		HUD_SOUND::LoadSound(section,"snd_night_vision_on"	, m_NightVisionOnSnd	, SOUND_TYPE_ITEM_USING);
 		HUD_SOUND::LoadSound(section,"snd_night_vision_off"	, m_NightVisionOffSnd	, SOUND_TYPE_ITEM_USING);
 		HUD_SOUND::LoadSound(section,"snd_night_vision_idle", m_NightVisionIdleSnd	, SOUND_TYPE_ITEM_USING);
@@ -135,8 +142,8 @@ void CTorch::SwitchNightVision(bool vision_on)
 		}
 	}
 
-	CCustomOutfit* pCO=pA->GetOutfit();
-	if(pCO&&pCO->m_NightVisionSect.size()&&!b_allow){
+	//CCustomOutfit* pCO=pA->GetOutfit();
+	if(m_NightVisionSect.size()&&!b_allow){
 		HUD_SOUND::PlaySound(m_NightVisionBrokenSnd, pA->Position(), pA, bPlaySoundFirstPerson);
 		return;
 	}
@@ -144,9 +151,9 @@ void CTorch::SwitchNightVision(bool vision_on)
 	if(m_bNightVisionOn){
 		CEffectorPP* pp = pA->Cameras().GetPPEffector((EEffectorPPType)effNightvision);
 		if(!pp){
-			if (pCO&&pCO->m_NightVisionSect.size())
+			if (m_NightVisionSect.size())
 			{
-				AddEffector(pA,effNightvision, pCO->m_NightVisionSect);
+				AddEffector(pA,effNightvision, m_NightVisionSect);
 				HUD_SOUND::PlaySound(m_NightVisionOnSnd, pA->Position(), pA, bPlaySoundFirstPerson);
 				HUD_SOUND::PlaySound(m_NightVisionIdleSnd, pA->Position(), pA, bPlaySoundFirstPerson, true);
 			}
@@ -186,6 +193,21 @@ void CTorch::UpdateSwitchNightVision   ()
 void CTorch::Switch()
 {
 	if (OnClient()) return;
+	CActor* pA = smart_cast<CActor*>(H_Parent());
+
+	if (pA)
+	{
+		bool bPlaySoundFirstPerson = (pA == Level().CurrentViewEntity());
+		if (m_switched_on)
+		{
+			HUD_SOUND::PlaySound(m_TorchOffSnd, pA->Position(), pA, bPlaySoundFirstPerson);
+		}
+		else
+		{
+			HUD_SOUND::PlaySound(m_TorchOnSnd, pA->Position(), pA, bPlaySoundFirstPerson);
+		}
+	}
+
 	bool bActive			= !m_switched_on;
 	Switch					(bActive);
 }

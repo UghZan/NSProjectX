@@ -254,6 +254,7 @@ void CUITalkWnd::Hide()
 	StopSnd						();
 
 	inherited::Hide				();
+	UITalkDialogWnd->Hide		();
 	UITradeWnd->Hide				();
 	if(!m_pActor)				return;
 	

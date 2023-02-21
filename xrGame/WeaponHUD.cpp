@@ -9,6 +9,8 @@
 #include "../xrEngine/skeletonanimated.h"
 #include "level.h"
 #include "MathUtils.h"
+#include "ActorCondition.h"
+
 weapon_hud_container* g_pWeaponHUDContainer=0;
 
 BOOL weapon_hud_value::load(const shared_str& section, CHudItem* owner)
@@ -82,10 +84,12 @@ CWeaponHUD::CWeaponHUD			(CHudItem* pHudItem)
 	m_bStopAtEndAnimIsRunning	= false;
 	m_pCallbackItem				= NULL;
 	m_Transform.identity		();
+	m_bobbing = xr_new<CWeaponBobbing>();
 }
 
 CWeaponHUD::~CWeaponHUD()
 {
+	xr_delete(m_bobbing);
 }
 
 void CWeaponHUD::Load(LPCSTR section)
@@ -109,7 +113,12 @@ void  CWeaponHUD::net_DestroyHud()
 
 void CWeaponHUD::UpdatePosition(const Fmatrix& trans)
 {
-	m_Transform.mul				(trans,m_shared_data.get_value()->m_offset);
+	//weapon bobbing taken from xp-dev_xray
+	//they *probably* took it from lost alpha
+	//either way, credit goes to them
+	Fmatrix xform = trans;
+	m_bobbing->Update(xform);
+	m_Transform.mul				(xform,m_shared_data.get_value()->m_offset);
 	VERIFY						(!fis_zero(DET(m_Transform)));
 }
 
@@ -188,4 +197,106 @@ void CWeaponHUD::CleanSharedContainer	()
 MotionID random_anim(MotionSVec& v)
 {
 	return v[Random.randI(v.size())];
+}
+
+CWeaponBobbing::CWeaponBobbing()
+{
+	Load();
+}
+
+CWeaponBobbing::~CWeaponBobbing()
+{
+}
+
+void CWeaponBobbing::Load()
+{
+	fTime = 0;
+	fReminderFactor = 0;
+	is_limping = false;
+	is_crouching = false;
+
+	m_fAimingFactor = pSettings->r_float(BOBBING_SECT, "aiming_factor");
+
+	m_fAmplitudeRun = pSettings->r_float(BOBBING_SECT, "run_amplitude");
+	m_fAmplitudeWalk = pSettings->r_float(BOBBING_SECT, "walk_amplitude");
+	m_fAmplitudeLimp = pSettings->r_float(BOBBING_SECT, "limp_amplitude");
+	m_fAmplitudeCrouch = pSettings->r_float(BOBBING_SECT, "crouch_amplitude");
+
+	m_fSpeedRun = pSettings->r_float(BOBBING_SECT, "run_speed");
+	m_fSpeedWalk = pSettings->r_float(BOBBING_SECT, "walk_speed");
+	m_fSpeedLimp = pSettings->r_float(BOBBING_SECT, "limp_speed");
+	m_fSpeedCrouch = pSettings->r_float(BOBBING_SECT, "crouch_speed");
+}
+
+void CWeaponBobbing::CheckState()
+{
+	dwMState = Actor()->get_state();
+	is_limping = Actor()->conditions().IsLimping();
+	is_crouching = dwMState & mcCrouch;
+	m_bZoomMode = Actor()->IsZoomAimingMode();
+	fTime += Device.fTimeDelta;
+}
+
+void CWeaponBobbing::Update(Fmatrix& m)
+{
+	CheckState();
+	if (dwMState & ACTOR_DEFS::mcAnyMove)
+	{
+		if (fReminderFactor < 1.f)
+			fReminderFactor += SPEED_REMINDER * Device.fTimeDelta;
+		else
+			fReminderFactor = 1.f;
+	}
+	else
+	{
+		if (fReminderFactor > 0.f)
+			fReminderFactor -= SPEED_REMINDER * Device.fTimeDelta;
+		else
+			fReminderFactor = 0.f;
+	}
+	if (!fsimilar(fReminderFactor, 0))
+	{
+		Fvector dangle;
+		Fmatrix		R, mR;
+		float k = m_bZoomMode ? m_fAimingFactor : 1.0f;
+
+		float A, ST;
+
+		if (isActorAccelerated(dwMState, m_bZoomMode))
+		{
+			A = m_fAmplitudeRun * k;
+			ST = m_fSpeedRun * fTime;
+		}
+		else if (is_limping)
+		{
+			A = m_fAmplitudeLimp * k;
+			ST = m_fSpeedLimp * fTime;
+		}
+		else if (is_crouching)
+		{
+			A = m_fAmplitudeCrouch * k;
+			ST = m_fSpeedCrouch * fTime;
+		}
+		else
+		{
+			A = m_fAmplitudeWalk * k;
+			ST = m_fSpeedWalk * fTime;
+		}
+
+		float _sinA = _sin(2 * ST) * A * fReminderFactor;
+		float _sinB = _sin(ST + 1.5707f) * A * fReminderFactor * 2;
+
+		m.c.y += _sinA;
+		dangle.x = _sinB;
+		dangle.z = _sinB;
+		dangle.y = _sinA;
+
+
+		R.setHPB(dangle.x, dangle.y, dangle.z);
+
+		mR.mul(m, R);
+
+		m.k.set(mR.k);
+		m.j.set(mR.j);
+	}
 }

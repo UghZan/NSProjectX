@@ -1,7 +1,45 @@
 #pragma once
-
+#include <Actor.h>
 #include "../xrEngine/SkeletonAnimated.h"
 class CHudItem;
+
+#define BOBBING_SECT "wpn_bobbing_effector"
+
+#define SPEED_REMINDER	5.f 
+
+class CWeaponBobbing
+{
+public:
+	CWeaponBobbing();
+	virtual ~CWeaponBobbing();
+	void Load();
+	void Update(Fmatrix& m);
+	void CheckState();
+
+private:
+	float	fTime;
+	Fvector	vAngleAmplitude;
+	float	fYAmplitude;
+	float	fSpeed;
+
+	u32		dwMState;
+	float	fReminderFactor;
+	bool	is_limping;
+	bool	is_crouching;
+	bool	m_bZoomMode;
+
+	float   m_fAimingFactor;
+
+	float	m_fAmplitudeRun;
+	float	m_fAmplitudeCrouch;
+	float	m_fAmplitudeWalk;
+	float	m_fAmplitudeLimp;
+
+	float	m_fSpeedRun;
+	float	m_fSpeedCrouch;
+	float	m_fSpeedWalk;
+	float	m_fSpeedLimp;
+};
 
 struct weapon_hud_value: public shared_value
 {
@@ -42,6 +80,8 @@ public:
 
 class CWeaponHUD
 {
+private:
+	CWeaponBobbing* m_bobbing;
 	//родительский объект HUD
 	CHudItem*			m_pParentWeapon;		
 	//флаг, если hud спрятан не показывается

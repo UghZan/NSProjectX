@@ -433,7 +433,6 @@ public:
 	void					PickupModeOff		();
 
 
-
 	//////////////////////////////////////////////////////////////////////////
 	// Motions (передвижения актрера)
 	//////////////////////////////////////////////////////////////////////////
@@ -457,6 +456,27 @@ public:
 	bool					AnyAction				()	{return (mstate_real & mcAnyAction) != 0;};
 
 	bool					is_jump					();		
+
+
+	IC u32 get_state() const
+	{
+		return this->mstate_real;
+	}
+
+	IC void set_state(u32 new_state)
+	{
+		this->mstate_real = new_state;
+	}
+
+	IC u32 get_state_wishful() const
+	{
+		return this->mstate_wishful;
+	}
+
+	IC void set_state_wishful(u32 new_state)
+	{
+		this->mstate_wishful = new_state;
+	}
 protected:
 	u32						mstate_wishful;
 	u32						mstate_old;

@@ -42,6 +42,8 @@ CWeaponMagazined::~CWeaponMagazined()
 	HUD_SOUND::DestroySound(sndShot);
 	HUD_SOUND::DestroySound(sndEmptyClick);
 	HUD_SOUND::DestroySound(sndReload);
+	HUD_SOUND::DestroySound(sndZoomIn);
+	HUD_SOUND::DestroySound(sndZoomOut);
 }
 
 
@@ -54,6 +56,9 @@ void CWeaponMagazined::StopHUDSounds		()
 	HUD_SOUND::StopSound(sndReload);
 
 	HUD_SOUND::StopSound(sndShot);
+
+	HUD_SOUND::StopSound(sndZoomIn);
+	HUD_SOUND::StopSound(sndZoomOut);
 //.	if(sndShot.enable && sndShot.snd.feedback)
 //.		sndShot.snd.feedback->switch_to_3D();
 
@@ -71,11 +76,13 @@ void CWeaponMagazined::Load	(LPCSTR section)
 	inherited::Load		(section);
 		
 	// Sounds
-	HUD_SOUND::LoadSound(section,"snd_draw"		, sndShow		, m_eSoundShow		);
-	HUD_SOUND::LoadSound(section,"snd_holster"	, sndHide		, m_eSoundHide		);
-	HUD_SOUND::LoadSound(section,"snd_shoot"	, sndShot		, m_eSoundShot		);
-	HUD_SOUND::LoadSound(section,"snd_empty"	, sndEmptyClick	, m_eSoundEmptyClick	);
-	HUD_SOUND::LoadSound(section,"snd_reload"	, sndReload		, m_eSoundReload		);
+	HUD_SOUND::LoadSound(section, "snd_draw"	, sndShow		, m_eSoundShow			);
+	HUD_SOUND::LoadSound(section, "snd_holster"	, sndHide		, m_eSoundHide			);
+	HUD_SOUND::LoadSound(section, "snd_shoot"	, sndShot		, m_eSoundShot			);
+	HUD_SOUND::LoadSound(section, "snd_empty"	, sndEmptyClick	, m_eSoundEmptyClick	);
+	HUD_SOUND::LoadSound(section, "snd_reload"	, sndReload		, m_eSoundReload		);
+	HUD_SOUND::LoadSound(section, "snd_zoomin"  , sndZoomIn		, SOUND_TYPE_ITEM_USING );
+	HUD_SOUND::LoadSound(section, "snd_zoomout" , sndZoomOut	, SOUND_TYPE_ITEM_USING );
 	
 	m_pSndShotCurrent = &sndShot;
 		
@@ -462,6 +469,8 @@ void CWeaponMagazined::UpdateSounds	()
 	if (sndShot.playing			()) sndShot.set_position		(get_LastFP());
 	if (sndReload.playing		()) sndReload.set_position		(get_LastFP());
 	if (sndEmptyClick.playing	())	sndEmptyClick.set_position	(get_LastFP());
+	if (sndZoomIn.playing())	sndZoomIn.set_position(get_LastFP());
+	if (sndZoomOut.playing())	sndZoomOut.set_position(get_LastFP());
 }
 
 void CWeaponMagazined::state_Fire	(float dt)
@@ -700,6 +709,8 @@ bool CWeaponMagazined::Action(s32 cmd, u32 flags)
 	{
 	case kWPN_RELOAD:
 		{
+		//from xp_dev-xray
+		if(!ParentIsActor() || !(g_actor->get_state() & mcSprint))
 			if(flags&CMD_START) 
 				if(iAmmoElapsed < iMagazineSize || IsMisfire()) 
 					Reload();
@@ -1039,6 +1050,11 @@ void CWeaponMagazined::OnZoomIn			()
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if(pActor)
 	{
+		//by daemonium from xp-dev_xray
+		HUD_SOUND::StopSound(sndZoomIn);
+		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());
+		HUD_SOUND::PlaySound(sndZoomIn, H_Parent()->Position(), H_Parent(), b_hud_mode);
+
 		CEffectorZoomInertion* S = smart_cast<CEffectorZoomInertion*>	(pActor->Cameras().GetCamEffector(eCEZoom));
 		if (!S)	
 		{
@@ -1060,6 +1076,10 @@ void CWeaponMagazined::OnZoomOut		()
 
 	CActor* pActor = smart_cast<CActor*>(H_Parent());
 	if(pActor)
+		//by daemonium from xp-dev_xray
+		HUD_SOUND::StopSound(sndZoomOut);
+		bool b_hud_mode = (Level().CurrentEntity() == H_Parent());
+		HUD_SOUND::PlaySound(sndZoomOut, H_Parent()->Position(), H_Parent(), b_hud_mode);
 		pActor->Cameras().RemoveCamEffector	(eCEZoom);
 
 }

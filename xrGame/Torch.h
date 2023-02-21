@@ -56,8 +56,13 @@ public:
 			void	UpdateSwitchNightVision   ();
 			float	NightVisionBattery		  ();
 protected:
+	shared_str						m_NightVisionSect;
+
 	bool					m_bNightVisionEnabled;
 	bool					m_bNightVisionOn;
+
+	HUD_SOUND				m_TorchOnSnd;
+	HUD_SOUND				m_TorchOffSnd;
 
 	HUD_SOUND				m_NightVisionOnSnd;
 	HUD_SOUND				m_NightVisionOffSnd;

@@ -1003,7 +1003,7 @@ public:
 
 };
 
-#ifdef DEBUG
+
 extern void print_help(lua_State *L);
 
 struct CCC_LuaHelp : public IConsole_Command {
@@ -1013,7 +1013,7 @@ struct CCC_LuaHelp : public IConsole_Command {
 		print_help(ai().script_engine().lua());
 	}
 };
-
+#ifdef DEBUG
 struct CCC_ShowSmartCastStats : public IConsole_Command {
 	CCC_ShowSmartCastStats(LPCSTR N) : IConsole_Command(N)  { bEmptyArgsHandled = true; };
 
@@ -1551,8 +1551,9 @@ void CCC_RegisterCommands()
 
 	CMD1(CCC_SetWeather, "set_weather");
 
-#ifdef DEBUG
+
 	CMD1(CCC_LuaHelp,				"lua_help");
+#ifdef DEBUG
 	CMD1(CCC_ShowSmartCastStats,	"show_smart_cast_stats");
 	CMD1(CCC_ClearSmartCastStats,	"clear_smart_cast_stats");
 

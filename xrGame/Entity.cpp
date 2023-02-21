@@ -72,16 +72,19 @@ void CEntity::OnEvent		(NET_Packet& P, u16 type)
 void CEntity::Die(CObject* who)
 {
 	if (!AlreadyDie()) set_death_time();
-	set_ready_to_save	();
-	SetfHealth			(-1.f);
+	set_ready_to_save();
+	SetfHealth(-1.f);
 
-	if(IsGameTypeSingle())
-	{
-		VERIFY				(m_registered_member);
-	}
-	m_registered_member	= false;
 	if (IsGameTypeSingle())
-		Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
+	{
+		VERIFY(m_registered_member);
+	}
+	if (m_registered_member)
+	{
+		m_registered_member = false;
+		if (IsGameTypeSingle())
+			Level().seniority_holder().team(g_Team()).squad(g_Squad()).group(g_Group()).unregister_member(this);
+	}
 }
 
 //обновление состояния

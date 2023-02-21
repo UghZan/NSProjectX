@@ -408,9 +408,9 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 
 		hit_power *= GetHitImmunity(pHDS->hit_type) - m_fBoostTelepaticImmunity;
 
-		m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
-		m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
-		m_fDeltaPower -= hit_power*m_fPowerHitPart;
+		//m_fHealthLost = hit_power*m_fHealthHitPart*m_fHitBoneScale;
+		//m_fDeltaHealth -= CanBeHarmed() ? m_fHealthLost : 0;
+		//m_fDeltaPower -= hit_power*m_fPowerHitPart;
 
 		ChangePsyHealth(-hit_power);
 		bAddWound =false;

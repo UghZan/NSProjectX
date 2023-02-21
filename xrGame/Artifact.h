@@ -16,6 +16,7 @@ private:
 public:
 									CArtefact						();
 	virtual							~CArtefact						();
+	u32								Cost() const override			{ return (m_cost * (1.0f + m_randomVariation)); }
 
 	virtual void					Load							(LPCSTR section);
 	

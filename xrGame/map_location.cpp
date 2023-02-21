@@ -97,13 +97,12 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	if(s)
 		m_flags.set( ePosToActor, TRUE);
 
-
 	strconcat(sizeof(path),path,path_base,":level_map");
 	node = g_uiSpotXml->NavigateToNode(path,0);
 	if(node){
 		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) ){
-			if(!bReload)
+			if(!m_level_spot_pointer)
 				m_level_spot = xr_new<CMapSpot>(this);
 			m_level_spot->Load(g_uiSpotXml,str);
 		}else{
@@ -112,7 +111,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 
 		str = g_uiSpotXml->ReadAttrib(path, 0, "pointer", "");
 		if( xr_strlen(str) ){
-			if(!bReload)
+			if(!m_level_spot_pointer)
 				m_level_spot_pointer = xr_new<CMapSpotPointer>(this);
 			m_level_spot_pointer->Load(g_uiSpotXml,str);
 		}else{
@@ -125,7 +124,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 	if(node){
 		LPCSTR str = g_uiSpotXml->ReadAttrib(path, 0, "spot", "");
 		if( xr_strlen(str) ){
-			if(!bReload)
+			if(!m_minimap_spot)
 				m_minimap_spot = xr_new<CMiniMapSpot>(this);
 			m_minimap_spot->Load(g_uiSpotXml,str);
 		}else{
@@ -134,7 +133,7 @@ void CMapLocation::LoadSpot(LPCSTR type, bool bReload)
 
 		str = g_uiSpotXml->ReadAttrib(path, 0, "pointer", "");
 		if( xr_strlen(str) ){
-			if(!bReload)
+			if(!m_minimap_spot_pointer)
 				m_minimap_spot_pointer = xr_new<CMapSpotPointer>(this);
 			m_minimap_spot_pointer->Load(g_uiSpotXml,str);
 		}else{

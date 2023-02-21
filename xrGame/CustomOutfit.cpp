@@ -83,10 +83,10 @@ void CCustomOutfit::Load(LPCSTR section)
 	m_additional_weight				= pSettings->r_float(section,"additional_inventory_weight");
 	m_additional_weight2			= pSettings->r_float(section,"additional_inventory_weight2");
 
-	if (pSettings->line_exist(section, "nightvision_sect"))
+	/*if (pSettings->line_exist(section, "nightvision_sect"))
 		m_NightVisionSect = pSettings->r_string(section, "nightvision_sect");
 	else
-		m_NightVisionSect = NULL;
+		m_NightVisionSect = NULL;*/
 
 	m_full_icon_name								= pSettings->r_string(section,"full_icon_name");
 }

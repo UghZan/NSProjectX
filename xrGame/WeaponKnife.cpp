@@ -245,6 +245,9 @@ void CWeaponKnife::Fire2Start ()
 {
 	inherited::Fire2Start();
 	SwitchState(eFire2);
+
+	if (ParentIsActor())
+		g_actor->set_state_wishful(g_actor->get_state_wishful() & (~mcSprint));
 }
 
 

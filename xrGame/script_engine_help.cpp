@@ -8,8 +8,6 @@
 
 #include "pch_script.h"
 
-#if 0//def DEBUG
-
 #ifndef BOOST_NO_STRINGSTREAM
 #	include <sstream>
 #else
@@ -213,12 +211,12 @@ void print_class						(lua_State *L, luabind::detail::class_rep *crep)
 	Msg			("};\n");
 }
 
-void print_free_functions				(lua_State *L, const luabind::object &object, LPCSTR header, const xr_string &indent)
+void print_free_functions(lua_State* L, const luabind::object& object, LPCSTR header, const xr_string& indent)
 {
 	u32							count = 0;
 	luabind::object::iterator	I = object.begin();
 	luabind::object::iterator	E = object.end();
-	for ( ; I != E; ++I) {
+	for (; I != E; ++I) {
 		if ((*I).type() != LUA_TFUNCTION)
 			continue;
 		(*I).pushvalue();
@@ -233,15 +231,15 @@ void print_free_functions				(lua_State *L, const luabind::object &object, LPCST
 					if (lua_getupvalue(L, -2, 1) != 0)
 					{
 						if (!count)
-							Msg("\n%snamespace %s {",indent.c_str(),header);
+							Msg("\n%snamespace %s {", indent.c_str(), header);
 						++count;
 						rep = static_cast<luabind::detail::free_functions::function_rep*>(lua_touserdata(L, -1));
 						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	i = rep->overloads().begin();
 						std::vector<luabind::detail::free_functions::overload_rep>::const_iterator	e = rep->overloads().end();
-						for ( ; i != e; ++i) {
+						for (; i != e; ++i) {
 							xr_string	S;
-							(*i).get_signature(L,S);
-							Msg("    %sfunction %s%s;",indent.c_str(),rep->name(),process_signature(S).c_str());
+							(*i).get_signature(L, S);
+							Msg("    %sfunction %s%s;", indent.c_str(), rep->name(), process_signature(S).c_str());
 						}
 						lua_pop(L, 1);
 					}
@@ -253,49 +251,43 @@ void print_free_functions				(lua_State *L, const luabind::object &object, LPCST
 	}
 	{
 		xr_string				_indent = indent;
-		_indent.append			("    ");
+		_indent.append("    ");
 		object.pushvalue();
-		lua_pushnil		(L);
+		lua_pushnil(L);
 		while (lua_next(L, -2) != 0) {
 			if (lua_type(L, -1) == LUA_TTABLE) {
-				if (xr_strcmp("_G",lua_tostring(L, -2))) {
+				if (xr_strcmp("_G", lua_tostring(L, -2))) {
 					LPCSTR				S = lua_tostring(L, -2);
 					luabind::object		object(L);
-					object.set			();
-					if (!xr_strcmp("security",S)) {
+					object.set();
+					if (!xr_strcmp("security", S)) {
 						S = S;
 					}
-					print_free_functions(L,object,S,_indent);
+					print_free_functions(L, object, S, _indent);
 				}
 			}
 #pragma todo("Dima to Dima : Remove this hack if find out why")
-			if (lua_isnumber(L,-2)) {
-				lua_pop(L,1);
-				lua_pop(L,1);
+			if (lua_isnumber(L, -2)) {
+				lua_pop(L, 1);
+				lua_pop(L, 1);
 				break;
 			}
-			lua_pop	(L, 1);
+			lua_pop(L, 1);
 		}
 	}
 	if (count)
-		Msg("%s};",indent.c_str());
+		Msg("%s};", indent.c_str());
 }
 
-void print_help							(lua_State *L)
+void print_help(lua_State* L)
 {
-	Msg					("\nList of the classes exported to LUA\n");
-	luabind::detail::class_registry::get_registry(L)->iterate_classes(L,&print_class);
-	Msg					("End of list of the classes exported to LUA\n");
-	Msg					("\nList of the namespaces exported to LUA\n");
-	print_free_functions(L,luabind::get_globals(L),"","");
-	Msg					("End of list of the namespaces exported to LUA\n");
+	Msg("\nList of the classes exported to LUA\n");
+	luabind::detail::class_registry::get_registry(L)->iterate_classes(L, &print_class);
+	Msg("End of list of the classes exported to LUA\n");
+	Msg("\nList of the namespaces exported to LUA\n");
+	print_free_functions(L, luabind::get_globals(L), "", "");
+	Msg("End of list of the namespaces exported to LUA\n");
 }
-#else
-void print_help							(lua_State *L)
-{
-	Msg					("! Release build doesn't support lua-help :(");
-}
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////////////

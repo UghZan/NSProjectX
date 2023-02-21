@@ -129,6 +129,8 @@ void CShootingObject::LoadFireParams	(LPCSTR section, LPCSTR prefix)
 	
 	//fHitPower			= pSettings->r_float	(section,strconcat(full_name, prefix, "hit_power"));
 	fHitImpulse			= pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "hit_impulse"));
+	LPCSTR s_hit_type = READ_IF_EXISTS(pSettings, r_string, section, "hit_type", "fire_wound");
+	hit_type = ALife::g_tfString2HitType(s_hit_type);
 	//максимальное расстояние полета пули
 	fireDistance		= pSettings->r_float	(section,strconcat(sizeof(full_name),full_name, prefix, "fire_distance"));
 	//начальная скорость пули
@@ -466,7 +468,7 @@ void CShootingObject::FireBullet(const Fvector& pos,
 
 	Level().BulletManager().AddBullet(	pos, dir, m_fStartBulletSpeed, l_fHitPower, 
 										fHitImpulse, parent_id, weapon_id, 
-										ALife::eHitTypeFireWound, fireDistance, cartridge, send_hit, aim_bullet);
+										hit_type, fireDistance, cartridge, send_hit, aim_bullet);
 }
 
 void CShootingObject::FireStart	()
