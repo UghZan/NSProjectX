@@ -177,9 +177,9 @@ void	CBaseMonster::Hit							(SHit* pHDS)
 		// пуля пробила шкуру
 		if (!fis_zero(m_fSkinArmor, EPS) && ap > m_fSkinArmor)
 		{
-			float d_hit_power = (ap - m_fSkinArmor)/ap;
-			if (d_hit_power < m_fHitFracMonster)
-				d_hit_power = m_fHitFracMonster;
+			float d_hit_power = m_fHitFracMonster + (ap - m_fSkinArmor)/ap;
+			if (d_hit_power > 1.0f)
+				d_hit_power = 1.0f;
 
 			hit_power *= d_hit_power;
 			VERIFY(hit_power >= 0.0f);

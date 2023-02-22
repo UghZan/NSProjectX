@@ -124,9 +124,9 @@ float	CCustomOutfit::HitThruArmour(SHit* hit)
 			//пуля пробила бронь
 			if (!IsGameTypeSingle())
 			{
-				float hit_fraction = (ap - BoneArmor) / ap;
-				if (hit_fraction < protection)
-					hit_fraction = protection;
+				float hit_fraction = protection + (ap - BoneArmor) / ap;
+				if (hit_fraction > 1.0f)
+					hit_fraction = 1.0f;
 
 				hit_power *= hit_fraction;
 			}

@@ -196,14 +196,15 @@ void			CAI_Stalker::Hit					(SHit* pHDS)
 	if (m_boneHitProtection && HDS.hit_type == ALife::eHitTypeFireWound){
 		float& hit_power = HDS.power;
 		float BoneArmor = m_boneHitProtection->getBoneArmour(HDS.bone());
+		float protection = m_boneHitProtection->m_fHitFrac;
 		float ap = HDS.ap;
 		if(!fis_zero(BoneArmor, EPS))
 		{
 			if(ap > BoneArmor)
 			{
-				float d_hit_power = (ap - BoneArmor) / ap;
-				if(d_hit_power < m_boneHitProtection->m_fHitFrac)
-					d_hit_power = m_boneHitProtection->m_fHitFrac;
+				float d_hit_power = protection + (ap - BoneArmor) / ap;
+				if(d_hit_power > 1)
+					d_hit_power = 1;
 
 				hit_power *= d_hit_power;
 				VERIFY(hit_power>=0.0f);
