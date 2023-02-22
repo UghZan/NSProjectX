@@ -200,10 +200,13 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 		else //restores
 		{
 			_val = GetRestoreByID(artefactEffects, i);
-			if( i < _item_additional_inventory_weight)
+			if (i < _item_additional_inventory_weight)
+			{
 				_val *= 100.0f * 1 / ARTEFACTS_UPDATE_TIME;
+				_sn = "%/s";
+			}
 			if (i != _item_power_loss) _val_boost = GetBoosterRestoreByID(conditions, i) * -100.0f * 10.0f; //10 is accounting for ten updates per second
-			_sn = "%/s";
+			else _val *= 100.0f;
 
 			if (fis_zero(_val) && fis_zero(_val_boost))	continue;
 		}
@@ -224,7 +227,7 @@ void CUIOutfitInfo::Update(CCustomOutfit* outfit)
 		if (i == _item_power_loss)
 		{
 			sign = false;
-			LPCSTR _color = (_val > 100) ? "%c[red]" : "%c[green]";
+			_color = (_val > 100) ? "%c[red]" : "%c[green]";
 		}
 
 		if (i == _item_additional_inventory_weight)

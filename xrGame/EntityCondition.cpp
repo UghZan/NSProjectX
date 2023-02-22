@@ -320,24 +320,23 @@ void CEntityCondition::UpdateCondition()
 
 
 
-float CEntityCondition::HitOutfitEffect(float hit_power, ALife::EHitType hit_type, s16 element, float AP)
+float CEntityCondition::HitOutfitEffect(SHit* hit)
 {
     CInventoryOwner* pInvOwner		= smart_cast<CInventoryOwner*>(m_object);
-	if(!pInvOwner)					return hit_power;
+	if(!pInvOwner)					return hit->power;
 
 	CCustomOutfit* pOutfit			= (CCustomOutfit*)pInvOwner->inventory().m_slots[OUTFIT_SLOT].m_pIItem;
-	if(!pOutfit)					return hit_power;
+	if(!pOutfit)					return hit->power;
 
-	float new_hit_power				= hit_power;
+	float new_hit_power				= hit->power;
 
-	//commented out for testing
-	//if (hit_type == ALife::eHitTypeFireWound)
-		//new_hit_power				= pOutfit->HitThruArmour(hit_power, element, AP);
-	//else
-		new_hit_power				*= pOutfit->GetHitTypeProtection(hit_type,element);
+	if (hit->hit_type == ALife::eHitTypeFireWound)
+		new_hit_power				= pOutfit->HitThruArmour(hit);
+	else
+		new_hit_power				*= pOutfit->GetHitTypeProtection(hit->hit_type, hit->boneID);
 	
 	//увеличить изношенность костюма
-	pOutfit->Hit					(hit_power, hit_type);
+	pOutfit->Hit					(new_hit_power, hit->hit_type);
 
 	return							new_hit_power;
 }
@@ -394,11 +393,11 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 	m_pWho = pHDS->who;
 	m_iWhoID = (NULL != pHDS->who) ? pHDS->who->ID() : 0;
 
-	float hit_power_org = pHDS->damage();
-	float hit_power = hit_power_org;
-	hit_power = HitOutfitEffect(hit_power, pHDS->hit_type, pHDS->boneID, pHDS->ap);
+	float hit_power = pHDS->damage();
+	float hit_power_orig = hit_power;
+	hit_power = HitOutfitEffect(pHDS);
 
-	bool bAddWound = true;
+	bool bAddWound = pHDS->add_wound;
 	switch(pHDS->hit_type)
 	{
 	case ALife::eHitTypeTelepatic:
@@ -497,7 +496,7 @@ CWound* CEntityCondition::ConditionHit(SHit* pHDS)
 		}break;
 	}
 
-	if (bDebug) Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<CKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost*100.0f, hit_power_org);
+	if (bDebug) Msg("%s hitted in %s with %f[%f]", m_object->Name(), smart_cast<CKinematics*>(m_object->Visual())->LL_BoneName_dbg(pHDS->boneID), m_fHealthLost*100.0f, hit_power_orig);
 	//раны добавл€ютс€ только живому
 	if(bAddWound && GetHealth()>0)
 		return AddWound(hit_power*m_fWoundBoneScale, pHDS->hit_type, pHDS->boneID);

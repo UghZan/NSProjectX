@@ -262,7 +262,7 @@ void CWeaponBobbing::Update(Fmatrix& m)
 
 		float A, ST;
 
-		if (isActorAccelerated(dwMState, m_bZoomMode))
+		if (!is_crouching && isActorAccelerated(dwMState, m_bZoomMode))
 		{
 			A = m_fAmplitudeRun * k;
 			ST = m_fSpeedRun * fTime;

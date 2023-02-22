@@ -35,6 +35,7 @@ IC	ALife::EHitType		type					()		const	{VERIFY(is_valide());return hit_type;}
 	float				impulse																																					;
 	ALife::EHitType		hit_type																																				;
 	float				ap;
+	bool				add_wound = true;
 	bool				aim_bullet;
 	//---------------------------------------------------
 	//GE_HIT_STATISTIC

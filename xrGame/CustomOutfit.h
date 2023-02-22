@@ -22,7 +22,7 @@ public:
 	float							GetHitTypeProtection(ALife::EHitType hit_type, s16 element);
 	float							GetDefHitTypeProtection(ALife::EHitType hit_type);
 
-	float							HitThruArmour		(float hit_power, s16 element, float AP);
+	float							HitThruArmour		(SHit* hit);
 	//коэффициент на который домножается потеря силы
 	//если на персонаже надет костюм
 	float							GetPowerLoss		();
@@ -52,6 +52,10 @@ public:
 
 	float							m_additional_weight;
 	float							m_additional_weight2;
+
+	shared_str						m_boneProtectionSect;
+	float							m_hitFraction;
+
 	//shared_str						m_NightVisionSect;
 	virtual u32						ef_equipment_type		() const;
 	virtual	BOOL					BonePassBullet			(int boneID);

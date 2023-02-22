@@ -422,7 +422,8 @@ protected:
 	LPCSTR					m_critical_wound_anim_legs;
 
 	//////////////////////////////////////////////////////////////////////////
-	
+	float							m_fSkinArmor;
+	float							m_fHitFracMonster;
 
 public:	
 

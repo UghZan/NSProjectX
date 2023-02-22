@@ -56,6 +56,15 @@ void CBaseMonster::Load(LPCSTR section)
 
 	m_rank							= (pSettings->line_exist(section,"rank")) ? int(pSettings->r_u32(section,"rank")) : 0;
 
+	m_fSkinArmor = 0.f;
+	m_fHitFracMonster = 0.1f;
+	if (pSettings->line_exist(section, "protections_sect"))
+	{
+		LPCSTR protections_sect = pSettings->r_string(section, "protections_sect");
+		m_fSkinArmor = READ_IF_EXISTS(pSettings, r_float, protections_sect, "skin_armor", 0.f);
+		m_fHitFracMonster = READ_IF_EXISTS(pSettings, r_float, protections_sect, "hit_fraction_monster", 0.1f);
+	}
+
 //	if (pSettings->line_exist(section,"Spawn_Inventory_Item_Section")) {
 //		m_item_section					= pSettings->r_string(section,"Spawn_Inventory_Item_Section");
 //		m_spawn_probability				= pSettings->r_float(section,"Spawn_Inventory_Item_Probability");
