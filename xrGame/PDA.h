@@ -6,6 +6,8 @@
 #include "InfoPortionDefs.h"
 #include "character_info_defs.h"
 
+#include "script_export_space.h"
+
 #include "PdaMsg.h"
 
 
@@ -36,7 +38,6 @@ public:
 	virtual void 							feel_touch_delete		(CObject* O);
 	virtual BOOL 							feel_touch_contact		(CObject* O);
 
-
 	virtual u16								GetOriginalOwnerID		() {return m_idOriginalOwner;}
 	virtual CInventoryOwner*				GetOriginalOwner		();
 	virtual CObject*						GetOwnerObject			();
@@ -58,8 +59,19 @@ public:
 	virtual void							save					(NET_Packet &output_packet);
 	virtual void							load					(IReader &input_packet);
 
+	virtual void							UsePDA					();
+
 	virtual LPCSTR							Name					();
 
+	bool							get_hacked_status()
+	{
+		return m_bHacked;
+	}
+
+	void							set_hacked_status(bool new_status)
+	{
+		m_bHacked = new_status;
+	}
 protected:
 	void									UpdateActiveContacts	();
 
@@ -71,5 +83,14 @@ protected:
 	shared_str					m_SpecificChracterOwner;
 	xr_string								m_sFullName;
 
+	bool									m_bHacked;
+
 	bool									m_bTurnedOff;
+	shared_str								m_scriptFunctionName;
+
+public:
+	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+add_to_type_list(CPda)
+#undef script_type_list
+#define script_type_list save_type_list(CPda)

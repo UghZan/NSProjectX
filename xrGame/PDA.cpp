@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_script.h"
 #include "pda.h"
 #include "hudmanager.h"
 #include "PhysicsShell.h"
@@ -11,6 +11,8 @@
 
 #include "specific_character.h"
 #include "alife_registry_wrappers.h"
+#include "script_engine.h"
+
 
 
 CPda::CPda(void)						
@@ -196,11 +198,35 @@ LPCSTR		CPda::Name				()
 		
 		CSpecificCharacter spec_char;
 		spec_char.Load(m_SpecificChracterOwner);
-		m_sFullName += " ";
+		m_sFullName += ": ";
 		m_sFullName += xr_string(spec_char.Name());
+		if (m_bHacked) m_sFullName += " (исп.)";
 	}
 	
 	return m_sFullName.c_str();
+}
+
+void CPda::UsePDA()
+{
+	if (m_bHacked) return;
+
+	luabind::functor<void> m_functor;
+	if (!ai().script_engine().functor("pda_manager.use_pda", m_functor))
+	{
+		Log("pda_manager.use_pda not found");
+		return;
+	}
+	CInventoryOwner* owner = GetOriginalOwner();
+	if (owner)
+	{
+		shared_str community = owner->CharacterInfo().Community().id();
+		int rank = owner->CharacterInfo().Rank().value();
+		m_functor(community, rank);
+	}
+	else
+		m_functor(NO_COMMUNITY_INDEX, NO_RANK);
+
+	m_bHacked = true;
 }
 
 CPda* CPda::GetPdaFromOwner(CObject* owner)

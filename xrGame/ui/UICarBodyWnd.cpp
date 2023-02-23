@@ -433,6 +433,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 			_action					= "st_eat";
 		b_show						= true;
 	}
+
 	if(_action)
 		m_pUIPropertiesBox->AddItem(_action,  NULL, INVENTORY_EAT_ACTION);
 

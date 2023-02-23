@@ -887,15 +887,16 @@ CInventoryItem *CInventory::get_object_by_id(ALife::_OBJECT_ID tObjectID)
 #include "script_game_object.h"
 bool CInventory::Eat(PIItem pIItem)
 {
-	R_ASSERT(pIItem->m_pCurrentInventory==this);
+	R_ASSERT(pIItem->m_pCurrentInventory == this);
+
+	CEntityAlive* entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
+	R_ASSERT(entity_alive);
+
 	//устанаовить съедобна ли вещь
 	CEatableItem* pItemToEat = smart_cast<CEatableItem*>(pIItem);
 	R_ASSERT				(pItemToEat);
-
-	CEntityAlive *entity_alive = smart_cast<CEntityAlive*>(m_pOwner);
-	R_ASSERT				(entity_alive);
 	
-	pItemToEat->UseBy		(entity_alive);
+	pItemToEat->UseBy(entity_alive);
 
 	if(IsGameTypeSingle() && Actor()->m_inventory == this)
 		Actor()->callback(GameObject::eUseObject)((smart_cast<CGameObject*>(pIItem))->lua_game_object());
@@ -936,7 +937,7 @@ bool CInventory::InRuck(PIItem pIItem) const
 
 bool CInventory::CanPutInSlot(PIItem pIItem) const
 {
-	if(!m_bSlotsUseful) return false;
+	if (!m_bSlotsUseful) return false;
 
 	if( !GetOwner()->CanPutInSlot(pIItem, pIItem->GetSlot() ) ) return false;
 

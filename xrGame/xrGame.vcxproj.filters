@@ -9746,6 +9746,7 @@
     <ClCompile Include="CustomZoneDetector.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
     </ClCompile>
+    <ClCompile Include="pda_script.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="graph_abstract.h">

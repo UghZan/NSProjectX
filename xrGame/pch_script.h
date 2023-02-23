@@ -6,9 +6,6 @@
 //	Description : precompiled header for lua and luabind users
 ////////////////////////////////////////////////////////////////////////////
 
-#ifndef PCH_SCRIPT_H
-#define PCH_SCRIPT_H
-
 #include "stdafx.h"
 
 //#pragma warning(disable:4244)
@@ -35,5 +32,3 @@ extern "C" {
 #include <luabind/return_reference_to_policy.hpp>
 #include <luabind/out_value_policy.hpp>
 #include <luabind/iterator_policy.hpp>
-
-#endif // PCH_SCRIPT_H

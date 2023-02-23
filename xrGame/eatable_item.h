@@ -20,12 +20,11 @@ public:
 
 	virtual void			Load						(LPCSTR section);
 	virtual bool			Useful						() const;
-
 	virtual BOOL			net_Spawn					(CSE_Abstract* DC);
 
 	virtual void			OnH_B_Independent			(bool just_before_destroy);
-	virtual	void			UseBy						(CEntityAlive* npc);
-			bool			Empty						()	const				{return m_iPortionsNum==0;};
+	virtual void			UseBy						(CEntityAlive* npc);
+	virtual bool			Empty						() const { return m_iUses == 0; };
 protected:	
 	//влияние при поедании вещи на параметры игрока
 	float					m_fHealthInfluence;
@@ -39,7 +38,7 @@ protected:
 
 	//количество порций еды, 
 	//-1 - порция одна и больше не бывает (чтоб не выводить надпись в меню)
-	int						m_iPortionsNum;
-	int						m_iStartPortionsNum;
+	int						m_iUses;
+	int						m_iMaxUses;
 };
 
