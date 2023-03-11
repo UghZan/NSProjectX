@@ -130,6 +130,7 @@ void CUIMainIngameWnd::Init()
 
 	UIWeaponBack.AttachChild	(&UIWeaponIcon);
 	xml_init.InitStatic			(uiXml, "static_wpn_icon", 0, &UIWeaponIcon);
+
 	UIWeaponIcon.SetShader		(GetEquipmentIconsShader());
 	UIWeaponIcon_rect			= UIWeaponIcon.GetWndRect();
 	//---------------------------------------------------------
@@ -326,17 +327,15 @@ void CUIMainIngameWnd::SetAmmoIcon (const shared_str& sect_name)
 
 	UIWeaponIcon.Show			(true);
 	//properties used by inventory menu
-	float iGridWidth			= pSettings->r_float(sect_name, "inv_grid_width");
-	float iGridHeight			= pSettings->r_float(sect_name, "inv_grid_height");
+	CIconParams icon_params(sect_name);
+	Frect rect = icon_params.original_rect();
 
-	float iXPos				= pSettings->r_float(sect_name, "inv_grid_x");
-	float iYPos				= pSettings->r_float(sect_name, "inv_grid_y");
+	UIWeaponIcon.SetShader(icon_params.get_shader());
+	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(rect);
 
-	UIWeaponIcon.GetUIStaticItem().SetOriginalRect(	(iXPos		 * INV_GRID_WIDTH),
-													(iYPos		 * INV_GRID_HEIGHT),
-													(iGridWidth	 * INV_GRID_WIDTH),
-													(iGridHeight * INV_GRID_HEIGHT));
 	UIWeaponIcon.SetStretchTexture(true);
+
+	int iGridWidth = (int)round(rect.width());
 
 	// now perform only width scale for ammo, which (W)size >2
 	// all others ammo (1x1, 1x2) will be not scaled (original picture)
@@ -1082,33 +1081,21 @@ void CUIMainIngameWnd::UpdatePickUpItem	()
 	shared_str sect_name	= m_pPickUpItem->object().cNameSect();
 
 	//properties used by inventory menu
-	int m_iGridWidth	= pSettings->r_u32(sect_name, "inv_grid_width");
-	int m_iGridHeight	= pSettings->r_u32(sect_name, "inv_grid_height");
+	CIconParams& params = m_pPickUpItem->m_icon_params;
+	Frect rect = params.original_rect();
 
-	int m_iXPos			= pSettings->r_u32(sect_name, "inv_grid_x");
-	int m_iYPos			= pSettings->r_u32(sect_name, "inv_grid_y");
-
-	float scale_x = m_iPickUpItemIconWidth/
-		float(m_iGridWidth*INV_GRID_WIDTH);
-
-	float scale_y = m_iPickUpItemIconHeight/
-		float(m_iGridHeight*INV_GRID_HEIGHT);
-
-	scale_x = (scale_x>1) ? 1.0f : scale_x;
-	scale_y = (scale_y>1) ? 1.0f : scale_y;
+	float scale_x = m_iPickUpItemIconWidth / rect.width();
+	float scale_y = m_iPickUpItemIconHeight / rect.height();
 
 	float scale = scale_x<scale_y?scale_x:scale_y;
 
-	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(
-		float(m_iXPos * INV_GRID_WIDTH),
-		float(m_iYPos * INV_GRID_HEIGHT),
-		float(m_iGridWidth * INV_GRID_WIDTH),
-		float(m_iGridHeight * INV_GRID_HEIGHT));
+	UIPickUpItemIcon.GetUIStaticItem().SetShader(params.get_shader());
+	UIPickUpItemIcon.GetUIStaticItem().SetOriginalRect(rect);
 
 	UIPickUpItemIcon.SetStretchTexture(true);
 
-	UIPickUpItemIcon.SetWidth(m_iGridWidth*INV_GRID_WIDTH*scale);
-	UIPickUpItemIcon.SetHeight(m_iGridHeight*INV_GRID_HEIGHT*scale);
+	UIPickUpItemIcon.SetWidth(rect.width() * scale);
+	UIPickUpItemIcon.SetHeight(rect.height() * scale);
 
 	UIPickUpItemIcon.SetWndPos(m_iPickUpItemIconX + 
 		(m_iPickUpItemIconWidth - UIPickUpItemIcon.GetWidth())/2,

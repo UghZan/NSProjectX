@@ -223,6 +223,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 #endif // PROFILE_CRITICAL_SECTIONS
 	;
 
+	ShowWindow(GetTopWindow(NULL), SW_MINIMIZE);
 	CS.Enter			();
 
 	error_after_dialog	= true;

@@ -24,7 +24,10 @@ protected:
 	
 public:
 	bool				m_bUseColor;
+	bool				m_bUseMidColor;
+	bool				m_bUseGradient;
 	Fcolor				m_minColor;
+	Fcolor				m_midColor;
 	Fcolor				m_maxColor;
 	float				m_inertion;	//
 public:

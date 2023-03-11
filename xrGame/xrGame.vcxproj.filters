@@ -6579,7 +6579,12 @@
     <ClInclude Include="CustomZoneDetector.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
     </ClInclude>
-    <ClInclude Include="script_additional_functions.h" />
+    <ClInclude Include="script_additional_functions.h">
+      <Filter>AI\AScript\ScriptEngine</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\UIIconParams.h">
+      <Filter>UI</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9750,7 +9755,12 @@
     <ClCompile Include="pda_script.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\PDA &amp; information</Filter>
     </ClCompile>
-    <ClCompile Include="script_additional_functions.cpp" />
+    <ClCompile Include="script_additional_functions.cpp">
+      <Filter>AI\AScript\ScriptEngine</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\UIIconParams.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="graph_abstract.h">

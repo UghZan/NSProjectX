@@ -36,11 +36,27 @@ namespace GameObject {
 
 		eOnMouseWheel,
 		eOnMouseMove,
+		eOnMousePress,
+		eOnMouseRelease,
+		eOnMouseHold,
+
 		eOnKeyPress,
 		eOnKeyRelease,
 		eOnKeyHold,
 
 		eActorSleep,
+
+		eOnActorWeaponFire,
+		eOnActorWeaponJammed,
+		eOnActorWeaponEmpty,
+		eOnActorWeaponReload,
+		eOnActorWeaponZoomIn,
+		eOnActorWeaponZoomOut,
+
+		eOnNPCWeaponFire,
+		eOnNPCWeaponJammed,
+		eOnNPCWeaponEmpty,
+		eOnNPCWeaponReload,
 
 		eHelicopterOnPoint,
 		eHelicopterOnHit,

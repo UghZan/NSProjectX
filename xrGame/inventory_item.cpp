@@ -123,6 +123,7 @@ CInventoryItem::~CInventoryItem()
 void CInventoryItem::Load(LPCSTR section) 
 {
 	CHitImmunity::LoadImmunities	(pSettings->r_string(section,"immunities_sect"),pSettings);
+	m_icon_params.Load(section);
 
 	ISpatial*			self				=	smart_cast<ISpatial*> (this);
 	if (self)			self->spatial.type	|=	STYPE_VISIBLEFORAI;	
@@ -1111,20 +1112,24 @@ float CInventoryItem::GetKillMsgHeight	() const
 
 int  CInventoryItem::GetGridWidth			() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_width");
+	return (int)m_icon_params.grid_width;
 }
 
 int  CInventoryItem::GetGridHeight			() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_height");
+	return (int)m_icon_params.grid_height;
 }
 int  CInventoryItem::GetXPos				() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_x");
+	return (int)m_icon_params.grid_x;
 }
 int  CInventoryItem::GetYPos				() const 
 {
-	return pSettings->r_u32(m_object->cNameSect(), "inv_grid_y");
+	return (int)m_icon_params.grid_y;
+}
+LPCSTR  CInventoryItem::GetIconAtlas() const
+{
+	return m_icon_params.icon_atlas;
 }
 
 bool CInventoryItem::IsNecessaryItem(CInventoryItem* item)		

@@ -17,6 +17,11 @@
 #include "object_broker.h"
 #include "string_table.h"
 
+#include "pch_script.h"
+#include "script_callback_ex.h"
+#include "script_game_object.h"
+#include "game_object_space.h"
+
 CWeaponMagazined::CWeaponMagazined(LPCSTR name, ESoundTypes eSoundType) : CWeapon(name)
 {
 	m_eSoundShow		= ESoundTypes(SOUND_TYPE_ITEM_TAKING | eSoundType);
@@ -374,6 +379,38 @@ void CWeaponMagazined::ReloadMagazine()
 	VERIFY((u32)iAmmoElapsed == m_magazine.size());
 }
 
+void IC CWeaponMagazined::state_switch_callback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type)
+{
+	xr_string ammo_type;
+	if (GetAmmoElapsed() == 0 || m_magazine.empty())
+	{
+		ammo_type = *m_ammoTypes[m_ammoType];
+	}
+	else
+	{
+		ammo_type = *m_ammoTypes[m_magazine.back().m_LocalAmmoType];
+	}
+
+	if (g_actor)
+	{
+		if (smart_cast<CActor*>(H_Parent()))  // This is an actor.
+		{
+			Actor()->callback(actor_type)(
+				lua_game_object(), // The weapon itself.
+				ammo_type.c_str()  // The used ammo of the weapon.
+				);
+		}
+		else if (smart_cast<CEntityAlive*>(H_Parent()))  // This is an NPC.
+		{
+			Actor()->callback(npc_type)(
+				smart_cast<CEntityAlive*>(H_Parent())->lua_game_object(),
+				lua_game_object(),
+				ammo_type.c_str());
+		}
+	}
+}
+
+
 void CWeaponMagazined::OnStateSwitch	(u32 S)
 {
 	inherited::OnStateSwitch(S);
@@ -389,13 +426,16 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Fire2	();
 		break;
 	case eMisfire:
+		state_switch_callback(GameObject::eOnActorWeaponJammed, GameObject::eOnNPCWeaponJammed);
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			HUD().GetUI()->AddInfoMessage("gun_jammed");
 		break;
 	case eMagEmpty:
+		state_switch_callback(GameObject::eOnActorWeaponEmpty, GameObject::eOnNPCWeaponEmpty);
 		switch2_Empty	();
 		break;
 	case eReload:
+		state_switch_callback(GameObject::eOnActorWeaponReload, GameObject::eOnNPCWeaponReload);
 		switch2_Reload	();
 		break;
 	case eShowing:
@@ -518,6 +558,7 @@ void CWeaponMagazined::state_Fire	(float dt)
 			FireTrace		(p1,d);
 		else
 			FireTrace		(m_vStartPos, m_vStartDir);
+		state_switch_callback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
 	}
 	
 	if(m_iShotNum == m_iQueueSize)

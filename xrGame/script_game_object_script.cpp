@@ -93,15 +93,31 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_key_press",				int(GameObject::eOnKeyPress)),
 				value("on_key_release",				int(GameObject::eOnKeyRelease)),
 				value("on_key_hold",				int(GameObject::eOnKeyHold)),
+
 				value("on_mouse_move",				int(GameObject::eOnMouseMove)),
 				value("on_mouse_wheel",				int(GameObject::eOnMouseWheel)),
+				value("on_mouse_press",				int(GameObject::eOnMousePress)),
+				value("on_mouse_release",			int(GameObject::eOnMouseRelease)),
+				value("on_mouse_hold",				int(GameObject::eOnMouseHold)),
 
 				value("on_item_belt",				int(GameObject::eOnItemBelt)),
 				value("on_item_slot",				int(GameObject::eOnItemSlot)),
 				value("on_item_ruck",				int(GameObject::eOnItemRuck)),
 
 				value("switch_torch",				int(GameObject::eSwitchTorch)),
-				value("switch_night_vision",		int(GameObject::eSwitchNV))
+				value("switch_night_vision",		int(GameObject::eSwitchNV)),
+
+				value("on_actor_weapon_empty",		int(GameObject::eOnActorWeaponEmpty)),
+				value("on_actor_weapon_jammed",		int(GameObject::eOnActorWeaponJammed)),
+				value("on_actor_weapon_fire",		int(GameObject::eOnActorWeaponFire)),
+				value("on_actor_weapon_reload",		int(GameObject::eOnActorWeaponReload)), 
+				value("on_actor_weapon_zoom_in",	int(GameObject::eOnActorWeaponZoomIn)),
+				value("on_actor_weapon_zoom_out",	int(GameObject::eOnActorWeaponZoomOut)),
+
+				value("on_npc_weapon_empty",		int(GameObject::eOnNPCWeaponEmpty)),
+				value("on_npc_weapon_jammed",		int(GameObject::eOnNPCWeaponJammed)),
+				value("on_npc_weapon_fire",			int(GameObject::eOnNPCWeaponFire)),
+				value("on_npc_weapon_reload",		int(GameObject::eOnNPCWeaponReload))
 			],
 
 		def("buy_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::buy_condition)),

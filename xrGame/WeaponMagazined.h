@@ -6,6 +6,7 @@
 #include "hudsound.h"
 #include "ai_sounds.h"
 
+
 class ENGINE_API CMotionDef;
 
 //размер очереди считается бесконечность
@@ -68,6 +69,8 @@ protected:
 	virtual void	switch2_Hiding	();
 	virtual void	switch2_Hidden	();
 	virtual void	switch2_Showing	();
+
+	virtual IC void	state_switch_callback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type);
 	
 	virtual void	OnShot			();	
 	

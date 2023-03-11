@@ -1,6 +1,7 @@
 #pragma once
 #include "UICellItem.h"
 #include "../Weapon.h"
+#include "UIIconParams.h"
 
 
 class CUIInventoryCellItem :public CUICellItem
@@ -33,10 +34,10 @@ public:
 protected:
 	CUIStatic*					m_addons					[eMaxAddon];
 	Fvector2					m_addon_offset				[eMaxAddon];
-	void						CreateIcon					(eAddonType);
+	void						CreateIcon					(eAddonType, CIconParams);
 	void						DestroyIcon					(eAddonType);
 	CUIStatic*					GetIcon						(eAddonType);
-	void						InitAddon					(CUIStatic* s, LPCSTR section, Fvector2 offset);
+	void						InitAddon					(CUIStatic*, CIconParams, Fvector2);
 	bool						is_scope					();
 	bool						is_silencer					();
 	bool						is_launcher					();

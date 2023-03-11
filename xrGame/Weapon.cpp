@@ -29,6 +29,11 @@
 #include "GamePersistent.h"
 #include "EffectorFall.h"
 
+#include "pch_script.h"
+#include "script_callback_ex.h"
+#include "script_game_object.h"
+#include "game_object_space.h"
+
 #define WEAPON_REMOVE_TIME		60000
 #define ROTATION_TIME			0.25f
 
@@ -1302,9 +1307,14 @@ float CWeapon::CurrentZoomFactor	()
 
 void CWeapon::OnZoomIn()
 {
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+
 	m_bZoomMode = true;
 	m_fZoomFactor = CurrentZoomFactor();
 	StopHudInertion();
+
+	if (pActor)
+		pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
 
 	if (m_bZoomDofEnabled && !IsScopeAttached())
 		GamePersistent().SetPickableEffectorDOF(true);//GamePersistent().SetEffectorDOF(m_ZoomDof);
@@ -1312,8 +1322,13 @@ void CWeapon::OnZoomIn()
 
 void CWeapon::OnZoomOut()
 {
+	CActor* pActor = smart_cast<CActor*>(H_Parent());
+
 	m_bZoomMode = false;
 	m_fZoomFactor = g_fov;
+
+	if(pActor)
+		pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
 
 	StartHudInertion();
 	GamePersistent().SetPickableEffectorDOF(false);//GamePersistent().RestoreEffectorDOF();

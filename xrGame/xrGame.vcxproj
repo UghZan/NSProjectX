@@ -2089,6 +2089,7 @@
     <ClInclude Include="ui\UIFrameWindow.h" />
     <ClInclude Include="ui\UIGameLog.h" />
     <ClInclude Include="ui\UIGameTutorial.h" />
+    <ClInclude Include="ui\UIIconParams.h" />
     <ClInclude Include="ui\UIInteractiveBackground.h" />
     <ClInclude Include="ui\UIInventoryUtilities.h" />
     <ClInclude Include="ui\UIInventoryWnd.h" />
@@ -8069,6 +8070,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_Advanced|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_All_To_All|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="ui\UIIconParams.cpp" />
     <ClCompile Include="ui\UIInventoryUtilities.cpp" />
     <ClCompile Include="ui\UIInventoryWnd.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>

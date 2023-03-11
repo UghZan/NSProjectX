@@ -11,6 +11,7 @@
 #include "inventory_space.h"
 #include "hit_immunity.h"
 #include "attachable_item.h"
+#include <ui/UIIconParams.h>
 
 enum EHandDependence{
 	hdNone	= 0,
@@ -61,6 +62,7 @@ protected:
 
 	Flags16						m_flags;
 public:
+	CIconParams					m_icon_params;
 								CInventoryItem		();
 	virtual						~CInventoryItem		();
 
@@ -134,6 +136,7 @@ public:
 			int					GetGridWidth		() const ;
 			int					GetGridHeight		() const ;
 			const shared_str&	GetIconName			() const		{return m_icon_name;};
+			LPCSTR				GetIconAtlas()		   const;
 			int					GetXPos				() const ;
 			int					GetYPos				() const ;
 	//---------------------------------------------------------------------
