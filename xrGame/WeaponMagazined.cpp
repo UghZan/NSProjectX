@@ -169,8 +169,8 @@ void CWeaponMagazined::FireEnd()
 	inherited::FireEnd();
 
 	CActor	*actor = smart_cast<CActor*>(H_Parent());
-	if(!iAmmoElapsed && actor && GetState()!=eReload) 
-		Reload();
+	//if(!iAmmoElapsed && actor && GetState()!=eReload) 
+	//	Reload();
 }
 
 void CWeaponMagazined::Reload() 
@@ -647,16 +647,10 @@ void CWeaponMagazined::switch2_Fire	()
 }
 void CWeaponMagazined::switch2_Empty()
 {
-	OnZoomOut();
-	
-	if(!TryReload())
-	{
-		OnEmptyClick();
-	}
-	else
-	{
-		inherited::FireEnd();
-	}
+	//OnZoomOut();
+
+	OnEmptyClick();
+	inherited::FireEnd();
 }
 void CWeaponMagazined::PlayReloadSound()
 {

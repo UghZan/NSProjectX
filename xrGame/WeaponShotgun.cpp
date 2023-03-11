@@ -194,11 +194,13 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 	{
 		case kWPN_ZOOM:
 		{
-			if (flags & CMD_START && m_bHasDupletMode) Fire2Start();
+			if (flags & CMD_START && m_bHasDupletMode)
+			{
+				Fire2Start();
+				return true;
+			}
 			else Fire2End();
-
 		}
-		return true;
 	}
 
 	if(inherited::Action(cmd, flags)) return true;
