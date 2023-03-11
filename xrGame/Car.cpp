@@ -2024,3 +2024,36 @@ Fvector	CCar::		ExitVelocity				()
 	return v;
 }
 
+void CCar::ChangefFuel(float fuel)
+{
+	float result = m_fuel + fuel;
+	if (result < 0)
+	{
+		SetfFuel(0);
+		return;
+	}
+	else if (result > 1)
+	{
+		SetfFuel(1);
+		return;
+	}
+	SetfFuel(result);
+}
+
+void CCar::ChangefHealth(float health)
+{
+	float current_health = GetfHealth(),
+		  result = current_health + health;
+	if (result < 0)
+	{
+		SetfHealth(0);
+		return;
+	}
+	else if (result > 1)
+	{
+		SetfHealth(1);
+		return;
+	}
+	SetfHealth(result);
+}
+

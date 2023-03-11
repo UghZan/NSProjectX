@@ -410,14 +410,17 @@ CUIDragDropListEx* CUIInventoryWnd::GetSlotList(u32 slot_idx)
 
 void CUIInventoryWnd::ClearAllLists()
 {
-	m_pUIBagList->ClearAll					(true);
-	m_pUIBeltList->ClearAll					(true);
-	m_pUIOutfitList->ClearAll				(true);
-	m_pUIPistolList->ClearAll				(true);
-	m_pUIAutomaticList->ClearAll			(true);
-	m_pUIKnifeList->ClearAll				(true);
-	m_pUIAFDetectorList->ClearAll			(true);
-	m_pUIBinocularList->ClearAll			(true);
-	m_pUIDetectorList->ClearAll				(true);
-	m_pUITorchList->ClearAll				(true);
+	if (IsGameTypeSingle())
+	{
+		m_pUIBagList->ClearAll(true);
+		m_pUIBeltList->ClearAll(true);
+		m_pUIOutfitList->ClearAll(true);
+		m_pUIPistolList->ClearAll(true);
+		m_pUIAutomaticList->ClearAll(true);
+		m_pUIKnifeList->ClearAll(true);
+		m_pUIAFDetectorList->ClearAll(true);
+		m_pUIBinocularList->ClearAll(true);
+		m_pUIDetectorList->ClearAll(true);
+		m_pUITorchList->ClearAll(true);
+	}
 }

@@ -579,6 +579,21 @@ public:
 	virtual float			GetfHealth					() const		{return CEntity::GetfHealth();};
 	virtual float			SetfHealth					(float value)	{return CEntity::SetfHealth(value);};
 
+	////
+	float					GetfFuel					()				{ return m_fuel; };
+	void					SetfFuel					(float fuel)	{ m_fuel = fuel; };
+	float					GetfFuelTank				()				{ return m_fuel_tank; };
+	void					SetfFuelTank				(float fuel_tank)	{ m_fuel_tank = fuel_tank; };
+	float					GetfFuelConsumption			()				{ return m_fuel_consumption; };
+	void					SetfFuelConsumption			(float fuel_consumption) { m_fuel_consumption = fuel_consumption; };
+	void					ChangefFuel(float fuel);
+	void					ChangefHealth(float health);
+	void					PlayDamageParticles() { m_damage_particles.Play1(this); m_damage_particles.Play2(this); }
+	void					StopDamageParticles() { m_damage_particles.Stop1(this); m_damage_particles.Stop2(this); }
+	bool					isActiveEngine				()				{ return b_engine_on;}
+	////
+
+
 	// Hits
 	virtual void			HitSignal					(float /**HitAmount/**/,	Fvector& /**local_dir/**/, CObject* /**who/**/, s16 /**element/**/)	{};
 	virtual void			HitImpulse					(float /**amount/**/,		Fvector& /**vWorldDir/**/, Fvector& /**vLocalDir/**/)			{};

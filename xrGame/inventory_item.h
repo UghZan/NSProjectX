@@ -147,6 +147,7 @@ public:
 			void				ChangeCondition		(float fDeltaCondition);
 
 	virtual u32					GetSlot				()  const					{return m_slot;}
+	void						SetSlot				(u32 slot)					{ m_slot = slot; };
 
 			bool				Belt				()							{return !!m_flags.test(Fbelt);}
 			void				Belt				(bool on_belt)				{m_flags.set(Fbelt,on_belt);}
