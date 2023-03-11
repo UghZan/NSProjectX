@@ -6579,6 +6579,7 @@
     <ClInclude Include="CustomZoneDetector.h">
       <Filter>Core\Client\Objects\items &amp; weapons\Devices\Detectors\Concrete Detectors</Filter>
     </ClInclude>
+    <ClInclude Include="script_additional_functions.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9749,6 +9750,7 @@
     <ClCompile Include="pda_script.cpp">
       <Filter>Core\Client\Objects\items &amp; weapons\PDA &amp; information</Filter>
     </ClCompile>
+    <ClCompile Include="script_additional_functions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="graph_abstract.h">

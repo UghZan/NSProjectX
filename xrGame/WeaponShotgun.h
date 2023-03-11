@@ -56,6 +56,7 @@ protected:
 	MotionSVec		mhud_open;
 	MotionSVec		mhud_add_cartridge;
 	MotionSVec		mhud_close;
+	bool			m_bHasDupletMode;
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };

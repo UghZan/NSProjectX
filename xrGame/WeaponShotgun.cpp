@@ -30,28 +30,28 @@ void CWeaponShotgun::net_Destroy()
 	inherited::net_Destroy();
 }
 
-void CWeaponShotgun::Load	(LPCSTR section)
+void CWeaponShotgun::Load(LPCSTR section)
 {
-	inherited::Load		(section);
+	inherited::Load(section);
 
 	// Звук и анимация для выстрела дуплетом
 	HUD_SOUND::LoadSound(section, "snd_shoot_duplet", sndShotBoth, m_eSoundShotBoth);
-	animGet	(mhud_shot_boths,	pSettings->r_string(*hud_sect,"anim_shoot_both"));
+	animGet(mhud_shot_boths, pSettings->r_string(*hud_sect, "anim_shoot_both"));
 
-	if(pSettings->line_exist(section, "tri_state_reload")){
+	if (pSettings->line_exist(section, "tri_state_reload")) {
 		m_bTriStateReload = !!pSettings->r_bool(section, "tri_state_reload");
 	};
-	if(m_bTriStateReload){
+	if (m_bTriStateReload) {
 		HUD_SOUND::LoadSound(section, "snd_open_weapon", m_sndOpen, m_eSoundOpen);
-		animGet	(mhud_open,	pSettings->r_string(*hud_sect,"anim_open_weapon"));
+		animGet(mhud_open, pSettings->r_string(*hud_sect, "anim_open_weapon"));
 
 		HUD_SOUND::LoadSound(section, "snd_add_cartridge", m_sndAddCartridge, m_eSoundAddCartridge);
-		animGet	(mhud_add_cartridge,	pSettings->r_string(*hud_sect,"anim_add_cartridge"));
+		animGet(mhud_add_cartridge, pSettings->r_string(*hud_sect, "anim_add_cartridge"));
 
 		HUD_SOUND::LoadSound(section, "snd_close_weapon", m_sndClose, m_eSoundClose);
-		animGet	(mhud_close,	pSettings->r_string(*hud_sect,"anim_close_weapon"));
+		animGet(mhud_close, pSettings->r_string(*hud_sect, "anim_close_weapon"));
 	};
-
+	m_bHasDupletMode = READ_IF_EXISTS(pSettings, r_bool, section, "has_duplet_mode", false);
 }
 
 
@@ -189,6 +189,18 @@ void CWeaponShotgun::UpdateSounds	()
 
 bool CWeaponShotgun::Action			(s32 cmd, u32 flags) 
 {
+
+	switch (cmd)
+	{
+		case kWPN_ZOOM:
+		{
+			if (flags & CMD_START && m_bHasDupletMode) Fire2Start();
+			else Fire2End();
+
+		}
+		return true;
+	}
+
 	if(inherited::Action(cmd, flags)) return true;
 
 	if(	m_bTriStateReload && GetState()==eReload &&
@@ -202,16 +214,6 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 	//если оружие чем-то занято, то ничего не делать
 	if(IsPending()) return false;
 
-	switch(cmd) 
-	{
-		case kWPN_ZOOM: 
-			{
-				if(flags&CMD_START) Fire2Start();
-				else Fire2End();
-
-			}
-			return true;
-	}
 	return false;
 }
 

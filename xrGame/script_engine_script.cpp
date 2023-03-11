@@ -11,6 +11,7 @@
 #include "ai_space.h"
 #include "script_debugger.h"
 //#include <ostream>
+#include <script_additional_functions.h>
 
 using namespace luabind;
 
@@ -183,8 +184,9 @@ ICF	u32	script_time_global	()	{ return 0; }
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
+	open_additional_libs(L);
 	module(L)[
-		def("log1", (void(*)(LPCSTR msg)) & Log), //from https://github.com/xer-urg/xp-dev_xray
+		def("log1", (void(*)(LPCSTR)) & Log), //from https://github.com/xer-urg/xp-dev_xray
 		class_<profile_timer_script>("profile_timer")
 			.def(constructor<>())
 			.def(constructor<profile_timer_script&>())

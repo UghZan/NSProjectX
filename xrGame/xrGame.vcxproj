@@ -1781,6 +1781,7 @@
     <ClInclude Include="script_action_planner_wrapper_inline.h" />
     <ClInclude Include="script_action_wrapper.h" />
     <ClInclude Include="script_action_wrapper_inline.h" />
+    <ClInclude Include="script_additional_functions.h" />
     <ClInclude Include="script_animation_action.h" />
     <ClInclude Include="script_animation_action_inline.h" />
     <ClInclude Include="script_binder.h" />
@@ -5830,6 +5831,7 @@
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_Advanced|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
       <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release_All_To_All|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
     </ClCompile>
+    <ClCompile Include="script_additional_functions.cpp" />
     <ClCompile Include="script_animation_action.cpp" />
     <ClCompile Include="script_animation_action_script.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug_Priquel|Win32'">pch_script.h</PrecompiledHeaderFile>
