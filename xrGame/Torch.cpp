@@ -6,6 +6,7 @@
 #include "PhysicsShell.h"
 #include "xrserver_objects_alife_items.h"
 #include "ai_sounds.h"
+#include "pch_script.h"
 
 #include "HUDManager.h"
 #include "level.h"
@@ -17,6 +18,8 @@
 #include "UIGameCustom.h"
 #include "actorEffector.h"
 #include "CustomOutfit.h"
+#include "game_object_space.h"
+#include "script_callback_ex.h"
 
 static const float		TIME_2_HIDE					= 5.f;
 static const float		TORCH_INERTION_CLAMP		= PI_DIV_6;
@@ -50,6 +53,7 @@ CTorch::CTorch(void)
 
 	m_prev_hp.set				(0,0);
 	m_delta_h					= 0;
+	b_lastState					= false;
 }
 
 CTorch::~CTorch(void) 
@@ -166,6 +170,10 @@ void CTorch::SwitchNightVision(bool vision_on)
 			HUD_SOUND::StopSound(m_NightVisionIdleSnd);
 		}
 	}
+
+	if (m_bNightVisionOn == vision_on) return;
+	callback(GameObject::eSwitchNV)(vision_on);
+	Actor()->callback(GameObject::eSwitchTorch)(vision_on);
 }
 
 
@@ -233,6 +241,15 @@ void CTorch::Switch	(bool light_on)
 		pVisual->CalculateBones				();
 
 		pVisual->LL_SetBoneVisible			(bi,	light_on,	TRUE); //hack
+	}
+
+	if (b_lastState == light_on) return;
+	b_lastState = light_on;
+	callback(GameObject::eSwitchTorch)(light_on);
+	CActor* pA = smart_cast<CActor*>(H_Parent());
+	if ((pA) ? true : false)
+	{
+		Actor()->callback(GameObject::eSwitchTorch)(light_on);
 	}
 }
 

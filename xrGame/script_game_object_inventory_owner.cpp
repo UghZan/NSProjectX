@@ -34,6 +34,7 @@
 #include "AI/Monsters/BaseMonster/base_monster.h"
 #include "weaponmagazined.h"
 #include "ai/stalker/ai_stalker.h"
+#include "Torch.h"
 
 bool CScriptGameObject::GiveInfoPortion(LPCSTR info_id)
 {
@@ -863,4 +864,74 @@ bool CScriptGameObject::movement_enabled()
 	}
 
 	return								(monster->movement().enabled());
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CScriptGameObject::EnableTorch(bool enable)
+{
+	CTorch* torch = smart_cast<CTorch*>(&object());
+	if (!torch) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::EnableTorch non-CTorch object !!!");
+		return;
+	}
+
+	torch->Switch(enable);
+}
+
+void CScriptGameObject::SwitchTorch()
+{
+	CTorch* torch = smart_cast<CTorch*>(&object());
+	if (!torch) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::SwitchTorch non-CTorch object !!!");
+		return;
+	}
+
+	torch->Switch();
+}
+
+bool CScriptGameObject::TorchEnabled()
+{
+	CTorch* torch = smart_cast<CTorch*>(&object());
+	if (!torch) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::TorchEnabled non-CTorch object !!!");
+		return							(false);
+	}
+
+	return torch->m_switched_on;
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void CScriptGameObject::EnableNightVision(bool enable)
+{
+	CTorch* torch = smart_cast<CTorch*>(&object());
+	if (!torch) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::EnableNightVision non-CTorch object !!!");
+		return;
+	}
+
+	torch->SwitchNightVision(enable);
+}
+
+void CScriptGameObject::SwitchNightVision()
+{
+	CTorch* torch = smart_cast<CTorch*>(&object());
+	if (!torch) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::SwitchNightVision non-CTorch object !!!");
+		return;
+	}
+
+	torch->SwitchNightVision();
+}
+
+bool CScriptGameObject::NightVisionEnabled()
+{
+	CTorch* torch = smart_cast<CTorch*>(&object());
+	if (!torch) {
+		ai().script_engine().script_log(ScriptStorage::eLuaMessageTypeError, "CScriptGameObject::NightVisionEnabled non-CTorch object !!!");
+		return							(false);
+	}
+
+	return torch->m_bNightVisionOn;
 }

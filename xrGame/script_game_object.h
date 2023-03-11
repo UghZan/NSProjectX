@@ -174,7 +174,7 @@ public:
 	_DECLARE_FUNCTION11	(SetHealth,			void, float);
 	_DECLARE_FUNCTION11	(SetPsyHealth,		void, float);
 	_DECLARE_FUNCTION11	(SetPower,			void, float);
-//	_DECLARE_FUNCTION11	(SetSatiety,		void, float);
+	_DECLARE_FUNCTION11	(SetSatiety,		void, float);
 	_DECLARE_FUNCTION11	(SetRadiation,		void, float);
 	_DECLARE_FUNCTION11	(SetCircumspection,	void, float);
 	_DECLARE_FUNCTION11	(SetMorale,			void, float);
@@ -259,6 +259,15 @@ public:
 			ETaskState			GetGameTaskState	(LPCSTR task_id, int objective_num);
 			void				SetGameTaskState	(ETaskState state, LPCSTR task_id, int objective_num);
 			void				GiveTaskToActor		(CGameTask* t, u32 dt, bool bCheckExisting);
+
+	//CTorch
+			void				EnableTorch(bool enable);
+			void				SwitchTorch();
+			bool				TorchEnabled();
+
+			void				EnableNightVision(bool enable);
+			void				SwitchNightVision();
+			bool				NightVisionEnabled();
 
 			
 			bool				IsTalking			();

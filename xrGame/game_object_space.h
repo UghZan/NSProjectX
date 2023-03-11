@@ -34,6 +34,12 @@ namespace GameObject {
 		eActionTypeParticle,
 		eActionTypeObject,
 
+		eOnMouseWheel,
+		eOnMouseMove,
+		eOnKeyPress,
+		eOnKeyRelease,
+		eOnKeyHold,
+
 		eActorSleep,
 
 		eHelicopterOnPoint,
@@ -41,8 +47,14 @@ namespace GameObject {
 
 		eOnItemTake,
 		eOnItemDrop,
+		eOnItemRuck,
+		eOnItemSlot,
+		eOnItemBelt,
 
 		eScriptAnimation,
+
+		eSwitchTorch,
+		eSwitchNV,
 		
 		eTraderGlobalAnimationRequest,
 		eTraderHeadAnimationRequest,

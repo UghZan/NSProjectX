@@ -16,13 +16,13 @@ protected:
 	float			fBrightness;
 	CLAItem*		lanim;
 	float			time2hide;
-
+	bool			b_lastState;
 	u16				guid_bone;
 	shared_str		light_trace_bone;
 
 	float			m_delta_h;
 	Fvector2		m_prev_hp;
-	bool			m_switched_on;
+
 	ref_light		light_render;
 	ref_light		light_omni;
 	ref_glow		glow_render;
@@ -49,6 +49,9 @@ public:
 			void	Switch				(bool light_on);
 
 	virtual bool	can_be_attached		() const;
+
+	bool			m_switched_on;
+	bool			m_bNightVisionOn;
  
 public:
 			void	SwitchNightVision		  ();
@@ -59,7 +62,6 @@ protected:
 	shared_str						m_NightVisionSect;
 
 	bool					m_bNightVisionEnabled;
-	bool					m_bNightVisionOn;
 
 	HUD_SOUND				m_TorchOnSnd;
 	HUD_SOUND				m_TorchOffSnd;

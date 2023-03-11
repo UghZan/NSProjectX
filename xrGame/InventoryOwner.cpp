@@ -460,14 +460,23 @@ void CInventoryOwner::OnItemDropUpdate ()
 void CInventoryOwner::OnItemBelt	(CInventoryItem *inventory_item, EItemPlace previous_place)
 {
 //.	attach		(inventory_item);
+	CGameObject* object = smart_cast<CGameObject*>(this);
+	VERIFY(object);
+	object->callback(GameObject::eOnItemBelt)(inventory_item->object().lua_game_object());
 }
 void CInventoryOwner::OnItemRuck	(CInventoryItem *inventory_item, EItemPlace previous_place)
 {
 	detach		(inventory_item);
+	CGameObject* object = smart_cast<CGameObject*>(this);
+	VERIFY(object);
+	object->callback(GameObject::eOnItemRuck)(inventory_item->object().lua_game_object());
 }
 void CInventoryOwner::OnItemSlot	(CInventoryItem *inventory_item, EItemPlace previous_place)
 {
 	attach		(inventory_item);
+	CGameObject* object = smart_cast<CGameObject*>(this);
+	VERIFY(object);
+	object->callback(GameObject::eOnItemSlot)(inventory_item->object().lua_game_object());
 }
 
 CInventoryItem* CInventoryOwner::GetCurrentOutfit() const

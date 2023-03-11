@@ -16,6 +16,7 @@
 #include "WeaponHUD.h"
 #include "xrServer.h"
 #include "autosave_manager.h"
+#include "pch_script.h"
 
 #include "actor.h"
 #include "huditem.h"
@@ -23,6 +24,8 @@
 #include "clsid_game.h"
 #include "../xrEngine/xr_input.h"
 #include "saved_game_wrapper.h"
+#include "game_object_space.h"
+#include "script_callback_ex.h"
 
 #ifdef DEBUG
 #	include "ai/monsters/BaseMonster/base_monster.h"
@@ -41,6 +44,8 @@ extern	float	g_fTimeFactor;
 void CLevel::IR_OnMouseWheel( int direction )
 {
 	if(	g_bDisableAllInput	) return;
+
+	if (g_actor) Actor()->callback(GameObject::eOnMouseWheel)(direction);
 
 	if (HUD().GetUI()->IR_OnMouseWheel(direction)) return;
 	if( Device.Paused()		) return;
@@ -67,8 +72,12 @@ void CLevel::IR_OnMouseHold(int btn)
 void CLevel::IR_OnMouseMove( int dx, int dy )
 {
 	if(g_bDisableAllInput)						return;
+
+	if (!g_bDisableAllInput && g_actor) Actor()->callback(GameObject::eOnMouseMove)(dx, dy);
+
 	if (pHUD->GetUI()->IR_OnMouseMove(dx,dy))	return;
 	if (Device.Paused())							return;
+
 	if (CURRENT_ENTITY())		{
 		IInputReceiver*		IR	= smart_cast<IInputReceiver*>	(smart_cast<CGameObject*>(CURRENT_ENTITY()));
 		if (IR)				IR->IR_OnMouseMove					(dx,dy);
@@ -100,6 +109,8 @@ void CLevel::IR_OnKeyboardPress	(int key)
 
 //.	if (DIK_F10 == key)		vtune.enable();
 //.	if (DIK_F11 == key)		vtune.disable();
+
+	if (!g_bDisableAllInput && g_actor) Actor()->callback(GameObject::eOnKeyPress)(key);
 	
 	EGameActions _curr = get_binded_action(key);
 	switch ( _curr ) 
@@ -363,6 +374,9 @@ void CLevel::IR_OnKeyboardRelease(int key)
 	bool b_ui_exist = (pHUD && pHUD->GetUI());
 
 	if (g_bDisableAllInput	) return;
+
+	if (g_actor) Actor()->callback(GameObject::eOnKeyRelease)(key);
+
 	if ( b_ui_exist && pHUD->GetUI()->IR_OnKeyboardRelease(key)) return;
 	if (Device.Paused()		) return;
 	if (game && Game().OnKeyboardRelease(get_binded_action(key)) ) return;
@@ -377,6 +391,8 @@ void CLevel::IR_OnKeyboardRelease(int key)
 void CLevel::IR_OnKeyboardHold(int key)
 {
 	if(g_bDisableAllInput) return;
+
+	if (g_actor) Actor()->callback(GameObject::eOnKeyHold)(key);
 
 	bool b_ui_exist = (pHUD && pHUD->GetUI());
 
