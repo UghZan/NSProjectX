@@ -4,6 +4,7 @@
 #include "..\xrEngine\irenderable.h"
 #include "..\xrEngine\igame_persistent.h"
 #include "..\xrEngine\environment.h"
+#include "..\xrEngine\customhud.h"
 
 using namespace		R_dsgraph;
 
@@ -357,6 +358,66 @@ void R_dsgraph_structure::r_dsgraph_render_graph	(u32	_priority, bool _clear)
 	Device.Statistic->RenderDUMP.End	();
 }
 
+void R_dsgraph_structure::r_dsgraph_render_hud_emissive()
+{
+#if	RENDER==R_R2
+	ENGINE_API extern float		psHUD_FOV;
+
+	// Change projection
+	Fmatrix Pold = Device.mProject;
+	Fmatrix FTold = Device.mFullTransform;
+	Device.mProject.build_projection(
+		deg2rad(psHUD_FOV * Device.fFOV /* *Device.fASPECT*/),
+		Device.fASPECT, VIEWPORT_NEAR,
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	Device.mFullTransform.mul(Device.mProject, Device.mView);
+	RCache.set_xform_project(Device.mProject);
+
+	// Rendering
+	rmNear();
+	mapHUDEmissive.traverseLR(sorted_L1);
+	mapHUDEmissive.clear();
+	rmNormal();
+
+	// Restore projection
+	Device.mProject = Pold;
+	Device.mFullTransform = FTold;
+	RCache.set_xform_project(Device.mProject);
+#endif
+}
+
+//////////////////////////////////////////////////////////////////////////
+// HUD sorted render
+void R_dsgraph_structure::r_dsgraph_render_hud_sorted()
+{
+#if	RENDER==R_R2
+	ENGINE_API extern float		psHUD_FOV;
+
+	// Change projection
+	Fmatrix Pold = Device.mProject;
+	Fmatrix FTold = Device.mFullTransform;
+	Device.mProject.build_projection(
+		deg2rad(psHUD_FOV * Device.fFOV /* *Device.fASPECT*/),
+		Device.fASPECT, VIEWPORT_NEAR,
+		g_pGamePersistent->Environment().CurrentEnv->far_plane);
+
+	Device.mFullTransform.mul(Device.mProject, Device.mView);
+	RCache.set_xform_project(Device.mProject);
+
+	// Rendering
+	rmNear();
+	mapHUDSorted.traverseRL(sorted_L1);
+	mapHUDSorted.clear();
+	rmNormal();
+
+	// Restore projection
+	Device.mProject = Pold;
+	Device.mFullTransform = FTold;
+	RCache.set_xform_project(Device.mProject);
+#endif
+}
+
 //////////////////////////////////////////////////////////////////////////
 // HUD render
 void R_dsgraph_structure::r_dsgraph_render_hud	()
@@ -505,6 +566,10 @@ void	R_dsgraph_structure::r_dsgraph_render_subspace	(IRender_Sector* _sector, CF
 			}
 		}
 	}
+
+#if RENDER==R_R2
+	if (g_pGameLevel && (phase == RImplementation.PHASE_SMAP) && ps_common_flags.test(RFLAG_ACTOR_SHADOW))	g_pGameLevel->pHUD->Render_Actor_Shadow();		// ACtor Shadow
+#endif
 
 	// Restore
 	ViewBase						= ViewSave;

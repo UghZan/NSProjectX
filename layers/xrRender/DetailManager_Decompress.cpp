@@ -10,6 +10,8 @@
 #	include "../../ETools/ETools.h"
 #endif
 
+extern float ps_current_detail_scale;
+
 //--------------------------------------------------- Decompression
 IC float	Interpolate			(float* base,		u32 x, u32 y, u32 size)
 {
@@ -166,6 +168,8 @@ Device.Statistic->TEST0.End		();
 
 			// Angles and scale
 			Item.scale	= r_scale.randF		(Dobj->m_fMinScale*0.5f,Dobj->m_fMaxScale*0.9f);
+
+			Item.scale *= ps_current_detail_scale;
 
 			// X-Form BBox
 			Fmatrix		mScale,mXform;

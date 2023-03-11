@@ -200,7 +200,6 @@ LPCSTR		CPda::Name				()
 		spec_char.Load(m_SpecificChracterOwner);
 		m_sFullName += ": ";
 		m_sFullName += xr_string(spec_char.Name());
-		if (m_bHacked) m_sFullName += " (исп.)";
 	}
 	
 	return m_sFullName.c_str();
@@ -208,7 +207,7 @@ LPCSTR		CPda::Name				()
 
 void CPda::UsePDA()
 {
-	if (m_bHacked) return;
+	if (m_bHacked || m_idOriginalOwner == 0) return;
 
 	luabind::functor<void> m_functor;
 	if (!ai().script_engine().functor("pda_manager.use_pda", m_functor))
@@ -219,12 +218,10 @@ void CPda::UsePDA()
 	CInventoryOwner* owner = GetOriginalOwner();
 	if (owner)
 	{
-		shared_str community = owner->CharacterInfo().Community().id();
-		int rank = owner->CharacterInfo().Rank().value();
-		m_functor(community, rank);
+		m_functor(m_idOriginalOwner);
 	}
 	else
-		m_functor(NO_COMMUNITY_INDEX, NO_RANK);
+		m_functor(-1);
 
 	m_bHacked = true;
 }

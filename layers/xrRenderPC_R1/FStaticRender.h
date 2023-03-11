@@ -187,6 +187,7 @@ public:
 	virtual void					Render					();
 	virtual void					Screenshot				(ScreenshotMode mode=SM_NORMAL, LPCSTR name = 0);
 	virtual void					OnFrame					();
+	virtual u32						active_phase			()			{ return phase; };
 	
 	// Render mode
 	virtual void					rmNear					();

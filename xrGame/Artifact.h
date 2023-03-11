@@ -16,7 +16,7 @@ private:
 public:
 									CArtefact						();
 	virtual							~CArtefact						();
-	u32								Cost() const override			{ return (m_cost * (1.0f + m_randomVariation)); }
+	u32								Cost() const override			{ return (m_cost * (1.0f + m_fRandomVariation)); }
 
 	virtual void					Load							(LPCSTR section);
 	
@@ -50,6 +50,8 @@ protected:
 	u16								m_CarringBoneID;
 	shared_str						m_sParticlesName;
 protected:
+		float							m_fRandomVariation;
+	float							m_fBasePower;
 	SArtefactActivation*			m_activationObj;
 	//////////////////////////////////////////////////////////////////////////
 	//	Lights
@@ -62,7 +64,6 @@ protected:
 	float							m_fTrailLightRange;
 protected:
 	virtual void					UpdateLights();
-	
 public:
 	enum AFProperty {
 		aHealthRestore,
@@ -105,8 +106,11 @@ public:
 	float							m_fAdditionalInvWeight;
 	float							m_fAdditionalInvWeight2;
 
-	bool							m_canHaveVariation = true;
-	float							m_randomVariation;
+	float							get_base_power						()				{ return m_fBasePower;	};
+	void							set_base_power						(float power)	{ m_fBasePower = power; };
+
+	float							get_random_variation() { return m_fRandomVariation; };
+	void							set_random_variation(float variation) { m_fRandomVariation = variation; };
 	
 	float							GetStatWithVariation(AFProperty stat_name);
 

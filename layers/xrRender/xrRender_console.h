@@ -128,6 +128,9 @@ extern ECORE_API Fvector3		ps_r2_dof;
 extern ECORE_API float			ps_r2_dof_sky;				//	distance to sky
 extern ECORE_API float			ps_r2_dof_kernel_size;		//	7.0f
 
+extern ECORE_API Flags32		ps_common_flags;				// r1+r2
+extern ECORE_API int			ps_r__detail_radius;
+
 enum
 {
 	R2FLAG_SUN								= (1<<0),
@@ -159,6 +162,7 @@ enum
 	R2FLAG_BLOOM							= (1 << 22),
 	R2FLAG_DOF								= (1 << 23),
 	R2FLAG_MBLUR							= (1 << 24)
+
 };
 
 enum
@@ -172,5 +176,11 @@ enum
 extern void						xrRender_initconsole	();
 extern BOOL						xrRender_test_hw		();
 extern void						xrRender_apply_tf		();
+
+enum
+{
+	RFLAG_BLOODMARKS = (1 << 0),
+	RFLAG_ACTOR_SHADOW = (1 << 1)
+};
 
 #endif

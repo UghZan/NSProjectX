@@ -738,6 +738,7 @@ CSE_ALifeItemArtefact::CSE_ALifeItemArtefact(LPCSTR caSection) : CSE_ALifeItem(c
 {
 	m_fAnomalyValue				= 100.f;
 	m_fRandomVariation			= Random.randF(-0.1f,0.1f);
+	m_fBasePower				= 1.0f;
 }
 
 CSE_ALifeItemArtefact::~CSE_ALifeItemArtefact()
@@ -748,12 +749,14 @@ void CSE_ALifeItemArtefact::STATE_Read		(NET_Packet	&tNetPacket, u16 size)
 {
 	inherited::STATE_Read		(tNetPacket,size);
 	tNetPacket.r_float_q8(m_fRandomVariation, -0.1f, 0.1f);
+	tNetPacket.r_float_q8(m_fBasePower, 0.1f, 2.0f);
 }
 
 void CSE_ALifeItemArtefact::STATE_Write		(NET_Packet	&tNetPacket)
 {
 	inherited::STATE_Write		(tNetPacket);
 	tNetPacket.w_float_q8(m_fRandomVariation, -0.1f, 0.1f);
+	tNetPacket.w_float_q8(m_fBasePower, 0.1f, 2.0f);
 }
 
 void CSE_ALifeItemArtefact::UPDATE_Read		(NET_Packet	&tNetPacket)
@@ -766,16 +769,12 @@ void CSE_ALifeItemArtefact::UPDATE_Write	(NET_Packet	&tNetPacket)
 	inherited::UPDATE_Write		(tNetPacket);
 }
 
-float CSE_ALifeItemArtefact::get_variation()
-{
-	return m_fRandomVariation;
-}
-
 void CSE_ALifeItemArtefact::FillProps		(LPCSTR pref, PropItemVec& items)
 {
 	inherited::FillProps			(pref,items);
 	PHelper().CreateFloat			(items, PrepareKey(pref, *s_name, "Anomaly value:"), &m_fAnomalyValue, 0.f, 200.f);
 	PHelper().CreateFloat			(items, PrepareKey(pref, *s_name, "Random Variation:"), &m_fRandomVariation, -0.1f, 0.1f);
+	PHelper().CreateFloat			(items, PrepareKey(pref, *s_name, "Base Power:"), &m_fBasePower, 0.1f, 2.0f);
 }
 
 BOOL CSE_ALifeItemArtefact::Net_Relevant	()

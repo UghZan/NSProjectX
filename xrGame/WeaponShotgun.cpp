@@ -8,7 +8,7 @@
 #include "level.h"
 #include "actor.h"
 
-CWeaponShotgun::CWeaponShotgun(void) : CWeaponCustomPistol("TOZ34")
+CWeaponShotgun::CWeaponShotgun(void) : CWeaponMagazined("TOZ34")
 {
     m_eSoundShotBoth		= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
 	m_eSoundClose			= ESoundTypes(SOUND_TYPE_WEAPON_SHOOTING);
@@ -140,7 +140,7 @@ void CWeaponShotgun::OnShotBoth()
 void CWeaponShotgun::switch2_Fire	()
 {
 	inherited::switch2_Fire	();
-	bWorking = false;
+	//bWorking = false;
 }
 
 void CWeaponShotgun::switch2_Fire2	()
@@ -204,10 +204,11 @@ bool CWeaponShotgun::Action			(s32 cmd, u32 flags)
 
 	switch(cmd) 
 	{
-		case kWPN_ZOOM : 
+		case kWPN_ZOOM: 
 			{
 				if(flags&CMD_START) Fire2Start();
 				else Fire2End();
+
 			}
 			return true;
 	}

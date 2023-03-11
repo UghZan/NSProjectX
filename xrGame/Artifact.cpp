@@ -100,8 +100,6 @@ void CArtefact::Load(LPCSTR section)
 		m_fAdditionalInvWeight = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight", 0.f);
 		m_fAdditionalInvWeight2 = READ_IF_EXISTS(pSettings, r_float, section, "additional_inventory_weight2", 0.f);
 
-		m_canHaveVariation = READ_IF_EXISTS(pSettings, r_bool, section, "has_variation", true);
-
 		if (pSettings->section_exist(/**cNameSect(), */pSettings->r_string(section, "hit_absorbation_sect")))
 			m_ArtefactHitImmunities.LoadImmunities(pSettings->r_string(section, "hit_absorbation_sect"), pSettings);
 	}
@@ -121,7 +119,7 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 	CSE_Abstract* e = (CSE_Abstract*)(DC);
 	CSE_ALifeItemArtefact* E = smart_cast<CSE_ALifeItemArtefact*>(e);
 
-	m_randomVariation = E->m_fRandomVariation;
+	m_fRandomVariation = E->m_fRandomVariation;
 
 	if (*m_sParticlesName)
 	{
@@ -151,18 +149,21 @@ BOOL CArtefact::net_Spawn(CSE_Abstract* DC)
 void CArtefact::save(NET_Packet& output_packet)
 {
 	inherited::save(output_packet);
-	save_data(m_randomVariation, output_packet);
+	save_data(m_fRandomVariation, output_packet);
+	save_data(m_fBasePower, output_packet);
 }
 
 void CArtefact::load(IReader& input_packet)
 {
 	inherited::load(input_packet);
-	load_data(m_randomVariation, input_packet);
+	load_data(m_fRandomVariation, input_packet);
+	load_data(m_fBasePower, input_packet);
 }
 
 float CArtefact::GetStatWithVariation(AFProperty stat_name)
 {
-	float coeff = 1 + m_randomVariation;
+	float coeff = m_fBasePower + m_fRandomVariation;
+	if (coeff <= 0.0f) coeff = 0.01f;
 	switch (stat_name)
 	{
 	case aHealthRestore:

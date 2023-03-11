@@ -232,7 +232,7 @@ void CActor::on_weapon_shot_start		(CWeapon *weapon)
 
 	if (pWM)
 	{
-		if (pWM->GetCurrentFireMode() != 1)
+		if (pWM->GetCurrentFireMode() > 1)
 		{
 			effector->SetActive(FALSE);
 			update_camera(effector);

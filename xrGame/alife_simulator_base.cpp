@@ -120,9 +120,9 @@ CSE_Abstract *CALifeSimulatorBase::spawn_item	(LPCSTR section, const Fvector &po
 	if(weapon)
 		weapon->a_elapsed		= weapon->get_ammo_magsize();
 
-	CSE_ALifeItemArtefact* artefact = smart_cast<CSE_ALifeItemArtefact*>(dynamic_object);
-	if (artefact)
-		artefact->m_fRandomVariation = Random.randF(-0.1, 0.1);
+	//CSE_ALifeItemArtefact* artefact = smart_cast<CSE_ALifeItemArtefact*>(dynamic_object);
+	//if (artefact)
+	//	artefact->m_fRandomVariation = Random.randF(-0.1, 0.1);
 
 	dynamic_object->m_tNodeID	= level_vertex_id;
 	dynamic_object->m_tGraphID	= game_vertex_id;

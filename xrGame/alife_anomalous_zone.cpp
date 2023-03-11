@@ -114,7 +114,7 @@ void CSE_ALifeAnomalousZone::spawn_artefacts				()
 			R_ASSERT2		(l_tpALifeItemArtefact,"Anomalous zone can't generate non-artefact objects since they don't have an 'anomaly property'!");
 
 			l_tpALifeItemArtefact->m_fAnomalyValue = m_maxPower*(1.f - i->o_Position.distance_to(o_Position)/m_offline_interactive_radius);
-			l_tpALifeItemArtefact->m_fRandomVariation = Random.randF(-0.1f, 0.1f);
+			//l_tpALifeItemArtefact->m_fRandomVariation = Random.randF(-0.1f, 0.1f);
 		}
 	}
 

@@ -210,14 +210,15 @@ SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemDetector,CSE_ALifeItem)
 	virtual							~CSE_ALifeItemDetector();
 	virtual u32						ef_detector_type() const;
 	virtual CSE_ALifeItemDetector	*cast_item_detector		() {return this;}
-SERVER_ENTITY_DECLARE_END
-add_to_type_list(CSE_ALifeItemDetector)
+	SERVER_ENTITY_DECLARE_END
+		add_to_type_list(CSE_ALifeItemDetector)
 #define script_type_list save_type_list(CSE_ALifeItemDetector)
 
-SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefact,CSE_ALifeItem)
+	SERVER_ENTITY_DECLARE_BEGIN(CSE_ALifeItemArtefact, CSE_ALifeItem)
 	float							m_fAnomalyValue;
 	float							m_fRandomVariation;
-	virtual float					get_variation();
+	float							m_fBasePower;
+
 									CSE_ALifeItemArtefact	(LPCSTR caSection);
 	virtual							~CSE_ALifeItemArtefact	();
 	virtual BOOL					Net_Relevant			();

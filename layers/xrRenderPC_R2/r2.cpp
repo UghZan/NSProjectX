@@ -250,8 +250,10 @@ void CRender::create()
 
 	// nvstencil on NV40 and up
 	o.nvstencil = FALSE;
-	if ((HW.Caps.id_vendor == 0x10DE) && (HW.Caps.id_device >= 0x40))	o.nvstencil = TRUE;
-	if (strstr(Core.Params, "-nonvs"))		o.nvstencil = FALSE;
+
+	//K.D: we really don't need this on modern cards because of unwanted bugs.
+	//if ((HW.Caps.id_vendor == 0x10DE) && (HW.Caps.id_device >= 0x40))	o.nvstencil = TRUE;
+	//if (strstr(Core.Params, "-nonvs"))		o.nvstencil = FALSE;
 
 	// nv-dbt
 	o.nvdbt = HW.support((D3DFORMAT)MAKEFOURCC('N', 'V', 'D', 'B'), D3DRTYPE_SURFACE, 0);
@@ -263,6 +265,13 @@ void CRender::create()
 	if (strstr(Core.Params, "-smap2560"))	o.smapsize = 2560;
 	if (strstr(Core.Params, "-smap3072"))	o.smapsize = 3072;
 	if (strstr(Core.Params, "-smap4096"))	o.smapsize = 4096;
+	D3DCAPS9 caps;
+	CHK_DX(HW.pDevice->GetDeviceCaps(&caps));
+	u32 video_mem = HW.pDevice->GetAvailableTextureMem();
+	if ((caps.MaxTextureHeight >= 6144) && (video_mem > 512) && strstr(Core.Params, "-smap6144"))
+		o.smapsize = 6144;
+	if ((caps.MaxTextureHeight >= 8192) && (video_mem > 512) && strstr(Core.Params, "-smap8192"))
+		o.smapsize = 8192;
 
 	// gloss
 	char* g = strstr(Core.Params, "-gloss ");
@@ -272,7 +281,7 @@ void CRender::create()
 	}
 
 	// options
-	o.bug = (strstr(Core.Params, "-bug")) ? TRUE : FALSE;
+	//o.bug = (strstr(Core.Params, "-bug")) ? TRUE : FALSE;
 	o.sunfilter = (strstr(Core.Params, "-sunfilter")) ? TRUE : FALSE;
 	//o.sunstatic			= (strstr(Core.Params,"-sunstatic"))?	TRUE	:FALSE	;
 	o.sunstatic = r2_sun_static;
@@ -345,6 +354,13 @@ void CRender::reset_begin()
 		Lights_LastFrame.clear();
 	}
 
+	// KD: let's reload details while changed details options on vid_restart
+	if (b_loaded && ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density)))
+	{
+		Details->Unload();
+		xr_delete(Details);
+	}
+
 	xr_delete(Target);
 	HWOCC.occq_destroy();
 	_RELEASE(q_sync_point[1]);
@@ -358,6 +374,13 @@ void CRender::reset_end()
 	HWOCC.occq_create(occq_size);
 
 	Target = xr_new<CRenderTarget>();
+
+	// KD: let's reload details while changed details options on vid_restart
+	if (b_loaded && ((dm_current_size != dm_size) || (ps_r__Detail_density != ps_current_detail_density)))
+	{
+		Details = xr_new<CDetailManager>();
+		Details->Load();
+	}
 
 	xrRender_apply_tf();
 

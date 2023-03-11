@@ -268,7 +268,7 @@
       <ProgramDataBaseFileName>$(IntDir)</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
-      <AdditionalIncludeDirectories>I:\Vitalya\mine\NSProjectX\xrCore;I:\Vitalya\mine\NSProjectX\third-party\include;I:\Vitalya\mine\NSProjectX\LuaJIT\src;I:\Vitalya\mine\NSProjectX\Luabind;I:\Vitalya\mine\NSProjectX\third-party\include\loki;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\xrCore;.\third-party\include;.\LuaJIT\src;.\Luabind;.\third-party\include\loki;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

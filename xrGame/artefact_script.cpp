@@ -13,6 +13,7 @@
 #include "ElectricBall.h"
 #include "RustyHairArtifact.h"
 #include "GalantineArtifact.h"
+#include "inventory_item_object.h"
 
 using namespace luabind;
 
@@ -21,6 +22,13 @@ void CArtefact::script_register(lua_State *L)
 {
 	module(L)
 	[
+		class_<CArtefact, CGameObject>("CArtefact")
+		.def("get_base_power", &CArtefact::get_base_power)
+		.def("set_base_power", &CArtefact::set_base_power)
+		.def("get_random_variation", &CArtefact::get_random_variation)
+		.def("set_random_variation", &CArtefact::set_random_variation)
+		,
+
 		class_<CMercuryBall			,CGameObject>("CMercuryBall").def		(constructor<>()),
 		class_<CBlackDrops			,CGameObject>("CBlackDrops").def		(constructor<>()),
 		class_<CBlackGraviArtefact	,CGameObject>("CBlackGraviArtefact").def(constructor<>()),

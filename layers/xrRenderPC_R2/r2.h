@@ -35,7 +35,7 @@ public:
 
 public:
 	struct		_options	{
-		u32		bug					: 1;
+		//u32		bug					: 1;
 
 		u32		smapsize			: 16;
 		u32		depth16				: 1;
@@ -209,6 +209,7 @@ public:
 
 	virtual	void					level_Load					(IReader*);
 	virtual void					level_Unload				();
+	virtual u32						active_phase				()	{ return phase; };
 
 	virtual IDirect3DBaseTexture9*	texture_load			(LPCSTR	fname, u32& msize);
 	virtual HRESULT shader_compile(
