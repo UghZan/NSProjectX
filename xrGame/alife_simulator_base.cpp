@@ -44,6 +44,10 @@ CALifeSimulatorBase::CALifeSimulatorBase	(xrServer *server, LPCSTR section)
 	m_registry_container		= 0;
 	random().seed				(u32(CPU::QPC() & 0xffffffff));
 	m_can_register_objects		= true;
+#ifdef LUAICP_COMPAT
+	LogXrayOffset("CALifeSpawnRegistry", this, &this->m_spawns);
+	LogXrayOffset("CALifeObjectRegistry", this, &this->m_objects);
+#endif
 }
 
 CALifeSimulatorBase::~CALifeSimulatorBase	()
@@ -84,6 +88,10 @@ void CALifeSimulatorBase::reload			(LPCSTR section)
 	m_groups					= xr_new<CALifeGroupRegistry>		();
 	m_registry_container		= xr_new<CALifeRegistryContainer>	();
 	m_initialized				= true;
+
+#ifdef LUAICP_COMPAT
+	Msg("#SE_DBG: CALifeSimulatorBase '%s' ->m_objects = 0x%p ", section, (LPVOID)m_objects);
+#endif
 }
 
 CSE_Abstract *CALifeSimulatorBase::spawn_item	(LPCSTR section, const Fvector &position, u32 level_vertex_id, GameGraph::_GRAPH_ID game_vertex_id, u16 parent_id, bool registration)

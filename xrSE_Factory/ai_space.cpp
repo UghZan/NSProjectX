@@ -15,6 +15,7 @@ CAI_Space *g_ai_space = 0;
 CAI_Space::CAI_Space				()
 {
 	m_script_engine			= 0;
+
 }
 
 void CAI_Space::init				()

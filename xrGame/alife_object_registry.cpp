@@ -13,6 +13,9 @@
 
 CALifeObjectRegistry::CALifeObjectRegistry	(LPCSTR section)
 {
+#ifdef LUAICP_COMPAT
+	LogXrayOffset("CALifeObjectRegistry.list", this, &this->m_objects);
+#endif
 }
 
 CALifeObjectRegistry::~CALifeObjectRegistry	()

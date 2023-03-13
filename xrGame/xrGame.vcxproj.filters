@@ -9784,5 +9784,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="cpp.hint" />
+    <None Include="luaicp_attach.inc" />
   </ItemGroup>
 </Project>

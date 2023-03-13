@@ -19,6 +19,24 @@ static LogCallback			LogCB			= 0;
 //from https://github.com/xer-urg/xp-dev_xray
 IWriter* LogWriter;
 
+#ifdef LUAICP_COMPAT
+typedef void (WINAPI* OFFSET_UPDATER)(LPCSTR key, u32 ofs);
+
+void	LogXrayOffset(LPCSTR key, LPVOID base, LPVOID pval)
+{
+	u32 ofs = (u32)pval - (u32)base;
+	Msg("XRAY_OFFSET: %30s = 0x%x base = 0x%p, pval = 0x%p ", key, ofs, base, pval);
+	static OFFSET_UPDATER cbUpdater = NULL;
+	HMODULE hDLL = GetModuleHandle("luaicp.dll");
+	if (!cbUpdater && hDLL)
+		cbUpdater = (OFFSET_UPDATER)GetProcAddress(hDLL, "UpdateXrayOffset");
+
+	if (cbUpdater)
+		cbUpdater(key, ofs);
+
+}
+#endif
+
 void FlushLog			(LPCSTR file_name)
 {
 	/*if (no_log)

@@ -109,6 +109,17 @@ CObject::CObject() : ISpatial(g_SpatialSpace)
 	NameObject = NULL;
 	NameSection = NULL;
 	NameVisual = NULL;
+#ifdef LUAICP_COMPAT
+	static bool _saved = false;
+	if (!_saved)
+	{
+		_saved = true;
+		LogXrayOffset("GameObject.id", this, &this->Props);
+		LogXrayOffset("GameObject.name", this, &this->NameObject);
+		LogXrayOffset("GameObject.section", this, &this->NameSection);
+		LogXrayOffset("GameObject.visual", this, &this->NameVisual);
+	}
+#endif
 
 #ifdef DEBUG
 	dbg_update_shedule = u32(-1) / 2;

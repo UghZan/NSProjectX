@@ -93,6 +93,19 @@ CSE_Abstract::CSE_Abstract					(LPCSTR caSection)
 	m_script_version			= 0;
 	m_tClassID					= TEXT2CLSID(pSettings->r_string(caSection,"class"));
 
+#ifdef LUAICP_COMPAT
+	static bool _saved = false;
+	if (!_saved)
+	{
+		_saved = true;
+		LogXrayOffset("CSE_AlifeObject.id", this, &this->ID);
+		LogXrayOffset("CSE_AlifeObject.parent_id", this, &this->ID_Parent);
+		LogXrayOffset("CSE_AlifeObject.name", this, &this->s_name_replace);
+		LogXrayOffset("CSE_AlifeObject.section", this, &this->s_name);
+		LogXrayOffset("CSE_AlifeObject.clsid", this, &this->m_script_clsid);
+	}
+#endif
+
 //	m_spawn_probability			= 1.f;
 	m_spawn_flags.zero			();
 	m_spawn_flags.set			(flSpawnEnabled			,TRUE);

@@ -8,3 +8,6 @@
 
 // ~~~GAMEPLAY~~~
 #define SIMPLIFIED_FIRE_WOUND_PROTECTION //fire_wound no longer uses bone_protection of outfit, instead using immunity value
+
+// ~~~DEV~~~
+#define LUAICP_COMPAT //lua interceptor compat by alpet from xp-dev_xray
