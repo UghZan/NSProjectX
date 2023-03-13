@@ -90,23 +90,27 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("take_item_from_box",			int(GameObject::eInvBoxItemTake)),
 				value("map_location_added",			int(GameObject::eMapLocationAdded)),
 
+#ifdef KEYBOARD_CALLBACKS
 				value("on_key_press",				int(GameObject::eOnKeyPress)),
 				value("on_key_release",				int(GameObject::eOnKeyRelease)),
 				value("on_key_hold",				int(GameObject::eOnKeyHold)),
+#endif
 
+#ifdef MOUSE_CALLBACKS
 				value("on_mouse_move",				int(GameObject::eOnMouseMove)),
 				value("on_mouse_wheel",				int(GameObject::eOnMouseWheel)),
 				value("on_mouse_press",				int(GameObject::eOnMousePress)),
 				value("on_mouse_release",			int(GameObject::eOnMouseRelease)),
 				value("on_mouse_hold",				int(GameObject::eOnMouseHold)),
+#endif
 
+#ifdef ITEM_MOVEMENT_CALLBACKS
 				value("on_item_belt",				int(GameObject::eOnItemBelt)),
 				value("on_item_slot",				int(GameObject::eOnItemSlot)),
 				value("on_item_ruck",				int(GameObject::eOnItemRuck)),
+#endif
 
-				value("switch_torch",				int(GameObject::eSwitchTorch)),
-				value("switch_night_vision",		int(GameObject::eSwitchNV)),
-
+#ifdef WEAPON_CALLBACKS
 				value("on_actor_weapon_empty",		int(GameObject::eOnActorWeaponEmpty)),
 				value("on_actor_weapon_jammed",		int(GameObject::eOnActorWeaponJammed)),
 				value("on_actor_weapon_fire",		int(GameObject::eOnActorWeaponFire)),
@@ -118,6 +122,10 @@ void CScriptGameObject::script_register(lua_State *L)
 				value("on_npc_weapon_jammed",		int(GameObject::eOnNPCWeaponJammed)),
 				value("on_npc_weapon_fire",			int(GameObject::eOnNPCWeaponFire)),
 				value("on_npc_weapon_reload",		int(GameObject::eOnNPCWeaponReload))
+#endif
+
+				value("switch_torch", int(GameObject::eSwitchTorch)),
+				value("switch_night_vision", int(GameObject::eSwitchNV))
 			],
 
 		def("buy_condition",				(void (*)(CScriptIniFile*,LPCSTR))(&::buy_condition)),

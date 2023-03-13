@@ -381,6 +381,7 @@ void CWeaponMagazined::ReloadMagazine()
 
 void IC CWeaponMagazined::state_switch_callback(GameObject::ECallbackType actor_type, GameObject::ECallbackType npc_type)
 {
+	//from xp-dev_xray
 	xr_string ammo_type;
 	if (GetAmmoElapsed() == 0 || m_magazine.empty())
 	{
@@ -426,16 +427,22 @@ void CWeaponMagazined::OnStateSwitch	(u32 S)
 		switch2_Fire2	();
 		break;
 	case eMisfire:
+#ifdef WEAPON_CALLBACKS
 		state_switch_callback(GameObject::eOnActorWeaponJammed, GameObject::eOnNPCWeaponJammed);
+#endif
 		if(smart_cast<CActor*>(this->H_Parent()) && (Level().CurrentViewEntity()==H_Parent()) )
 			HUD().GetUI()->AddInfoMessage("gun_jammed");
 		break;
 	case eMagEmpty:
+#ifdef WEAPON_CALLBACKS
 		state_switch_callback(GameObject::eOnActorWeaponEmpty, GameObject::eOnNPCWeaponEmpty);
+#endif
 		switch2_Empty	();
 		break;
 	case eReload:
+#ifdef WEAPON_CALLBACKS
 		state_switch_callback(GameObject::eOnActorWeaponReload, GameObject::eOnNPCWeaponReload);
+#endif
 		switch2_Reload	();
 		break;
 	case eShowing:
@@ -558,7 +565,9 @@ void CWeaponMagazined::state_Fire	(float dt)
 			FireTrace		(p1,d);
 		else
 			FireTrace		(m_vStartPos, m_vStartDir);
+#ifdef WEAPON_CALLBACKS
 		state_switch_callback(GameObject::eOnActorWeaponFire, GameObject::eOnNPCWeaponFire);
+#endif
 	}
 	
 	if(m_iShotNum == m_iQueueSize)

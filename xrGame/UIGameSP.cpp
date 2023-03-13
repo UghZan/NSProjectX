@@ -92,6 +92,7 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		}break;
 
 	case kACTIVE_JOBS:
+		if(pActor->GetPDA())
 		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
 			PdaMenu->SetActiveSubdialog(eptQuests);
 			m_game->StartStopMenu(PdaMenu,true);
@@ -99,6 +100,7 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		}break;
 
 	case kMAP:
+		if (pActor->GetPDA())
 		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
 			PdaMenu->SetActiveSubdialog(eptMap);
 			m_game->StartStopMenu(PdaMenu,true);
@@ -106,6 +108,7 @@ bool CUIGameSP::IR_OnKeyboardPress(int dik)
 		}break;
 
 	case kCONTACTS:
+		if (pActor->GetPDA())
 		if( !MainInputReceiver() || MainInputReceiver()==PdaMenu){
 			PdaMenu->SetActiveSubdialog(eptContacts);
 			m_game->StartStopMenu(PdaMenu,true);

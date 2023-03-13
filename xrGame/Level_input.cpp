@@ -45,7 +45,9 @@ void CLevel::IR_OnMouseWheel( int direction )
 {
 	if(	g_bDisableAllInput	) return;
 
+#ifdef MOUSE_CALLBACKS
 	if (g_actor) Actor()->callback(GameObject::eOnMouseWheel)(direction);
+#endif
 
 	if (HUD().GetUI()->IR_OnMouseWheel(direction)) return;
 	if( Device.Paused()		) return;
@@ -64,17 +66,24 @@ static int mouse_button_2_key []	=	{MOUSE_1,MOUSE_2,MOUSE_3};
 
 void CLevel::IR_OnMousePress(int btn)
 {	
+
+#ifdef MOUSE_CALLBACKS
 	if (g_actor) Actor()->callback(GameObject::eOnMousePress)(btn);
+#endif
 	IR_OnKeyboardPress(mouse_button_2_key[btn]);
 }
 void CLevel::IR_OnMouseRelease(int btn)
 {	
+#ifdef MOUSE_CALLBACKS
 	if (g_actor) Actor()->callback(GameObject::eOnMouseRelease)(btn);
+#endif
 	IR_OnKeyboardRelease(mouse_button_2_key[btn]);
 }
 void CLevel::IR_OnMouseHold(int btn)
 {	
+#ifdef MOUSE_CALLBACKS
 	if (g_actor) Actor()->callback(GameObject::eOnMouseHold)(btn);
+#endif
 	IR_OnKeyboardHold(mouse_button_2_key[btn]);
 }
 
@@ -82,7 +91,9 @@ void CLevel::IR_OnMouseMove( int dx, int dy )
 {
 	if(g_bDisableAllInput)						return;
 
+#ifdef MOUSE_CALLBACKS
 	if (!g_bDisableAllInput && g_actor) Actor()->callback(GameObject::eOnMouseMove)(dx, dy);
+#endif
 
 	if (pHUD->GetUI()->IR_OnMouseMove(dx,dy))	return;
 	if (Device.Paused())							return;
@@ -119,7 +130,9 @@ void CLevel::IR_OnKeyboardPress	(int key)
 //.	if (DIK_F10 == key)		vtune.enable();
 //.	if (DIK_F11 == key)		vtune.disable();
 
+#ifdef KEYBOARD_CALLBACKS
 	if (!g_bDisableAllInput && g_actor) Actor()->callback(GameObject::eOnKeyPress)(key);
+#endif
 	
 	EGameActions _curr = get_binded_action(key);
 	switch ( _curr ) 
@@ -384,7 +397,9 @@ void CLevel::IR_OnKeyboardRelease(int key)
 
 	if (g_bDisableAllInput	) return;
 
+#ifdef KEYBOARD_CALLBACKS
 	if (g_actor) Actor()->callback(GameObject::eOnKeyRelease)(key);
+#endif
 
 	if ( b_ui_exist && pHUD->GetUI()->IR_OnKeyboardRelease(key)) return;
 	if (Device.Paused()		) return;
@@ -401,7 +416,9 @@ void CLevel::IR_OnKeyboardHold(int key)
 {
 	if(g_bDisableAllInput) return;
 
+#ifdef KEYBOARD_CALLBACKS
 	if (g_actor) Actor()->callback(GameObject::eOnKeyHold)(key);
+#endif
 
 	bool b_ui_exist = (pHUD && pHUD->GetUI());
 

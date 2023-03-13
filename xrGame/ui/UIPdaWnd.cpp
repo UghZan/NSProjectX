@@ -191,10 +191,16 @@ void CUIPdaWnd::UpdateDateTime()
 	}
 }
 
+#include "../Actor.h"
+#include "../Inventory.h"
 void CUIPdaWnd::Update()
 {
 	inherited::Update		();
 	UpdateDateTime			();
+
+	//hide PDA window if there's no PDA in the slot
+	if (!g_actor->GetPDA() && IsShown())
+		GetHolder()->StartStopMenu(this, true);
 }
 
 void CUIPdaWnd::SetActiveSubdialog(EPdaTabs section)

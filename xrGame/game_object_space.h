@@ -34,18 +34,23 @@ namespace GameObject {
 		eActionTypeParticle,
 		eActionTypeObject,
 
+#ifdef MOUSE_CALLBACKS
 		eOnMouseWheel,
 		eOnMouseMove,
 		eOnMousePress,
 		eOnMouseRelease,
 		eOnMouseHold,
+#endif
 
+#ifdef KEYBOARD_CALLBACKS
 		eOnKeyPress,
 		eOnKeyRelease,
 		eOnKeyHold,
+#endif
 
 		eActorSleep,
 
+#ifdef WEAPON_CALLBACKS
 		eOnActorWeaponFire,
 		eOnActorWeaponJammed,
 		eOnActorWeaponEmpty,
@@ -57,15 +62,19 @@ namespace GameObject {
 		eOnNPCWeaponJammed,
 		eOnNPCWeaponEmpty,
 		eOnNPCWeaponReload,
+#endif
 
 		eHelicopterOnPoint,
 		eHelicopterOnHit,
 
 		eOnItemTake,
 		eOnItemDrop,
+
+#ifdef ITEM_MOVEMENT_CALLBACKS
 		eOnItemRuck,
 		eOnItemSlot,
 		eOnItemBelt,
+#endif
 
 		eScriptAnimation,
 
