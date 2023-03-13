@@ -18,9 +18,7 @@ void 	XRCORE_API				Log				(LPCSTR msg, const Fvector& dop);
 void 	XRCORE_API				Log				(LPCSTR msg, const Fmatrix& dop);
 void 	XRCORE_API				LogWinErr		(LPCSTR msg, long 			err_code);
 
-#ifdef LUAICP_COMPAT
 void	XRCORE_API				LogXrayOffset	(LPCSTR key, LPVOID base, LPVOID pval);
-#endif
 
 typedef void	( * LogCallback)				(LPCSTR string);
 
