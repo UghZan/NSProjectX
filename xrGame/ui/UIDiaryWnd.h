@@ -73,6 +73,5 @@ public:
 			void		AddNews					();
 			void		MarkNewsAsRead			(bool status);
 	virtual void		Show					(bool status);
-
 };
 

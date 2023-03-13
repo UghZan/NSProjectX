@@ -329,7 +329,6 @@ float CEntityCondition::HitOutfitEffect(SHit* hit)
 	if(!pOutfit)					return hit->power;
 
 	float new_hit_power				= hit->power;
-
 	if (hit->hit_type == ALife::eHitTypeFireWound)
 		new_hit_power				= pOutfit->HitThruArmour(hit);
 	else

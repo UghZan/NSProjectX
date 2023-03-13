@@ -114,9 +114,19 @@ float CCustomOutfit::GetHitTypeProtection(ALife::EHitType hit_type, s16 element)
 float	CCustomOutfit::HitThruArmour(SHit* hit)
 {
 	float hit_power = hit->power;
+#ifdef SIMPLIFIED_FIRE_WOUND_PROTECTION
+	float protection = 1.0f - m_HitTypeProtection[ALife::eHitTypeFireWound] * GetCondition();
+#else
 	float protection = m_boneProtection->m_fHitFrac;
-	float BoneArmor = m_boneProtection->getBoneArmour(ALife::eHitTypeFireWound) * GetCondition();
+#endif
+
 	float ap = hit->ap;
+#ifdef SIMPLIFIED_FIRE_WOUND_PROTECTION
+	float BoneArmor = m_HitTypeProtection[ALife::eHitTypeFireWound] * GetCondition();
+#else
+	float BoneArmor = m_boneProtection->getBoneArmour(ALife::eHitTypeFireWound) * GetCondition();
+#endif
+
 	if (!fis_zero(BoneArmor))
 	{
 		if (ap > BoneArmor)

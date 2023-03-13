@@ -29,6 +29,10 @@
 #include "map_location.h"
 #include "phworld.h"
 
+#include "alife_time_manager.h"
+#include "game_sv_single.h"
+#include "alife_simulator.h"
+
 using namespace luabind;
 
 LPCSTR command_line	()
@@ -184,6 +188,18 @@ u32 get_time_month()
 	u32 year = 0, month = 0, day = 0, hours = 0, mins = 0, secs = 0, milisecs = 0;
 	split_time(Level().GetGameTime(), year, month, day, hours, mins, secs, milisecs);
 	return			month;
+}
+
+void change_game_time(u32 days, u32 hours, u32 mins)
+{
+	game_sv_Single* tpGame = smart_cast<game_sv_Single*>(Level().Server->game);
+	if (tpGame && ai().get_alife()) {
+		u32 value = days * 86400 + hours * 3600 + mins * 60;
+		float fValue = static_cast<float>(value);
+		value *= 1000;  // msec
+		g_pGamePersistent->Environment().ChangeGameTime(fValue);
+		tpGame->alife().time_manager().change_game_time(value);
+	}
 }
 
 float rain_factor()
@@ -589,9 +605,13 @@ void CLevel::script_register(lua_State *L)
 		def("set_game_difficulty",				set_game_difficulty),
 		def("get_game_difficulty",				get_game_difficulty),
 		
+		def("get_time_years",					get_time_year),
+		def("get_time_months",					get_time_month),
 		def("get_time_days",					get_time_days),
 		def("get_time_hours",					get_time_hours),
 		def("get_time_minutes",					get_time_minutes),
+
+		def("change_game_time",					change_game_time),
 
 		def("cover_in_direction",				cover_in_direction),
 		def("vertex_in_direction",				vertex_in_direction),
