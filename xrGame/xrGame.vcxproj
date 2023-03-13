@@ -8087,7 +8087,10 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release_All_To_All|Win32'">pch_script.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="ui\uiinventorywnd2.cpp" />
-    <ClCompile Include="ui\UIInventoryWnd3.cpp" />
+    <ClCompile Include="ui\UIInventoryWnd3.cpp">
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">pch_script.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderOutputFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)$(ProjectName)_script.pch</PrecompiledHeaderOutputFile>
+    </ClCompile>
     <ClCompile Include="ui\UIItemInfo.cpp" />
     <ClCompile Include="ui\UIKeyBinding.cpp" />
     <ClCompile Include="ui\UIKickPlayer.cpp" />

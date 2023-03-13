@@ -1,4 +1,5 @@
 // icon_params.h
+// realisation from OGSR-Engine
 #pragma once
 
 class CIconParams
@@ -17,7 +18,7 @@ public:
 	CIconParams()
 	{
 		loaded = false;
-		icon_atlas = "ui_icon_equipment";
+		icon_atlas = "";
 		grid_x = grid_y = 0.f;
 		grid_width = grid_height = 0.f;
 	}

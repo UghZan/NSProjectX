@@ -205,27 +205,6 @@ LPCSTR		CPda::Name				()
 	return m_sFullName.c_str();
 }
 
-void CPda::UsePDA()
-{
-	if (m_bHacked || m_idOriginalOwner == 0) return;
-
-	luabind::functor<void> m_functor;
-	if (!ai().script_engine().functor("pda_manager.use_pda", m_functor))
-	{
-		Log("pda_manager.use_pda not found");
-		return;
-	}
-	CInventoryOwner* owner = GetOriginalOwner();
-	if (owner)
-	{
-		m_functor(m_idOriginalOwner);
-	}
-	else
-		m_functor(-1);
-
-	m_bHacked = true;
-}
-
 CPda* CPda::GetPdaFromOwner(CObject* owner)
 {
 	return smart_cast<CInventoryOwner*>(owner)->GetPDA			();

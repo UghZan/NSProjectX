@@ -17,7 +17,6 @@
 
 #define BUY_MENU_TEXTURE "ui\\ui_mp_buy_menu"
 #define EQUIPMENT_ICONS  "ui\\ui_icon_equipment"
-#define EQUIPMENT_MAX_ICONS 16
 #define CHAR_ICONS		 "ui\\ui_icons_npc"
 #define MAP_ICONS		 "ui\\ui_icons_map"
 #define MP_CHAR_ICONS	 "ui\\ui_models_multiplayer"
@@ -51,7 +50,7 @@ void InventoryUtilities::DestroyShaders()
 {
 	g_BuyMenuShader.destroy			();
 
-	g_EquipmentIconsShader.destroy();
+	g_EquipmentIconsShader.destroy	();
 
 	g_MPCharIconsShader.destroy		();
 	g_tmpWMShader.destroy			();
@@ -171,6 +170,16 @@ ref_shader& InventoryUtilities::GetBuyMenuShader()
 	return g_BuyMenuShader;
 }
 
+ref_shader& InventoryUtilities::GetEquipmentIconsShader()
+{
+	if (!g_EquipmentIconsShader)
+	{
+		g_EquipmentIconsShader.create("hud\\default", EQUIPMENT_ICONS);
+	}
+	return g_EquipmentIconsShader;
+}
+
+//realization from monolith engine with slight modifications
 ref_shader& InventoryUtilities::GetEquipmentIconsShader(LPCSTR filename)
 {
 	xr_map<LPCSTR, ref_shader>::iterator it = g_CustomIconShaders.find(filename);
@@ -178,7 +187,7 @@ ref_shader& InventoryUtilities::GetEquipmentIconsShader(LPCSTR filename)
 	if (it != g_CustomIconShaders.end())
 		return it->second;
 
-	ref_shader shader = *xr_new<ref_shader>();
+	ref_shader shader = NULL;
 	shader.create("hud\\default", filename);
 
 	std::pair<LPCSTR, ref_shader> name_shader;

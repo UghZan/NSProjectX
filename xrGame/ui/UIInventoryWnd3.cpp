@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch_script.h"
 #include "UIInventoryWnd.h"
 #include "../actor.h"
 #include "../silencer.h"
@@ -15,7 +15,9 @@
 #include "UICellItem.h"
 #include "UIListBoxItem.h"
 #include "../CustomOutfit.h"
-#include "PDA.h"
+#include "../script_engine.h"
+#include "../ai_space.h"
+#include "../script_game_object.h"
 
 
 void CUIInventoryWnd::EatItem(PIItem itm)
@@ -47,7 +49,6 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 	CSilencer* pSilencer = smart_cast<CSilencer*>		(CurrentIItem());
 	CGrenadeLauncher* pGrenadeLauncher = smart_cast<CGrenadeLauncher*>	(CurrentIItem());
 	CBottleItem* pBottleItem = smart_cast<CBottleItem*>		(CurrentIItem());
-	CPda* pPDA = smart_cast<CPda*>		(CurrentIItem());
 
 	bool	b_show = false;
 
@@ -180,17 +181,130 @@ void CUIInventoryWnd::ActivatePropertiesBox()
 		else
 			_action = "st_eat";
 	}
-	else if (pPDA)
-	{
-		_action = "st_use";
-	}
 
 	if(_action){
-		if (pPDA)
-			UIPropertiesBox.AddItem(_action, NULL, INVENTORY_USE_PDA_ACTION);
-		else
 			UIPropertiesBox.AddItem(_action,  NULL, INVENTORY_EAT_ACTION);
 		b_show			= true;
+	}
+
+	CGameObject* gameObject = smart_cast<CGameObject*>(CurrentIItem());
+
+	LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use1_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct1;
+		if (ai().script_engine().functor(functor_name, funct1))
+		{
+			_action = funct1(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT2_ACTION);
+				b_show = true;
+			}
+		}
+	}
+
+	functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use2_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct2;
+		if (ai().script_engine().functor(functor_name, funct2))
+		{
+			_action = funct2(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT3_ACTION);
+				b_show = true;
+			}
+		}
+	}
+
+	functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use3_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct3;
+		if (ai().script_engine().functor(functor_name, funct3))
+		{
+			_action = funct3(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT4_ACTION);
+				b_show = true;
+			}
+		}
+	}
+
+	functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use4_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct4;
+		if (ai().script_engine().functor(functor_name, funct4))
+		{
+			_action = funct4(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT5_ACTION);
+				b_show = true;
+			}
+		}
+	}
+
+	functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use5_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct5;
+		if (ai().script_engine().functor(functor_name, funct5))
+		{
+			_action = funct5(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT6_ACTION);
+				b_show = true;
+			}
+		}
+	}
+
+	functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use6_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct6;
+		if (ai().script_engine().functor(functor_name, funct6))
+		{
+			_action = funct6(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT7_ACTION);
+				b_show = true;
+			}
+		}
+	}
+	functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use7_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct7;
+		if (ai().script_engine().functor(functor_name, funct7))
+		{
+			_action = funct7(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT8_ACTION);
+				b_show = true;
+			}
+		}
+	}
+	functor_name = READ_IF_EXISTS(pSettings, r_string, gameObject->cNameSect(), "use8_functor", 0);
+	if (functor_name)
+	{
+		luabind::functor<LPCSTR> funct8;
+		if (ai().script_engine().functor(functor_name, funct8))
+		{
+			_action = funct8(gameObject->lua_game_object());
+			if (_action)
+			{
+				UIPropertiesBox.AddItem(_action, NULL, INVENTORY_EAT9_ACTION);
+				b_show = true;
+			}
+		}
 	}
 
 	bool disallow_drop	= (pOutfit&&bAlreadyDressed);
@@ -246,6 +360,126 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 		case INVENTORY_EAT_ACTION:
 			EatItem(CurrentIItem());
 			break;
+		case INVENTORY_EAT2_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use1_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct1;
+				if (ai().script_engine().functor(functor_name, funct1))
+				{
+					if (funct1(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
+		case INVENTORY_EAT3_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use2_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct2;
+				if (ai().script_engine().functor(functor_name, funct2))
+				{
+					if (funct2(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
+		case INVENTORY_EAT4_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use3_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct3;
+				if (ai().script_engine().functor(functor_name, funct3))
+				{
+					if (funct3(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
+		case INVENTORY_EAT5_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use4_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct4;
+				if (ai().script_engine().functor(functor_name, funct4))
+				{
+					if (funct4(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
+		case INVENTORY_EAT6_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use5_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct5;
+				if (ai().script_engine().functor(functor_name, funct5))
+				{
+					if (funct5(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
+		case INVENTORY_EAT7_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use6_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct6;
+				if (ai().script_engine().functor(functor_name, funct6))
+				{
+					if (funct6(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
+		case INVENTORY_EAT8_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use7_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct7;
+				if (ai().script_engine().functor(functor_name, funct7))
+				{
+					if (funct7(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
+		case INVENTORY_EAT9_ACTION:
+		{
+			CGameObject* GO = smart_cast<CGameObject*>(CurrentIItem());
+			LPCSTR functor_name = READ_IF_EXISTS(pSettings, r_string, GO->cNameSect(), "use8_action_functor", 0);
+			if (functor_name)
+			{
+				luabind::functor<bool> funct8;
+				if (ai().script_engine().functor(functor_name, funct8))
+				{
+					if (funct8(GO->lua_game_object()))
+						TryUseItem(CurrentIItem());
+				}
+			}
+			break;
+		}
 		case INVENTORY_ATTACH_ADDON:
 			AttachAddon((PIItem)(UIPropertiesBox.GetClickedItem()->GetData()));
 			break;
@@ -260,9 +494,6 @@ void CUIInventoryWnd::ProcessPropertiesBoxClicked	()
 			break;
 		case INVENTORY_RELOAD_MAGAZINE:
 			(smart_cast<CWeapon*>(CurrentIItem()))->Action(kWPN_RELOAD, CMD_START);
-			break;
-		case INVENTORY_USE_PDA_ACTION:
-			(smart_cast<CPda*>(CurrentIItem()))->UsePDA();
 			break;
 		case INVENTORY_UNLOAD_MAGAZINE:
 			{
@@ -284,19 +515,13 @@ bool CUIInventoryWnd::TryUseItem(PIItem itm)
 	CMedkit*			pMedkit				= smart_cast<CMedkit*>			(itm);
 	CAntirad*			pAntirad			= smart_cast<CAntirad*>			(itm);
 	CEatableItem*		pEatableItem		= smart_cast<CEatableItem*>		(itm);
-	CPda*				pPDA				= smart_cast<CPda*>				(itm);
 
-	if(pMedkit || pAntirad || pEatableItem || pBottleItem)
+	if(!pMedkit && !pAntirad && !pEatableItem && !pBottleItem)
 	{
-		EatItem(itm);
-		return true;
+		return false;
 	}
-	if (pPDA)
-	{
-		pPDA->UsePDA();
-		return true;
-	}
-	return false;
+	EatItem(itm);
+	return true;
 }
 
 bool CUIInventoryWnd::DropItem(PIItem itm, CUIDragDropListEx* lst)

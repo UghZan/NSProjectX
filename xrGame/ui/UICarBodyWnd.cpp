@@ -275,9 +275,6 @@ void CUICarBodyWnd::SendMessage(CUIWindow *pWnd, s16 msg, void *pData)
 		{
 			switch(m_pUIPropertiesBox->GetClickedItem()->GetTAG())
 			{
-			case INVENTORY_EAT_ACTION:	//סתוסעü מבתוךע
-				EatItem();
-				break;
 			case INVENTORY_UNLOAD_MAGAZINE:
 				{
 				CUICellItem * itm = CurrentItem();
@@ -419,7 +416,7 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 	CBottleItem*			pBottleItem		= smart_cast<CBottleItem*>		(CurrentIItem());
     bool					b_show			= false;
 	
-	LPCSTR _action				= NULL;
+	/*LPCSTR _action = NULL;
 	if(pMedkit || pAntirad)
 	{
 		_action						= "st_use";
@@ -432,10 +429,10 @@ void CUICarBodyWnd::ActivatePropertiesBox()
 		else
 			_action					= "st_eat";
 		b_show						= true;
-	}
+	}*/
 
-	if(_action)
-		m_pUIPropertiesBox->AddItem(_action,  NULL, INVENTORY_EAT_ACTION);
+	//if(_action)
+	//	m_pUIPropertiesBox->AddItem(_action,  NULL, INVENTORY_EAT_ACTION);
 
 
 	if(b_show){

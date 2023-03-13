@@ -98,9 +98,12 @@ void CUIWpnParams::SetInfo(const shared_str& wpn_section)
 	m_textCapacity.SetText(pSettings->r_string(wpn_section, "ammo_mag_size"));
 }
 
+#pragma todo "пересадить на проверку через классы?"
 bool CUIWpnParams::Check(const shared_str& wpn_section){
 	if (pSettings->line_exist(wpn_section, "fire_dispersion_base"))
 	{
+		if (0 == xr_strcmp(wpn_section, "wpn_knife"))
+			return false;
         if (0==xr_strcmp(wpn_section, "wpn_addon_silencer"))
             return false;
         if (0==xr_strcmp(wpn_section, "wpn_binoc"))
