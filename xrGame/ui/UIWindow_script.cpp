@@ -101,6 +101,7 @@ void CUIWindow::script_register(lua_State *L)
 		.def("DetachChild",				&CUIWindow::DetachChild)
 		.def("SetAutoDelete",			&CUIWindow::SetAutoDelete)
 		.def("IsAutoDelete",			&CUIWindow::IsAutoDelete)
+		.def("DetachFromParent",		&CUIWindow::DetachFromParent)
 
 		.def("SetWndRect",				(void (CUIWindow::*)(Frect))					&CUIWindow::SetWndRect_script)
 		.def("SetWndRect",				(void (CUIWindow::*)(float,float,float,float))   &CUIWindow::SetWndRect_script)
@@ -123,7 +124,12 @@ void CUIWindow::script_register(lua_State *L)
 		.def("WindowName",				&CUIWindow::WindowName_script)
 		.def("SetWindowName",			&CUIWindow::SetWindowName)
 		.def("SetPPMode",				&CUIWindow::SetPPMode)
-		.def("ResetPPMode",				&CUIWindow::ResetPPMode),
+		.def("ResetPPMode",				&CUIWindow::ResetPPMode)
+
+		.def("GetMousePosX",			&CUIWindow::GetMousePosX)
+		.def("GetMousePosY",			&CUIWindow::GetMousePosY)
+
+		.def("GetAbsoluteRect",			(void (CUIWindow::*)(Frect&)) & CUIWindow::GetAbsoluteRect),
 
 //		.def("",						&CUIWindow::)
 		

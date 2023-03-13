@@ -6585,6 +6585,9 @@
     <ClInclude Include="ui\UIIconParams.h">
       <Filter>UI</Filter>
     </ClInclude>
+    <ClInclude Include="raypick.h">
+      <Filter>Core</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="damage_manager.cpp">
@@ -9760,6 +9763,9 @@
     </ClCompile>
     <ClCompile Include="ui\UIIconParams.cpp">
       <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="raypick.cpp">
+      <Filter>Core</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

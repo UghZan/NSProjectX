@@ -21,7 +21,7 @@ public:
 	IC		CScriptEngine	&script_engine	() const;
 };
 
-extern CAI_Space *g_ai_space;
+extern DLL_API CAI_Space *g_ai_space;
 
 IC	CAI_Space	&ai	();
 

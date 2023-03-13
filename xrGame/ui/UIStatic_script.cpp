@@ -38,9 +38,14 @@ void CUIStatic::script_register(lua_State *L)
 
 		.def("SetHeading",			&CUIStatic::SetHeading)
 		.def("GetHeading",			&CUIStatic::GetHeading)
+
+		.def("AdjustHeightToText",	&CUIStatic::AdjustHeightToText)
+		.def("AdjustWidthToText",	&CUIStatic::AdjustWidthToText)
 	
 		.def("ClipperOn",			&CUIStatic::ClipperOn)
 		.def("ClipperOff",			(void(CUIStatic::*)(void))&CUIStatic::ClipperOff )
 		.def("GetClipperState",		&CUIStatic::GetClipperState)
+
+		.def("SetTextComplexMode", &CUIStatic::SetTextComplexMode)
 	];
 }

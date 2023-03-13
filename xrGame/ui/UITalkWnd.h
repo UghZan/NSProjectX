@@ -35,6 +35,8 @@ public:
 	virtual bool		StopAnyMove					(){return true;}
 	virtual void		SendMessage					(CUIWindow* pWnd, s16 msg, void* pData = NULL);
 
+	CUITradeWnd*		GetTradeWnd					(){ return UITradeWnd; };
+
 	virtual void		Draw();
 	virtual void		Update();
 		

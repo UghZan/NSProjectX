@@ -118,6 +118,8 @@ void CScriptStorage::reinit	()
 
 	luaL_openlibs(m_virtual_machine);
 
+#include "luaicp_attach.inc"
+
 	if (strstr(Core.Params,"-_g"))
 		file_header			= file_header_new;
 	else

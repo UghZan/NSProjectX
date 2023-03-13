@@ -1313,8 +1313,10 @@ void CWeapon::OnZoomIn()
 	m_fZoomFactor = CurrentZoomFactor();
 	StopHudInertion();
 
+#ifdef WEAPON_CALLBACKS
 	if (pActor)
 		pActor->callback(GameObject::eOnActorWeaponZoomIn)(lua_game_object());
+#endif
 
 	if (m_bZoomDofEnabled && !IsScopeAttached())
 		GamePersistent().SetPickableEffectorDOF(true);//GamePersistent().SetEffectorDOF(m_ZoomDof);
@@ -1327,8 +1329,10 @@ void CWeapon::OnZoomOut()
 	m_bZoomMode = false;
 	m_fZoomFactor = g_fov;
 
+#ifdef WEAPON_CALLBACKS
 	if(pActor)
 		pActor->callback(GameObject::eOnActorWeaponZoomOut)(lua_game_object());
+#endif
 
 	StartHudInertion();
 	GamePersistent().SetPickableEffectorDOF(false);//GamePersistent().RestoreEffectorDOF();

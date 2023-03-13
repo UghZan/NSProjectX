@@ -87,6 +87,7 @@ public:
 	virtual bool			IsChild				(CUIWindow* pChild) const;
 	virtual void			DetachAll			();
 	int						GetChildNum			()								{return m_ChildWndList.size();} 
+	void					DetachFromParent	();
 
 	void					SetParent			(CUIWindow* pNewParent);
 	CUIWindow*				GetParent			()	const							{return m_pParentWnd;}
@@ -249,6 +250,10 @@ protected:
 #endif
 
 public:
+
+	inline float			GetMousePosX() const { return cursor_pos.x; }
+	inline float			GetMousePosY() const { return cursor_pos.y; }
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 

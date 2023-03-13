@@ -74,6 +74,7 @@
     <UseOfMfc>false</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release-AVX|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
@@ -1754,6 +1755,7 @@
     <ClInclude Include="quadtree_inline.h" />
     <ClInclude Include="RadioactiveZone.h" />
     <ClInclude Include="random32.h" />
+    <ClInclude Include="raypick.h" />
     <ClInclude Include="RegistryFuncs.h" />
     <ClInclude Include="relation_registry.h" />
     <ClInclude Include="relation_registry_defs.h" />
@@ -5624,6 +5626,7 @@
     <ClCompile Include="r2_test_hw.cpp" />
     <ClCompile Include="RadioactiveZone.cpp" />
     <ClCompile Include="random32.cpp" />
+    <ClCompile Include="raypick.cpp" />
     <ClCompile Include="RegistryFuncs.cpp" />
     <ClCompile Include="relation_registry.cpp" />
     <ClCompile Include="relation_registry_actions.cpp">
