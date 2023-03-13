@@ -550,6 +550,7 @@
     <ClInclude Include="string_concatenations_inline.h">
       <Filter>shared memory/string library\string concat</Filter>
     </ClInclude>
+    <ClInclude Include="build_config_defines.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="xrCore.rc">

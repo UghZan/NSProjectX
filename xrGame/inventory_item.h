@@ -46,22 +46,26 @@ class CInventoryItem :
 private:
 	typedef CAttachableItem inherited;
 protected:
-	enum EIIFlags{				FdropManual			=(1<<0),
-								FCanTake			=(1<<1),
-								FCanTrade			=(1<<2),
-								Fbelt				=(1<<3),
-								Fruck				=(1<<4),
-								FRuckDefault		=(1<<5),
-								FUsingCondition		=(1<<6),
-								FAllowSprint		=(1<<7),
-								Fuseful_for_NPC		=(1<<8),
-								FInInterpolation	=(1<<9),
-								FInInterpolate		=(1<<10),
-								FIsQuestItem		=(1<<11),
+	enum EIIFlags{				FdropManual			=(1	<< 0),
+								FCanTake			=(1	<< 1),
+								FCanTrade			=(1	<< 2),
+								Fbelt				=(1	<< 3),
+								Fruck				=(1	<< 4),
+								FRuckDefault		=(1	<< 5),
+								FUsingCondition		=(1	<< 6),
+								FAllowSprint		=(1	<< 7),
+								Fuseful_for_NPC		=(1	<< 8),
+								FInInterpolation	=(1	<< 9),
+								FInInterpolate		=(1	<< 10),
+								FIsQuestItem		=(1	<< 11),
+								FIAlwaysTradable	=(1 << 12),
+								FIAlwaysUntradable	=(1 << 13),
+								FIUngroupable		=(1 << 14),
+								FIManualHighlighting=(1 << 15),
 	};
 
-	Flags16						m_flags;
 public:
+	Flags16						m_flags;
 	CIconParams					m_icon_params;
 								CInventoryItem		();
 	virtual						~CInventoryItem		();

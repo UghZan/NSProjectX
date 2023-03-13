@@ -14,6 +14,7 @@
 
 #include <ostream>
 #include <luabind/operator.hpp>
+#include "../xrGame/xr_level_controller.h"
 
 using namespace luabind;
 
@@ -183,6 +184,7 @@ ICF	u32	script_time_global	()	{ return Device.dwTimeGlobal; }
 ICF	u32	script_time_global	()	{ return 0; }
 #endif
 
+extern int get_action_dik(EGameActions _action_id);
 #pragma optimize("s",on)
 void CScriptEngine::script_register(lua_State *L)
 {
@@ -197,8 +199,10 @@ void CScriptEngine::script_register(lua_State *L)
 			.def("start",&profile_timer_script::start)
 			.def("stop",&profile_timer_script::stop)
 			.def("time",&profile_timer_script::time)
+
 	];
 
+	function	(L, "bind_to_dik",			get_action_dik);
 	function	(L,	"log",							LuaLog);
 	function	(L,	"error_log",					ErrorLog);
 	function	(L,	"flush",						FlushLogs);

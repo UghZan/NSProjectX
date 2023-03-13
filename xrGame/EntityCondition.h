@@ -137,6 +137,9 @@ public:
 	IC float				GetRadiation			() const			{return m_fRadiation;}
 	IC float				GetPsyHealth			() const			{return m_fPsyHealth;}
 
+	virtual float			GetSatiety				()					{ return 0.f; };
+	virtual float xr_stdcall GetAlcohol				()					{ return 0.f; };
+
 	IC float 				GetEntityMorale			() const			{return m_fEntityMorale;}
 
 	IC float 				GetHealthLost			() const			{return m_fHealthLost;}
