@@ -1,4 +1,5 @@
-#include "stdafx.h"
+#include "StdAfx.h"
+#include "../pch_script.h"
 
 #include "UIMainIngameWnd.h"
 #include "UIMessagesWindow.h"
@@ -60,6 +61,54 @@ void test_update();
 #include <functional>
 
 using namespace InventoryUtilities;
+using namespace luabind;
+
+CUIStatic* warn_icon_list[8] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+
+#ifdef SCRIPT_ICONS_CONTROL
+bool __declspec(dllexport) external_icon_ctrl = false;			
+
+__declspec(dllexport) CUIMainIngameWnd* WINAPI GetMainIngameWindow()
+{
+	if (g_hud)
+	{
+		CUI* pUI = g_hud->GetUI();
+		if (pUI)
+			return pUI->UIMainIngameWnd;
+	}
+	return NULL;
+}
+
+
+bool __declspec(dllexport) SetupGameIcon(u32 icon, u32 cl, float width, float height)
+{
+	CUIMainIngameWnd* window = GetMainIngameWindow();
+	if (!window)
+		return false;
+
+
+	CUIStatic* sIcon = warn_icon_list[icon];
+
+	if (sIcon)
+	{
+		if (width > 0 && height > 0)
+		{
+			sIcon->SetWidth(width);
+			sIcon->SetHeight(height);
+			sIcon->SetStretchTexture(cl > 0);
+		}
+		else
+			window->SetWarningIconColor((CUIMainIngameWnd::EWarningIcons)icon, cl);
+		external_icon_ctrl = true;
+		return true;
+	}
+	return false;
+}
+
+#else
+#define external_icon_ctrl				0
+#endif
+
 
 //	hud adjust mode
 int			g_bHudAdjustMode			= 0;
@@ -102,6 +151,15 @@ CUIMainIngameWnd::~CUIMainIngameWnd()
 	xr_delete					(m_artefactPanel);
 	HUD_SOUND::DestroySound		(m_contactSnd);
 	xr_delete					(g_MissileForceShape);
+#ifdef LUAICP_COMPAT
+	warn_icon_list[ewiWeaponJammed] = &UIWeaponJammedIcon;
+	warn_icon_list[ewiRadiation] = &UIRadiaitionIcon;
+	warn_icon_list[ewiWound] = &UIWoundIcon;
+	warn_icon_list[ewiStarvation] = &UIStarvationIcon;
+	warn_icon_list[ewiPsyHealth] = &UIPsyHealthIcon;
+	warn_icon_list[ewiInvincible] = &UIInvincibleIcon;
+	warn_icon_list[ewiArtefact] = &UIArtefactIcon;
+#endif
 }
 
 void CUIMainIngameWnd::Init()
@@ -400,6 +458,9 @@ void CUIMainIngameWnd::Update()
 				SetWarningIconColor	(ewiInvincible,0xffffffff);
 			else
 				SetWarningIconColor	(ewiInvincible,0x00ffffff);
+
+			if (!external_icon_ctrl)
+				TurnOffWarningIcon(ewiInvincible);
 		}
 		// ewiArtefact
 		if( (GameID() == GAME_ARTEFACTHUNT) && !(Device.dwFrame%30) ){
@@ -408,6 +469,9 @@ void CUIMainIngameWnd::Update()
 				SetWarningIconColor	(ewiArtefact,0xffffffff);
 			else
 				SetWarningIconColor	(ewiArtefact,0x00ffffff);
+
+			if (!external_icon_ctrl)
+				TurnOffWarningIcon(ewiArtefact);
 		}
 
 		// Armor indicator stuff
@@ -427,9 +491,9 @@ void CUIMainIngameWnd::Update()
 		UpdateActiveItemInfo				();
 
 
-		EWarningIcons i					= ewiWeaponJammed;
 
-		while (i < ewiInvincible)
+		EWarningIcons i = ewiWeaponJammed;
+		while (!external_icon_ctrl && i < ewiInvincible)
 		{
 			float value = 0;
 			switch (i)
@@ -890,12 +954,17 @@ bool CUIMainIngameWnd::OnKeyboardPress(int dik)
 		{
 		case DIK_NUMPADMINUS:
 			//.HideAll();
-			HUD().GetUI()->HideGameIndicators();
+			if (!external_icon_ctrl)
+				HUD().GetUI()->HideGameIndicators();
+			else
+				HUD().GetUI()->ShowGameIndicators();
 			return true;
 			break;
 		case DIK_NUMPADPLUS:
-			//.ShowAll();
-			HUD().GetUI()->ShowGameIndicators();
+			if (!external_icon_ctrl)
+				HUD().GetUI()->ShowGameIndicators();
+			else
+				HUD().GetUI()->HideGameIndicators();
 			return true;
 			break;
 		}
@@ -1146,6 +1215,21 @@ void CUIMainIngameWnd::reset_ui()
 	m_pPickUpItem					= NULL;
 	UIMotionIcon.ResetVisibility	();
 }
+
+#pragma optimize("s",on)
+void CUIMainIngameWnd::script_register(lua_State* L)
+{
+#ifdef SCRIPT_ICONS_CONTROL
+	module(L)
+		[
+			// class_< CUIMainIngameWnd >("CUIMainIngameWnd")
+			// .def("turn_off_icon", &TurnOffWarningIcon),
+			def("setup_game_icon", &SetupGameIcon)
+		];
+#endif
+}
+#pragma optimize("",on)
+
 
 #ifdef DEBUG
 /*

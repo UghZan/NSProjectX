@@ -21,7 +21,7 @@
 
 ENGINE_API	bool g_dedicated_server;
 
-extern DLL_API CAI_Space *g_ai_space = 0;
+CAI_Space *g_ai_space = 0;
 
 CAI_Space::CAI_Space				()
 {

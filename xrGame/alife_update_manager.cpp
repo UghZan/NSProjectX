@@ -543,7 +543,7 @@ void CALifeUpdateManager::assign_story_id(ALife::_OBJECT_ID id, ALife::_STORY_ID
 		return;
 	}
 
-	if (!(story_objects().object(sid)))
+	if (!(story_objects().object(sid, true)))
 	{
 		if (object->m_bOnline)
 			switch_offline(object);

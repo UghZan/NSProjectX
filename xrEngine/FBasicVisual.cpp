@@ -26,6 +26,7 @@ IRender_Visual::IRender_Visual()
 	Type = 0;
 	shader = 0;
 	vis.clear();
+	ZeroMemory(shader_name, sizeof(shader_name));
 }
 
 IRender_Visual::~IRender_Visual()
@@ -65,6 +66,7 @@ void IRender_Visual::Load(const char* N, IReader* data, u32)
 		data->r_stringZ(fnT, sizeof(fnT));
 		data->r_stringZ(fnS, sizeof(fnS));
 		shader.create(fnS, fnT);
+		strcpy_s(shader_name, sizeof(shader_name), fnS);
 	}
 
 	// desc
@@ -80,6 +82,7 @@ void	IRender_Visual::Copy(IRender_Visual* pFrom)
 	PCOPY(Type);
 	PCOPY(shader);
 	PCOPY(vis);
+	strcpy_s(shader_name, pFrom->shader_name);
 #ifdef _EDITOR
 	PCOPY(desc);
 #endif

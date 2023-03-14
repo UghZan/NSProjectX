@@ -44,10 +44,11 @@ public:
 	virtual	bool	bfAssignObject(CScriptEntityAction *tpEntityAction);
 
 			Fvector GetCurrentDirection	();
-private:
+
 			void	TurnOn			();
 			void	TurnOff			();
-	
+	IC		bool	IsEnabled		() const { return light_render->get_active(); }
+private:
 	// Rotation routines
 	static void		BoneCallbackX(CBoneInstance *B);
 	static void		BoneCallbackY(CBoneInstance *B);

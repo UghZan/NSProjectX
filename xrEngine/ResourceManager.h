@@ -100,6 +100,7 @@ public:
 	// Low level resource creation
 	CTexture* _CreateTexture(LPCSTR Name);
 	void							_DeleteTexture(const CTexture* T);
+	CTexture* _FindTexture(LPCSTR Name);
 
 	CMatrix* _CreateMatrix(LPCSTR Name);
 	void							_DeleteMatrix(const CMatrix* M);

@@ -96,9 +96,15 @@ IRender_Visual*	CModelPool::Instance_Load		(const char* N, BOOL allow_register)
 	string_path		fn;
 	string_path		name;
 
+	strcpy_s(name, sizeof(name), N);
+
+	char* sub = strstr(name, "|");
+	if (sub)
+		sub[0] = 0;
+
 	// Add default ext if no ext at all
-	if (0==strext(N))	strconcat	(sizeof(name),name,N,".ogf");
-	else				strcpy_s	(name,sizeof(name),N);
+	if (0 == strext(name))
+		strcat_s(name, sizeof(name), ".ogf");
 
 	// Load data from MESHES or LEVEL
 	if (!FS.exist(N))	{

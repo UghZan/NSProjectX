@@ -14,6 +14,11 @@
 #define		PRIORITY_NORMAL	8
 #define		PRIORITY_LOW	4
 
+typedef int (WINAPI* OBJECT_METHOD) (PVOID pThis);
+
+OBJECT_METHOD ENGINE_API TextureLoadCapture = NULL;
+OBJECT_METHOD ENGINE_API TextureUnloadCapture = NULL;
+
 void resptrcode_texture::create(LPCSTR _name)
 {
 	_set(Device.Resources->_CreateTexture(_name));
@@ -155,6 +160,16 @@ void CTexture::Preload()
 
 void CTexture::Load()
 {
+	int result = 0;
+	if (TextureLoadCapture)
+		result = TextureLoadCapture((PVOID)this);
+
+	if (result <= 0)
+		LoadImpl();
+}
+
+void CTexture::LoadImpl()
+{
 	flags.bLoaded = true;
 	desc_cache = 0;
 	if (pSurface)					return;
@@ -171,7 +186,14 @@ void CTexture::Load()
 #ifndef		DEDICATED_SERVER
 	// Check for OGM
 	string_path			fn;
-	if (FS.exist(fn, "$game_textures$", *cName, ".ogm")) {
+	string_path			name;
+	strcpy_s(name, sizeof(name), *cName);
+
+	char* sub = strstr(name, "|");
+	if (sub)
+		sub[0] = 0;
+
+	if (FS.exist(fn, "$game_textures$", name, ".ogm")) {
 		// AVI
 		pTheora = xr_new<CTheoraSurface>();
 		m_play_time = 0xFFFFFFFF;
@@ -203,7 +225,7 @@ void CTexture::Load()
 		}
 	}
 	else
-		if (FS.exist(fn, "$game_textures$", *cName, ".avi")) {
+		if (FS.exist(fn, "$game_textures$", name, ".avi")) {
 			// AVI
 			pAVI = xr_new<CAviPlayerCustom>();
 
@@ -231,7 +253,7 @@ void CTexture::Load()
 			}
 		}
 		else
-			if (FS.exist(fn, "$game_textures$", *cName, ".seq"))
+			if (FS.exist(fn, "$game_textures$", name, ".seq"))
 			{
 				// Sequence
 				string256 buffer;
@@ -271,7 +293,7 @@ void CTexture::Load()
 			{
 				// Normal texture
 				u32	mem = 0;
-				pSurface = ::Render->texture_load(*cName, mem);
+				pSurface = ::Render->texture_load(name, mem);
 
 				// Calc memory usage and preload into vid-mem
 				if (pSurface) {
@@ -305,6 +327,8 @@ void CTexture::Unload()
 #ifdef DEBUG
 	_SHOW_REF(msg_buff, pSurface);
 #endif // DEBUG
+	if (TextureUnloadCapture)
+		TextureUnloadCapture((PVOID)this);
 	_RELEASE(pSurface);
 
 	xr_delete(pAVI);

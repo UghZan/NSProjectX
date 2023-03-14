@@ -59,8 +59,8 @@ CGameObject::CGameObject		()
 		LogXrayOffset("GameObject.clsid", this, &this->m_script_clsid);
 		LogXrayOffset("GameObject.story_id", this, &this->m_story_id);
 		LogXrayOffset("GameObject.ai_location", this, &this->m_ai_location);
-#endif
 	}
+#endif
 }
 
 CGameObject::~CGameObject		()

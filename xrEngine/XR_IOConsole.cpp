@@ -125,6 +125,10 @@ void CConsole::Initialize()
 	// Commands
 	extern void CCC_Register();
 	CCC_Register();
+
+#ifdef LUAICP_COMPAT
+	LogXrayOffset("CConsole.commands", this, &this->Commands);
+#endif
 }
 
 CConsole::~CConsole()

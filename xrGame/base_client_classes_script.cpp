@@ -14,6 +14,10 @@
 #include "../xrEngine/skeletonanimated.h"
 #include "ai/stalker/ai_stalker.h"
 #include "../xrEngine/../xrNetServer/net_utils.h"
+#include "../xrEngine/ResourceManager.h"
+#include "../xrEngine/device.h"
+#include "../xrEngine/Render.h"
+#include "script_game_object.h"
 
 using namespace luabind;
 
@@ -182,6 +186,148 @@ void CBlendScript::script_register		(lua_State *L)
 			//			.def(constructor<>())
 		];
 }
+
+// alpet ======================== SCRIPT_TEXTURE_CONTROL BEGIN =========== 
+
+CTexture* script_texture_create(LPCSTR name)
+{
+	return Device.Resources->_CreateTexture(name);
+}
+
+CTexture* script_texture_find(LPCSTR name)
+{
+	return Device.Resources->_FindTexture(name);
+}
+
+void script_texture_delete(CTexture* t)
+{
+	xr_delete(t);
+}
+
+void script_texture_setname(CTexture* t, LPCSTR name)
+{
+	t->set_name(name);
+}
+
+
+void script_texture_load(CTexture* t)
+{
+	t->Load();
+}
+
+void script_texture_unload(CTexture* t)
+{
+	t->Unload();
+}
+
+LPCSTR script_texture_getname(CTexture* t)
+{
+	return t->cName.c_str();
+}
+
+CTexture* script_visual_getset_texture(CScriptGameObject* script_obj, int n, LPCSTR replace)
+{
+	IRender_Visual* parent_v = script_obj->object().Visual();
+	if (!parent_v)
+		return NULL; // not have visual
+
+	CKinematics* k = dynamic_cast<CKinematics*> (parent_v);
+	if (!k)
+		return NULL;
+
+
+	CTexture* list[256] = { 0 };
+	int tex_count = 0;
+
+	list[n] = NULL;
+
+	n = (n > 255) ? 255 : n;
+
+	u32 verbose = 1;
+
+	for (u32 cn = 0; cn < k->children.size(); cn++)
+	{
+		IRender_Visual* child_v = k->children.at(cn);
+
+		Shader* s = child_v->shader._get();
+		if (verbose > 5) Msg("# Shader *S = 0x%p name = <%s>, child_num = %d ", s, child_v->shader_name, cn);
+
+		if (s->E[0]._get())
+		{
+			ShaderElement* E = s->E[0]._get();
+			if (verbose > 5) Msg("#  ShaderElement *E = 0x%p", E);
+			for (u32 p = 0; p < E->passes.size(); p++)
+				if (E->passes[p]._get())
+				{
+					SPass* pass = E->passes[p]._get();
+					if (verbose > 5) Msg("#   SPass *pass = 0x%p", pass);
+					STextureList* tlist = pass->T._get();
+					if (!tlist) continue;
+					if (verbose > 5) Msg("#   STextureList *tlist = 0x%p, size = %d ", tlist, tlist->size());
+
+					for (u32 t = 0; t < tlist->size() && tex_count <= n; t++)
+						list[tex_count++] = tlist->at(t).second._get();
+				}
+		}
+
+		if (tex_count && replace && strlen(child_v->shader_name))
+		{
+			s32 last_skinning = Render->m_skinning;
+
+			Render->shader_option_skinning(1);
+			child_v->shader.destroy();
+			child_v->shader.create(child_v->shader_name, replace);
+
+			Render->shader_option_skinning(last_skinning);
+		}
+
+	}
+
+	return list[n];
+}
+
+CTexture* script_visual_get_texture(CScriptGameObject* script_obj, int n)
+{
+	return script_visual_getset_texture(script_obj, n, NULL);
+}
+
+
+void CTextureScript::script_register(lua_State* L)
+{
+	// added by alpet 10.07.14
+	module(L)
+		[
+			class_<CTexture>("CTexture")
+			.def("delete", &script_texture_delete)
+		.def("find", &script_texture_find)
+		.def("load", &script_texture_load)
+		.def("unload", &script_texture_unload)
+		.def("get_name", &script_texture_getname)
+		.def("set_name", &script_texture_setname)
+		.def("get_surface", &CTexture::surface_get)
+		.def_readonly("ref_count", &CTexture::dwReference)
+		];
+}
+
+
+void CResourceManagerScript::script_register(lua_State* L)
+{
+	// added by alpet 10.07.14
+	module(L)[
+		// added by alpet
+		def("texture_create", &script_texture_create),
+			def("texture_delete", &script_texture_delete),
+			def("texture_find", &script_texture_find),
+			def("texture_load", &script_texture_load),
+			def("texture_unload", &script_texture_unload),
+			def("texture_set_name", &script_texture_setname),
+			def("texture_get_name", &script_texture_getname),
+			def("texture_from_visual", &script_visual_get_texture),
+			def("texture_to_visual", &script_visual_getset_texture)
+	];
+}
+
+// alpet ======================== SCRIPT_TEXTURE_CONTROL END =========== 
 
 /*
 void CKinematicsScript::script_register		(lua_State *L)
