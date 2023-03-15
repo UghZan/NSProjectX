@@ -12,6 +12,7 @@
 #pragma warning(pop)
 
 extern bool shared_str_initialized;
+extern bool force_flush_log;
 
 #ifdef __BORLANDC__
     #	include "d3d9.h"
@@ -111,21 +112,19 @@ void update_clipboard	(const char *string)
 #endif // DEBUG
 }
 
-extern void BuildStackTrace();
+extern LPCSTR BuildStackTrace();
 extern char g_stackTrace[100][4096];
 extern int	g_stackTraceCount;
 
-void LogStackTrace	(LPCSTR header)
+void LogStackTrace(LPCSTR header)
 {
-	if (!shared_str_initialized)
-		return;
+	Msg("%s", header);
+	BuildStackTrace();
 
-	BuildStackTrace	();		
+	for (int i = 1; i < g_stackTraceCount; ++i)
+		Msg(" %s", g_stackTrace[i]);
 
-	Msg				("%s",header);
-
-	for (int i=1; i<g_stackTraceCount; ++i)
-		Msg			("%s",g_stackTrace[i]);
+	FlushLog();
 }
 
 void gather_info		(const char *expression, const char *description, const char *argument0, const char *argument1, const char *file, int line, const char *function, LPSTR assertion_info)
@@ -182,9 +181,7 @@ void gather_info		(const char *expression, const char *description, const char *
 	memory_monitor::flush_each_time	(false);
 #endif // USE_MEMORY_MONITOR
 
-	if (!IsDebuggerPresent() && !strstr(GetCommandLine(),"-no_call_stack_assert")) {
-		if (shared_str_initialized)
-			Msg			("stack trace:\n");
+	if (!strstr(GetCommandLine(), "-no_call_stack_assert")) {
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 		buffer			+= sprintf(buffer,"stack trace:%s%s",endline,endline);
@@ -192,19 +189,16 @@ void gather_info		(const char *expression, const char *description, const char *
 
 		BuildStackTrace	();		
 
-		for (int i=2; i<g_stackTraceCount; ++i) {
-			if (shared_str_initialized)
-				Msg		("%s",g_stackTrace[i]);
+		Msg("!stack trace:\n");
+		for (int i = 2; i < g_stackTraceCount; ++i)
+			Msg("!\t %s", g_stackTrace[i]);
 
 #ifdef USE_OWN_ERROR_MESSAGE_WINDOW
 			buffer		+= sprintf(buffer,"%s%s",g_stackTrace[i],endline);
 #endif // USE_OWN_ERROR_MESSAGE_WINDOW
-		}
 
-		if (shared_str_initialized)
-			FlushLog	();
-
-		copy_to_clipboard	(assertion_info);
+			if (!IsDebuggerPresent())
+				copy_to_clipboard(assertion_info);
 	}
 }
 
@@ -222,6 +216,7 @@ void xrDebug::backend	(const char *expression, const char *description, const ch
 	(MUTEX_PROFILE_ID(xrDebug::backend))
 #endif // PROFILE_CRITICAL_SECTIONS
 	;
+	force_flush_log = true;
 
 	ShowWindow(GetTopWindow(NULL), SW_MINIMIZE);
 	CS.Enter			();
@@ -611,20 +606,17 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		BuildStackTrace		(pExceptionInfo);
 		*pExceptionInfo->ContextRecord = save;
 
-		if (shared_str_initialized)
 			Msg				("stack trace:\n");
 		copy_to_clipboard	("stack trace:\r\n\r\n");
 
 		string4096			buffer;
 		for (int i=0; i<g_stackTraceCount; ++i) {
-			if (shared_str_initialized)
 				Msg			("%s",g_stackTrace[i]);
 			sprintf			(buffer,"%s\r\n",g_stackTrace[i]);
 			update_clipboard(buffer);
 		}
 
 		if (*error_message) {
-			if (shared_str_initialized)
 				Msg			("\n%s",error_message);
 
 			strcat			(error_message,"\r\n");
@@ -632,7 +624,6 @@ LONG WINAPI UnhandledFilter	(_EXCEPTION_POINTERS *pExceptionInfo)
 		}
 	}
 
-	if (shared_str_initialized)
 		FlushLog			();
 
 #ifndef USE_OWN_ERROR_MESSAGE_WINDOW

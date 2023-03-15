@@ -3,13 +3,14 @@
 #include <stdio.h>
 
 #define MAX_STACK_TRACE	100
+#define MAX_STACK_ENTRY_LENGTH 4096
 
-char g_stackTrace[MAX_STACK_TRACE][4096];
+char g_stackTrace[MAX_STACK_TRACE][MAX_STACK_ENTRY_LENGTH];
 int g_stackTraceCount = 0;
 
 void BuildStackTrace	(struct _EXCEPTION_POINTERS *g_BlackBoxUIExPtrs)
 {
-	FillMemory			(g_stackTrace[0],MAX_STACK_TRACE*256, 0 );
+	FillMemory			(g_stackTrace[0],MAX_STACK_TRACE * MAX_STACK_ENTRY_LENGTH, 0 );
 
 	const TCHAR* traceDump = 
 		GetFirstStackTraceString( GSTSO_MODULE | GSTSO_SYMBOL | GSTSO_SRCLINE,
@@ -65,7 +66,7 @@ void BuildStackTrace	(struct _EXCEPTION_POINTERS *g_BlackBoxUIExPtrs)
 #	pragma auto_inline(on)
 #endif // _EDITOR
 
-void BuildStackTrace	()
+LPCSTR __declspec(dllexport) BuildStackTrace()
 {
     CONTEXT					context;
 	context.ContextFlags	= CONTEXT_FULL;
@@ -76,7 +77,7 @@ void BuildStackTrace	()
 #endif // _EDITOR
 
 	if (!GetThreadContext(GetCurrentThread(),&context))
-		return;
+		return NULL;
 
 	context.Eip				= program_counter();
 #ifndef _EDITOR
@@ -92,6 +93,7 @@ void BuildStackTrace	()
 	ex_ptrs.ExceptionRecord	= 0;
 
 	BuildStackTrace			(&ex_ptrs);
+	return g_stackTrace[0];
 }
 
 #ifndef _EDITOR

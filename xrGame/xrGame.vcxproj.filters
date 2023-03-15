@@ -9785,5 +9785,8 @@
   <ItemGroup>
     <None Include="cpp.hint" />
     <None Include="luaicp_attach.inc" />
+    <None Include="light_ext.inc">
+      <Filter>Core\Client\Objects\hanging_lamp</Filter>
+    </None>
   </ItemGroup>
 </Project>

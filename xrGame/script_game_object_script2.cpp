@@ -27,6 +27,11 @@
 #include "relation_registry.h"
 #include "danger_object.h"
 
+#include "Weapon.h"
+#include "Torch.h"
+#include "alife_simulator.h"
+#include "alife_object_registry.h"
+
 #include "game_object_space.h"
 #include "detail_path_manager_space.h"
 #include "patrol_path_manager_space.h"
@@ -34,6 +39,33 @@
 using namespace luabind;
 
 extern CScriptActionPlanner *script_action_planner(CScriptGameObject *obj);
+
+IRender_Visual* CScriptGameObject::GetWeaponHUD_Visual() const
+{
+	CGameObject* obj = &this->object();
+	CWeapon* wpn = dynamic_cast<CWeapon*> (obj);
+	if (!wpn) return NULL;
+
+	return wpn->GetHUD()->Visual();
+}
+
+void CScriptGameObject::LoadWeaponHUD_Visual(LPCSTR wpn_hud_section)
+{
+	CGameObject* obj = &this->object();
+	CWeapon* wpn = dynamic_cast<CWeapon*> (obj);
+	if (!wpn) return;
+
+	wpn->GetHUD()->Load(wpn_hud_section);
+}
+
+
+CSE_ALifeDynamicObject* CScriptGameObject::alife_object() const
+{
+	const CALifeSimulator* sim = ai().get_alife();
+	if (sim)
+		return sim->objects().object(object().ID(), true);
+	return NULL;
+}
 
 class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject> &instance)
 {
@@ -257,6 +289,11 @@ class_<CScriptGameObject> &script_register_game_object1(class_<CScriptGameObject
 
 		// alpet: export object cast
 		.def("get_game_object", &CScriptGameObject::object)
+		.def("get_alife_object", &CScriptGameObject::alife_object)
+		.def("get_torch", &get_torch)
+
+		.def("get_hud_visual", &CScriptGameObject::GetWeaponHUD_Visual)
+		.def("load_hud_visual", &CScriptGameObject::LoadWeaponHUD_Visual)
 
 	;return	(instance);
 }

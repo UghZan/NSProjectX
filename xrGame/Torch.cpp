@@ -21,6 +21,8 @@
 #include "game_object_space.h"
 #include "script_callback_ex.h"
 
+
+
 static const float		TIME_2_HIDE					= 5.f;
 static const float		TORCH_INERTION_CLAMP		= PI_DIV_6;
 static const float		TORCH_INERTION_SPEED_MAX	= 7.5f;
@@ -36,6 +38,7 @@ CTorch::CTorch(void)
 	light_render				= ::Render->light_create();
 	light_render->set_type		(IRender_Light::SPOT);
 	light_render->set_shadow	(true);
+	light_render->set_virtual_size(0.1);
 	light_omni					= ::Render->light_create();
 	light_omni->set_type		(IRender_Light::POINT);
 	light_omni->set_shadow		(false);

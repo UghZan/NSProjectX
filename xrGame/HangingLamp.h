@@ -50,6 +50,20 @@ public:
 	virtual void	shedule_Update	( u32 dt);							// Called by sheduler
 	virtual void	UpdateCL		( );								// Called each frame, so no need for dt
 
+	IRender_Light* GetLight(int target = 0);
+
+	void			SetAngle(float angle, int target = 0);
+	void			SetAnimation(LPCSTR name);
+	void			SetBrightness(float brightness);
+	void			SetDirection(const Fvector& v);
+	void			SetColor(const Fcolor& color, int target = 0);
+	void			SetRGB(float r, float g, float b, int target = 0);
+
+	void			SetPosition(const Fvector& v);
+	void			SetRange(float range, int target = 0);
+	void			SetTexture(LPCSTR texture, int target = 0);
+	void			SetVirtualSize(float size, int target = 0);
+	void			Synchronize();
 
 	virtual void	SpawnInitPhysics	(CSE_Abstract	*D)																;
 	virtual CPhysicsShellHolder*	PPhysicsShellHolder	()	{return PhysicsShellHolder();}								;

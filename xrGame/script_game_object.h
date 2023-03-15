@@ -643,6 +643,16 @@ public:
 			LPCSTR GetVisualName();
 			void SetVisualName(LPCSTR);
 
+			//xp-dev_xray
+			void AttachVehicle(CScriptGameObject*);
+			void DetachVehicle();
+			void SetPosition(Fvector);
+			_DECLARE_FUNCTION10(alife_object, CSE_ALifeDynamicObject*);
+
+			// alpet: visual functions for CWeapon descedants 
+			_DECLARE_FUNCTION10(GetWeaponHUD_Visual, IRender_Visual*);
+			void				LoadWeaponHUD_Visual(LPCSTR wpn_hud_section);
+
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
 add_to_type_list(CScriptGameObject)

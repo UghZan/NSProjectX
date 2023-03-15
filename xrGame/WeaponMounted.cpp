@@ -101,6 +101,7 @@ BOOL	CWeaponMounted::net_Spawn(CSE_Abstract* DC)
 	PPhysicsShell()			= P_build_Shell(this,false,fixed_bones);
 	K						->CalculateBones_Invalidate();
 	K						->CalculateBones();
+	m_pPhysicsShell->GetGlobalTransformDynamic(&XFORM());
 
 	CShootingObject::Light_Create();
 
@@ -225,10 +226,21 @@ void	CWeaponMounted::cam_Update			(float dt, float fov)
 	const Fmatrix& C				= K->LL_GetTransform(camera_bone);
 	XFORM().transform_tiny			(P,C.c);
 
-	if(OwnerActor()){
+	CActor* A = OwnerActor();
+	if (A) {
 		// rotate head
-		OwnerActor()->Orientation().yaw			= -Camera()->yaw;
-		OwnerActor()->Orientation().pitch		= -Camera()->pitch;
+		CCameraBase* cam = Camera();
+		A->Orientation().yaw = -cam->yaw;
+		A->Orientation().pitch = cam->pitch;
+		CCameraBase* fe = A->cam_FirstEye();
+		if (fe)
+		{
+			fe->yaw = cam->yaw;
+			fe->pitch = cam->pitch;
+			Fvector p = P;
+			p.y -= A->Radius() * 2.f / 3.f;
+			A->XFORM().c = p;
+		}
 	}
 	Camera()->Update							(P,Da);
 	Level().Cameras().Update					(Camera());
@@ -262,11 +274,12 @@ bool	CWeaponMounted::attach_Actor		(CGameObject* actor)
 }
 void	CWeaponMounted::detach_Actor		()
 {
+	CKinematics* K = PKinematics(Visual());
 	CHolderCustom::detach_Actor();
 	// disable actor rotate callback
-	CBoneInstance& biX		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(rotate_x_bone);	
+	CBoneInstance& biX		= K->LL_GetBoneInstance(rotate_x_bone);	
 	biX.reset_callback		();
-	CBoneInstance& biY		= smart_cast<CKinematics*>(Visual())->LL_GetBoneInstance(rotate_y_bone);	
+	CBoneInstance& biY		= K->LL_GetBoneInstance(rotate_y_bone);	
 	biY.reset_callback		();
 	// enable shell callback
 	m_pPhysicsShell->EnabledCallbacks(TRUE);

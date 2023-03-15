@@ -13,3 +13,4 @@
 #define LUAICP_COMPAT //lua interceptor compat by alpet from xp-dev_xray
 //#define SCRIPT_ICONS_CONTROL //stop engine-side warning indicators (like radiation, godmode, weapon condition etc.) from showing
 //#define SCRIPT_EZI_CONTROL //allows control of zoom inertion from scripts
+#define ARTEFACTS_WORK_IN_RUCK //artefacts have an influence on actor even if in ruck, with configurable intensity

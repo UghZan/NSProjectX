@@ -5,6 +5,9 @@
 #include "resource.h"
 #include "log.h"
 
+#define	LOG_TIME_PRECISE
+bool __declspec(dllexport) force_flush_log = false; //by alpet: log saves in chunks of 32 kb, and forcefully saves on every crash
+
 extern BOOL					LogExecCB		= TRUE;
 static string_path			logFName		= "engine.log";
 static BOOL 				no_log			= TRUE;
@@ -16,9 +19,10 @@ static BOOL 				no_log			= TRUE;
 xr_vector<shared_str>*		LogFile			= NULL;
 static LogCallback			LogCB			= 0;
 
-//from https://github.com/xer-urg/xp-dev_xray
+//logging from https://github.com/xer-urg/xp-dev_xray
 IWriter* LogWriter;
 
+size_t cached_log = 0;
 
 typedef void (WINAPI* OFFSET_UPDATER)(LPCSTR key, u32 ofs);
 
@@ -39,6 +43,9 @@ void	LogXrayOffset(LPCSTR key, LPVOID base, LPVOID pval)
 
 void FlushLog			(LPCSTR file_name)
 {
+	if (LogWriter)
+		LogWriter->flush();
+	cached_log = 0;
 	/*if (no_log)
 		return;
 
@@ -61,10 +68,11 @@ void FlushLog			()
 	//FlushLog		(logFName);
 }
 
+extern bool shared_str_initialized;
+
 void AddOne				(const char *split) 
 {
-	if(!LogFile)		
-						return;
+	if(!LogFile)		return;
 
 	logCS.Enter			();
 
@@ -75,26 +83,50 @@ void AddOne				(const char *split)
 	}
 //#endif
 
+if (LogExecCB&&LogCB)LogCB(split);
+
 //	DUMP_PHASE;
 	{
-		shared_str			temp = shared_str(split);
-//		DUMP_PHASE;
-		LogFile->push_back	(temp);
-	}
+		if (shared_str_initialized)
+		{
+			shared_str			temp = shared_str(split);
+			LogFile->push_back(temp);
+		}
 
-	//modified
-	if (LogWriter) {
-		time_t t = time(NULL);
-		tm* ti = localtime(&t);
-		char buf[64];
-		strftime(buf, 64, "[%x %X]\t", ti);
+		//+RvP, alpet
+		if (LogWriter)
+		{
+			switch (*split)
+			{
+			case 0x21:
+			case 0x23:
+			case 0x25:
+				split++;
+				break;
+			}
+			char buf[64];
+#ifdef	LOG_TIME_PRECISE 
+			SYSTEMTIME lt;
+			GetLocalTime(&lt);
 
-		LogWriter->w_printf("%s%s\n", buf, split);
-		LogWriter->flush();
+			sprintf_s(buf, 64, "[%02d.%02d.%02d %02d:%02d:%02d.%03d] ", lt.wDay, lt.wMonth, lt.wYear % 100, lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds);
+			LogWriter->w_printf("%s%s\r\n", buf, split);
+			cached_log += xr_strlen(buf);
+			cached_log += xr_strlen(split) + 2;
+#else
+			time_t t = time(NULL);
+			tm* ti = localtime(&t);
+
+			strftime(buf, 64, "[%x %X]\t", ti);
+
+			LogWriter->wprintf("%s %s\r\n", buf, split);
+#endif
+			if (force_flush_log || cached_log >= 32768)
+				FlushLog();
+		}
 	}
 
 	//exec CallBack
-	if (LogExecCB&&LogCB)LogCB(split);
 
 	logCS.Leave				();
 }

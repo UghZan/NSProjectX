@@ -47,6 +47,16 @@ public:
 
 			void	Switch				();
 			void	Switch				(bool light_on);
+			IRender_Light* GetLight		(int target = 0);
+
+			void	SetAnimation		(LPCSTR name);
+			void	SetBrightness		(float brightness);
+			void	SetColor			(const Fcolor& color, int target = 0);
+			void	SetRGB				(float r, float g, float b, int target = 0);
+			void	SetAngle			(float angle, int target = 0);
+			void	SetRange			(float range, int target = 0);
+			void	SetTexture			(LPCSTR texture, int target = 0);
+			void	SetVirtualSize		(float size, int target = 0);
 
 	virtual bool	can_be_attached		() const;
 
@@ -97,6 +107,7 @@ public:
 
 	DECLARE_SCRIPT_REGISTER_FUNCTION
 };
+CTorch* get_torch(CScriptGameObject* script_obj);
 add_to_type_list(CTorch)
 #undef script_type_list
 #define script_type_list save_type_list(CTorch)

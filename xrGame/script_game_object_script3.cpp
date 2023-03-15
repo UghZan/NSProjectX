@@ -338,5 +338,10 @@ class_<CScriptGameObject> &script_register_game_object2(class_<CScriptGameObject
 		.def("get_visual_name", &CScriptGameObject::GetVisualName)
 		.def("set_visual_name", &CScriptGameObject::SetVisualName)
 
+		//Real Wolf 11.07.2014
+		.def("attach_vehicle", &CScriptGameObject::AttachVehicle)
+		.def("detach_vehicle", &CScriptGameObject::DetachVehicle)
+		.def("set_position", &CScriptGameObject::SetPosition)
+
 	;return	(instance);
 }

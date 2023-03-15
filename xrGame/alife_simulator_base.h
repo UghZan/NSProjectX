@@ -107,6 +107,7 @@ public:
 			void								append_item_vector			(ALife::OBJECT_VECTOR	&tObjectVector,	ALife::ITEM_P_VECTOR &tItemList);
 			shared_str							level_name					() const;
 			void								on_death					(CSE_Abstract *killed, CSE_Abstract *killer);
+	IC		CALifeSimulatorBase*				get_base					() { return this; };
 
 public:
 	ALife::ITEM_P_VECTOR						m_temp_item_vector;

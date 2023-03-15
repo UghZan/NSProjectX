@@ -154,14 +154,102 @@ void CObjectScript::script_register		(lua_State *L)
 	];
 }
 
-void IRender_VisualScript::script_register		(lua_State *L)
+// alpet ======================== SCRIPT_TEXTURE_CONTROL BEGIN ========== =
+
+
+IRender_Visual * visual_get_child(IRender_Visual * v, u32 n_child)
+{
+
+	if (!v) return NULL; // not have visual
+	CKinematics* k = dynamic_cast<CKinematics*> (v);
+	if (!k) return NULL;
+	if (n_child >= k->children.size()) 		return NULL;
+	return k->children.at(n_child);
+}
+
+CTexture* visual_get_texture(IRender_Visual* child_v, int n_texture)
+{
+	if (!child_v) return NULL; // not have visual
+
+	CTexture* list[256] = { 0 };
+	int tex_count = 0;
+
+	n_texture = (n_texture > 255) ? 255 : n_texture;
+	list[n_texture] = NULL;
+
+	u32 verbose = 1;
+
+	Shader* s = child_v->shader._get();
+
+	if (verbose > 5) Msg("# Shader *S = 0x%p name = <%s> ", s, child_v->shader_name);
+
+	if (s && s->E[0]._get())
+	{
+		ShaderElement* E = s->E[0]._get();
+		if (verbose > 5) Msg("#  ShaderElement *E = 0x%p", E);
+		for (u32 p = 0; p < E->passes.size(); p++)
+			if (E->passes[p]._get())
+			{
+				SPass* pass = E->passes[p]._get();
+				if (verbose > 5) Msg("#   SPass *pass = 0x%p", pass);
+				STextureList* tlist = pass->T._get();
+				if (!tlist) continue;
+				if (verbose > 5) Msg("#   STextureList *tlist = 0x%p, size = %d ", tlist, tlist->size());
+
+				for (u32 t = 0; t < tlist->size() && tex_count <= n_texture; t++)
+					list[tex_count++] = tlist->at(t).second._get();
+			}
+	}
+
+
+
+	return list[n_texture];
+}
+
+void visual_configure(IRender_Visual* child_v, LPCSTR new_shader, LPCSTR new_texture)
+{
+	if ((new_shader && child_v->textures.size()) ||
+		(new_texture && child_v->shader_name.size()))
+	{
+		s32 last_skinning = Render->m_skinning;
+
+		Render->shader_option_skinning(1);
+		child_v->shader.destroy();
+
+		LPCSTR sh_name = new_shader ? new_shader : *child_v->shader_name;
+		LPCSTR tx_name = new_texture ? new_texture : *child_v->textures;
+
+		child_v->shader.create(sh_name, tx_name);
+		child_v->shader_name = sh_name;
+		child_v->textures = tx_name;
+
+		Render->shader_option_skinning(last_skinning);
+	}
+}
+
+void visual_set_texture(IRender_Visual* v, LPCSTR replace) { visual_configure(v, NULL, replace); }
+
+void visual_set_shader(IRender_Visual* v, LPCSTR replace) { visual_configure(v, replace, NULL); }
+
+void IRender_VisualScript::script_register(lua_State* L)
 {
 	module(L)
-	[
-		class_<IRender_Visual>("IRender_Visual")
+		[
+			class_<IRender_Visual>("IRender_Visual")
 			.def(constructor<>())
-			.def("dcast_PKinematicsAnimated",&IRender_Visual::dcast_PKinematicsAnimated)
-	];
+		.def("dcast_PKinematicsAnimated", &IRender_Visual::dcast_PKinematicsAnimated)
+		.def("child", &visual_get_child)
+		.def("configure", &visual_configure)
+
+		.def("get_texture", &visual_get_texture)
+
+
+		.def("get_shader_name", &IRender_Visual::get_shader_name)
+		.def("get_texture_name", &IRender_Visual::get_texture_name)
+		.def("set_shader_name", &visual_set_shader)
+		.def("set_texture_name", &visual_set_texture)
+
+		];
 }
 
 void CKinematicsAnimated_PlayCycle(CKinematicsAnimated* sa, LPCSTR anim)
@@ -225,72 +313,46 @@ LPCSTR script_texture_getname(CTexture* t)
 	return t->cName.c_str();
 }
 
-CTexture* script_visual_getset_texture(CScriptGameObject* script_obj, int n, LPCSTR replace)
+void child_visual_configure(IRender_Visual * v, u32 n_child, LPCSTR new_shader, LPCSTR new_texture)
 {
-	IRender_Visual* parent_v = script_obj->object().Visual();
-	if (!parent_v)
-		return NULL; // not have visual
 
-	CKinematics* k = dynamic_cast<CKinematics*> (parent_v);
-	if (!k)
-		return NULL;
+	if (!v)	return; // not have visual
 
+	CKinematics* k = dynamic_cast<CKinematics*> (v);
+	if (!k)	return;
 
-	CTexture* list[256] = { 0 };
-	int tex_count = 0;
+	if (n_child >= k->children.size()) return;
 
-	list[n] = NULL;
+	IRender_Visual* child_v = k->children.at(n_child);
 
-	n = (n > 255) ? 255 : n;
-
-	u32 verbose = 1;
-
-	for (u32 cn = 0; cn < k->children.size(); cn++)
-	{
-		IRender_Visual* child_v = k->children.at(cn);
-
-		Shader* s = child_v->shader._get();
-		if (verbose > 5) Msg("# Shader *S = 0x%p name = <%s>, child_num = %d ", s, child_v->shader_name, cn);
-
-		if (s->E[0]._get())
-		{
-			ShaderElement* E = s->E[0]._get();
-			if (verbose > 5) Msg("#  ShaderElement *E = 0x%p", E);
-			for (u32 p = 0; p < E->passes.size(); p++)
-				if (E->passes[p]._get())
-				{
-					SPass* pass = E->passes[p]._get();
-					if (verbose > 5) Msg("#   SPass *pass = 0x%p", pass);
-					STextureList* tlist = pass->T._get();
-					if (!tlist) continue;
-					if (verbose > 5) Msg("#   STextureList *tlist = 0x%p, size = %d ", tlist, tlist->size());
-
-					for (u32 t = 0; t < tlist->size() && tex_count <= n; t++)
-						list[tex_count++] = tlist->at(t).second._get();
-				}
-		}
-
-		if (tex_count && replace && strlen(child_v->shader_name))
-		{
-			s32 last_skinning = Render->m_skinning;
-
-			Render->shader_option_skinning(1);
-			child_v->shader.destroy();
-			child_v->shader.create(child_v->shader_name, replace);
-
-			Render->shader_option_skinning(last_skinning);
-		}
-
-	}
-
-	return list[n];
+	visual_configure(child_v, new_shader, new_texture);
 }
 
-CTexture* script_visual_get_texture(CScriptGameObject* script_obj, int n)
+
+void script_object_set_texture(CScriptGameObject* script_obj, u32 nc, LPCSTR replace)
 {
-	return script_visual_getset_texture(script_obj, n, NULL);
+	IRender_Visual* v = script_obj->object().Visual();
+	child_visual_configure(v, nc, NULL, replace);
 }
 
+void script_object_set_shader(CScriptGameObject* script_obj, u32 nc, LPCSTR replace)
+{
+	IRender_Visual* v = script_obj->object().Visual();
+	child_visual_configure(v, nc, replace, NULL);
+}
+
+CTexture* script_object_get_texture(CScriptGameObject* script_obj, u32 n_child, u32 n_texture)
+{
+	IRender_Visual* v = script_obj->object().Visual();
+	v = visual_get_child(v, n_child);
+	return visual_get_texture(v, n_texture);
+}
+
+void script_texture_reload(CTexture* t)
+{
+	t->Unload();
+	t->Load();
+}
 
 void CTextureScript::script_register(lua_State* L)
 {
@@ -299,13 +361,14 @@ void CTextureScript::script_register(lua_State* L)
 		[
 			class_<CTexture>("CTexture")
 			.def("delete", &script_texture_delete)
-		.def("find", &script_texture_find)
-		.def("load", &script_texture_load)
-		.def("unload", &script_texture_unload)
-		.def("get_name", &script_texture_getname)
-		.def("set_name", &script_texture_setname)
-		.def("get_surface", &CTexture::surface_get)
-		.def_readonly("ref_count", &CTexture::dwReference)
+			.def("reload", &script_texture_reload)
+			.def("find", &script_texture_find)
+			.def("load", &script_texture_load)
+			.def("unload", &script_texture_unload)
+			.def("get_name", &script_texture_getname)
+			.def("set_name", &script_texture_setname)
+			.def("get_surface", &CTexture::surface_get)
+			.def_readonly("ref_count", &CTexture::dwReference)
 		];
 }
 
@@ -322,8 +385,10 @@ void CResourceManagerScript::script_register(lua_State* L)
 			def("texture_unload", &script_texture_unload),
 			def("texture_set_name", &script_texture_setname),
 			def("texture_get_name", &script_texture_getname),
-			def("texture_from_visual", &script_visual_get_texture),
-			def("texture_to_visual", &script_visual_getset_texture)
+			def("texture_from_object", &script_object_get_texture),
+			def("texture_from_visual", &visual_get_texture),
+			def("texture_to_object", &script_object_set_texture),
+			def("texture_to_visual", &visual_set_texture)
 	];
 }
 
